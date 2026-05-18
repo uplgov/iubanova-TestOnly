@@ -1,468 +1,690 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ERR</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 禁止选择文本 */
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    :root {
-      --bg-primary: #0a0f1a;
-      --bg-secondary: #10161f;
-      --text-primary: #e8edf5;
-      --text-secondary: #9aaebf;
-      --border-color: #1f2a36;
-      --card-bg: #10161f;
-      --card-border: #222c38;
-      --btn-bg: #1e2a3a;
-      --accent: #5f7f9e;
-      --sec-bg: #071220;
-      --sec-border: #1a3a5c;
-      --sec-text: #7aabcc;
-      --sec-icon: #4a8ab0;
-      --quick-card: #0f1c2a;
-      --quick-border: #1e3248;
-    }
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: system-ui, 'Segoe UI', 'SF Pro Text', 'Noto Sans', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
 
-    body {
-      font-family: 'Georgia', 'Times New Roman', Times, serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: background 0.2s, color 0.2s;
-    }
+        /* 禁止拖拽图片、右键、复制 */
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: auto;
+        }
 
-    #securityBanner {
-      background: var(--sec-bg);
-      border-bottom: 1px solid var(--sec-border);
-    }
+        /* 整体容器 */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #000;
+        }
 
-    #securityFull {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1), opacity 0.45s ease, padding 0.45s ease;
-      padding: 0 2rem;
-    }
+        /* 移动端警告遮罩 */
+        .mobile-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0c12;
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+            flex-direction: column;
+            gap: 2rem;
+            color: #eee;
+            font-weight: 500;
+        }
+        .warning-text-block p {
+            margin: 1rem 0;
+            line-height: 1.4;
+            font-size: 1.1rem;
+            max-width: 600px;
+        }
+        hr {
+            width: 60px;
+            margin: 0.5rem auto;
+            border-color: #444;
+        }
 
-    #securityFull.open {
-      max-height: 260px;
-      opacity: 1;
-      padding: 14px 2rem;
-    }
+        /* 初始加载界面 (LOGO + 进度条) */
+        .initial-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+        .loader-logo {
+            width: 150px;
+            max-width: 30%;
+            margin-bottom: 2rem;
+        }
+        .loader-logo img {
+            width: 100%;
+            display: block;
+        }
+        .progress-bar-container {
+            width: 260px;
+            max-width: 70%;
+            height: 4px;
+            background: #2a2a2e;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0 0.5rem;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #f0f0f0;
+            transition: width 0.2s linear;
+        }
+        .percent-text {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-family: monospace;
+        }
 
-    #securityFull-inner {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
+        /* 主界面: 左右分割布局 (暗黑风格) */
+        .main-interface {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease;
+            position: relative;
+        }
+        .left-panel {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 0.1s ease; /* 快速切换无动画，符合需求 */
+            position: relative;
+        }
+        .right-panel {
+            flex: 1;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-image 0.1s ease;
+        }
+        /* 右侧毛玻璃容器 (位于图片上方但按钮清晰) */
+        .glass-card {
+            width: 80%;
+            max-width: 320px;
+            background: rgba(20, 20, 30, 0.55);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 1.8rem 1.2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        .lang-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            margin: 12px 0;
+            background: #000000cc;
+            border: 1px solid #3a3a44;
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+        .lang-btn:hover {
+            background: #1e1e2e;
+            transform: scale(1.02);
+        }
+        /* 渐变衔接 (左图右侧渐变黑，右图左侧渐变黑) */
+        .left-panel::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 100%;
+            background: linear-gradient(to left, rgba(0,0,0,0.9), rgba(0,0,0,0));
+            pointer-events: none;
+        }
+        .right-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0));
+            pointer-events: none;
+            z-index: 1;
+        }
 
-    #closeBannerBtn {
-      flex-shrink: 0;
-      margin-top: 2px;
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: #cc3333;
-      border: none;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.18s;
-    }
+        /* 加载遮罩 (语言选择后) */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            color: white;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+        .loading-subtitle {
+            font-size: 1.1rem;
+            max-width: 80%;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 16px;
+            border-radius: 60px;
+            transition: opacity 0.25s ease-in-out;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    #closeBannerBtn::before, #closeBannerBtn::after {
-      content: '';
-      position: absolute;
-      width: 7px;
-      height: 1.5px;
-      background: transparent;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(45deg);
-      transition: background 0.18s;
-    }
+        /* 模式选择界面 */
+        .mode-selector {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(0px);
+            transition: backdrop-filter 0.2s;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .mode-card {
+            background: rgba(10,10,20,0.85);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 85%;
+            text-align: center;
+            color: white;
+            border: 1px solid #ffffff30;
+        }
+        .mode-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .mode-btn {
+            background: #1f1f2e;
+            padding: 12px 24px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            border: none;
+            color: white;
+        }
+        .mode-btn:hover {
+            background: #3a3a4e;
+            transform: scale(1.02);
+        }
+        .tooltip-text {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #bbb;
+            min-height: 60px;
+            transition: 0.1s;
+        }
+        h3 {
+            margin-bottom: 0.5rem;
+        }
 
-    #closeBannerBtn::after {
-      transform: translate(-50%, -50%) rotate(-45deg);
-    }
-
-    #closeBannerBtn:hover {
-      background: #888;
-    }
-
-    #closeBannerBtn:hover::before, #closeBannerBtn:hover::after {
-      background: #fff;
-    }
-
-    .security-body {
-      flex: 1;
-    }
-
-    .security-body h3 {
-      font-size: 0.82rem;
-      font-weight: bold;
-      color: var(--sec-text);
-      margin-bottom: 10px;
-      font-family: 'Georgia', serif;
-      letter-spacing: 0.02em;
-    }
-
-    .security-items {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-
-    .security-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.75rem;
-      color: var(--sec-text);
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .security-item img {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      opacity: 0.85;
-      filter: hue-rotate(180deg) brightness(1.2);
-      flex-shrink: 0;
-    }
-
-    .security-item span {
-      opacity: 0.9;
-      line-height: 1.4;
-    }
-
-    #securityCollapsed {
-      padding: 7px 2rem;
-      font-size: 0.72rem;
-      color: var(--sec-text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: opacity 0.2s;
-      font-family: 'Georgia', serif;
-      letter-spacing: 0.01em;
-    }
-
-    #securityCollapsed:hover {
-      opacity: 0.7;
-    }
-
-    #securityCollapsed::before {
-      content: '›';
-      font-size: 0.9rem;
-      transition: transform 0.2s;
-    }
-
-    #securityCollapsed:hover::before {
-      transform: translateX(2px);
-    }
-
-    .maintenance-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      min-height: 60vh;
-      padding: 3rem 2rem;
-    }
-
-    .hero-word {
-      text-align: center;
-      position: relative;
-      max-width: 100%;
-    }
-
-    .main-word {
-      font-size: 7rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      color: white;
-      text-shadow: 0 0 25px rgba(255,255,255,0.4);
-      margin-bottom: 2rem;
-      word-break: break-word;
-      line-height: 1.2;
-    }
-
-    @media (max-width: 760px) {
-      .main-word {
-        font-size: 3.5rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .main-word {
-        font-size: 2.5rem;
-      }
-    }
-
-    .language-ring {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1.2rem 2rem;
-      max-width: 1000px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .lang-item {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.55);
-      font-family: 'Georgia', monospace;
-      letter-spacing: 0.02em;
-      transition: color 0.2s, transform 0.15s;
-      white-space: nowrap;
-      cursor: default;
-    }
-
-    .lang-item:hover {
-      color: rgba(255, 255, 255, 0.9);
-      transform: translateY(-2px);
-    }
-
-    @media (max-width: 640px) {
-      .lang-item {
-        font-size: 0.7rem;
-        white-space: nowrap;
-      }
-      .language-ring {
-        gap: 0.8rem 1rem;
-      }
-    }
-
-    .footer-note {
-      text-align: center;
-      padding: 1.8rem;
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      border-top: 1px solid var(--border-color);
-      margin-top: 2rem;
-      letter-spacing: 0.5px;
-    }
-
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.9rem 2rem;
-      border-bottom: 1px solid var(--border-color);
-      background: var(--bg-secondary);
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .home-button {
-      font-size: 1.15rem;
-      font-weight: bold;
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      cursor: pointer;
-      font-family: 'Georgia', serif;
-      letter-spacing: 0.03em;
-      transition: color 0.15s;
-    }
-
-    .home-button:hover {
-      color: var(--accent);
-    }
-
-    .nav-divider {
-      color: var(--text-secondary);
-    }
-
-    .current-location {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-    }
-
-    .btn-square {
-      background: var(--btn-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 0.3rem 0.9rem;
-      cursor: pointer;
-      color: var(--text-primary);
-      font-size: 0.82rem;
-      font-family: 'Georgia', serif;
-      transition: border-color 0.15s, background 0.15s;
-    }
-
-    .btn-square:hover {
-      border-color: var(--accent);
-      background: var(--card-bg);
-    }
-
-    body.light {
-      --bg-primary: #f4f6f9;
-      --bg-secondary: #ffffff;
-      --text-primary: #1a2634;
-      --text-secondary: #3a4a5e;
-      --border-color: #d0d8e4;
-      --card-bg: #ffffff;
-      --card-border: #dce2ec;
-      --btn-bg: #eef2f7;
-      --sec-bg: #e8f4fd;
-      --sec-border: #b8d8f0;
-      --sec-text: #2a5f80;
-      --quick-card: #f0f6ff;
-      --quick-border: #c8dff0;
-    }
-
-    body.light .security-item img {
-      filter: none;
-      opacity: 0.7;
-    }
-
-    body.light .main-word {
-      color: #1a2634;
-      text-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-
-    body.light .lang-item {
-      color: rgba(26,38,52,0.55);
-    }
-
-    body.light .lang-item:hover {
-      color: rgba(26,38,52,0.85);
-    }
-  </style>
+        /* 辅助隐藏 */
+        .hidden {
+            display: none;
+        }
+        .noscroll {
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
-
-<div id="securityBanner">
-  <div id="securityFull">
-    <div id="securityFull-inner">
-      <button id="closeBannerBtn" title="Close"></button>
-      <div class="security-body">
-        <h3 id="securityTitle">How do you know this website is safe?</h3>
-        <div class="security-items">
-          <div class="security-item">
-            <img src="https://uplgov.github.io/sixside/Government.png" alt="Official domain">
-            <span id="securityDomain">uplgov.github.io is the official and only domain of the UPL Government</span>
-          </div>
-          <div class="security-item">
-            <img src="https://uplgov.github.io/sixside/Lock.png" alt="Secure connection">
-            <span id="securityHttps">The lock icon and https:// in your browser mean your connection is encrypted and secure</span>
-          </div>
-          <div class="security-item">
-            <img src="https://uplgov.github.io/sixside/Rubbishbin.png" alt="No data storage">
-            <span id="securityNoStorage">This portal does not store any data. According to the 2133 "Privacy and Cybersecurity for Government Departments - Version 2" regulation, government portals must visibly indicate when data storage is about to begin.</span>
-          </div>
+<div class="app-container" id="appRoot">
+    <!-- 移动端警告 默认隐藏，检测后显示 -->
+    <div id="mobileWarning" class="mobile-warning" style="display: none;">
+        <div class="warning-text-block">
+            <p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
+            <hr>
+            <p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
+            <hr>
+            <p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
         </div>
-      </div>
     </div>
-  </div>
-  <div id="securityCollapsed">
-    <span id="securityCollapsedText">Learn why this page is safe</span>
-  </div>
-</div>
 
-<div class="top-bar">
-  <div class="nav-left">
-    <button class="home-button" id="homeBtn">UPL Central Government</button>
-    <span class="nav-divider">|</span>
-    <span class="current-location" id="currentLocation">Technical Notice</span>
-  </div>
-  <div class="toolbar">
-    <button class="btn-square" id="themeToggleBtn">Dark/Light</button>
-  </div>
-</div>
-
-<div class="maintenance-container">
-  <div class="hero-word">
-    <div class="main-word">Under maintenance</div>
-    <div class="language-ring">
-      <span class="lang-item" data-lang="zh-hans">正在维护</span>
-      <span class="lang-item" data-lang="zh-hant">正在維護</span>
-      <span class="lang-item" data-lang="zh-classical">維護之中</span>
-      <span class="lang-item" data-lang="zh-wenyan">維修之中</span>
-      <span class="lang-item" data-lang="hi">रखरखाव में</span>
-      <span class="lang-item" data-lang="es">En mantenimiento</span>
-      <span class="lang-item" data-lang="mn">Засварт орж байна</span>
-      <span class="lang-item" data-lang="ru">На обслуживании</span>
-      <span class="lang-item" data-lang="pt">Em manutenção</span>
-      <span class="lang-item" data-lang="ko">유지보수 중</span>
-      <span class="lang-item" data-lang="ja">メンテナンス中</span>
-      <span class="lang-item" data-lang="fr">En maintenance</span>
-      <span class="lang-item" data-lang="de">In Wartung</span>
+    <!-- 初始加载界面 (预加载全部) -->
+    <div id="initialLoader" class="initial-loader">
+        <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
+        <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
+        <div id="percentText" class="percent-text">0%</div>
     </div>
-  </div>
-</div>
 
-<div class="footer-note">
-  <span>ERR · Service temporarily unavailable · Please check back later.</span>
+    <!-- 主界面 左右布局 -->
+    <div id="mainInterface" class="main-interface">
+        <div id="leftPanel" class="left-panel" style="background-image: url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg');"></div>
+        <div id="rightPanel" class="right-panel" style="background-image: none; background-color: #000;">
+            <div class="glass-card">
+                <button id="btnEn" class="lang-btn">British English</button>
+                <button id="BtnClassical" class="lang-btn">華夏文言</button>
+                <button id="BtnTrad" class="lang-btn">正體官話</button>
+                <button id="BtnSimp" class="lang-btn">简体白话</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择语言后加载overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingSubtitle" class="loading-subtitle"> </div>
+    </div>
+
+    <!-- 模式选择界面 -->
+    <div id="modeSelector" class="mode-selector">
+        <div class="mode-card">
+            <h3 id="modeTitle">选择符合你的模式</h3>
+            <div class="mode-buttons">
+                <button id="fullExpBtn" class="mode-btn">完整的体验</button>
+                <button id="lowStressBtn" class="mode-btn">较低的压力</button>
+            </div>
+            <div id="modeTooltip" class="tooltip-text"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-  (function() {
-    let bannerOpen = false;
-
-    function openBanner() {
-      document.getElementById("securityFull").classList.add("open");
-      document.getElementById("securityCollapsed").style.display = "none";
-      bannerOpen = true;
-    }
-
-    function closeBanner() {
-      document.getElementById("securityFull").classList.remove("open");
-      document.getElementById("securityCollapsed").style.display = "flex";
-      bannerOpen = false;
-    }
-
-    document.getElementById("closeBannerBtn").onclick = function(e) {
-      e.stopPropagation();
-      closeBanner();
-    };
-    document.getElementById("securityCollapsed").onclick = openBanner;
-    document.getElementById("securityCollapsed").style.display = "flex";
-
-    setTimeout(function() {
-      if (!bannerOpen) openBanner();
-    }, 500);
-
-    const toggleBtn = document.getElementById("themeToggleBtn");
-    if (toggleBtn) {
-      toggleBtn.addEventListener("click", function() {
-        document.body.classList.toggle("light");
-      });
-    }
-
-    const homeBtn = document.getElementById("homeBtn");
-    if (homeBtn) {
-      homeBtn.addEventListener("click", function() {
-        window.location.reload();
-      });
-    }
-  })();
+    (function() {
+        // 检测是否为移动设备 (广义移动)
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
+        const mobileWarningDiv = document.getElementById('mobileWarning');
+        const initialLoader = document.getElementById('initialLoader');
+        const mainInterface = document.getElementById('mainInterface');
+        
+        if (isMobile) {
+            // 阻止访问，显示警告，禁止右键拖拽等
+            mobileWarningDiv.style.display = 'flex';
+            initialLoader.style.display = 'none';
+            document.body.style.overflow = 'hidden';
+            // 禁止右键与拖拽全局
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+            document.addEventListener('dragstart', (e) => e.preventDefault());
+            return; // 停住所有逻辑
+        }
+        
+        // 桌面环境: 禁止右键、拖拽、复制
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('dragstart', (e) => e.preventDefault());
+        document.addEventListener('selectstart', (e) => e.preventDefault());
+        
+        // 模拟加载全部资源（图片，代码）进度条 直到所有图片预加载完成
+        const imagesToPreload = [
+            "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
+            "https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg",
+            "https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg",
+            "https://uplgov.github.io/iubanova-TestOnly/images/bigben.jpg",
+            "https://uplgov.github.io/iubanova-TestOnly/images/teapot.jpg",
+            "https://uplgov.github.io/iubanova-TestOnly/images/thegreatwall.jpg",
+            "https://uplgov.github.io/iubanova-TestOnly/images/arandomstreet.jpg",
+            "https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg"
+        ];
+        
+        let loadedCount = 0;
+        const totalImages = imagesToPreload.length;
+        const progressFill = document.getElementById('progressFill');
+        const percentText = document.getElementById('percentText');
+        
+        function updateProgress() {
+            const percent = Math.floor((loadedCount / totalImages) * 100);
+            progressFill.style.width = percent + '%';
+            percentText.innerText = percent + '%';
+            if (loadedCount === totalImages) {
+                // 加载完成 隐藏启动器，显示主界面
+                setTimeout(() => {
+                    initialLoader.style.opacity = '0';
+                    setTimeout(() => {
+                        initialLoader.style.display = 'none';
+                        mainInterface.style.visibility = 'visible';
+                        mainInterface.style.opacity = '1';
+                    }, 400);
+                }, 200);
+            }
+        }
+        
+        function preloadImage(url) {
+            const img = new Image();
+            img.onload = () => {
+                loadedCount++;
+                updateProgress();
+            };
+            img.onerror = () => {
+                loadedCount++;
+                updateProgress();
+            };
+            img.src = url;
+        }
+        
+        imagesToPreload.forEach(url => preloadImage(url));
+        
+        // DOM 元素
+        const leftPanel = document.getElementById('leftPanel');
+        const rightPanel = document.getElementById('rightPanel');
+        const btnEn = document.getElementById('btnEn');
+        const btnClassical = document.getElementById('BtnClassical');
+        const btnTrad = document.getElementById('BtnTrad');
+        const btnSimp = document.getElementById('BtnSimp');
+        
+        // hover 更改左侧图片
+        btnEn.addEventListener('mouseenter', () => {
+            leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg')";
+        });
+        btnClassical.addEventListener('mouseenter', () => {
+            leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')";
+        });
+        btnTrad.addEventListener('mouseenter', () => {
+            leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')";
+        });
+        btnSimp.addEventListener('mouseenter', () => {
+            leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')";
+        });
+        
+        // 点击右侧背景变化 + 记录选择的语言
+        let selectedLanguage = 'en'; // en, classical, trad, simp
+        function setRightBgByLang(lang) {
+            if (lang === 'en') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/bigben.jpg')";
+            else if (lang === 'classical') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/teapot.jpg')";
+            else if (lang === 'trad') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/thegreatwall.jpg')";
+            else if (lang === 'simp') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/arandomstreet.jpg')";
+            rightPanel.style.backgroundSize = "cover";
+            rightPanel.style.backgroundPosition = "center";
+        }
+        
+        btnEn.addEventListener('click', () => { selectedLanguage = 'en'; setRightBgByLang('en'); startLoadingSequence(); });
+        btnClassical.addEventListener('click', () => { selectedLanguage = 'classical'; setRightBgByLang('classical'); startLoadingSequence(); });
+        btnTrad.addEventListener('click', () => { selectedLanguage = 'trad'; setRightBgByLang('trad'); startLoadingSequence(); });
+        btnSimp.addEventListener('click', () => { selectedLanguage = 'simp'; setRightBgByLang('simp'); startLoadingSequence(); });
+        
+        // 字幕库
+        const subtitlesMap = {
+            en: [
+                "Use ⌘ + D to add our website to your Favourites in Safari.",
+                "A restless melody is playing.",
+                "Fancy brewing a cup of tea while you wait?",
+                "We're preparing some fine content for you.",
+                "Press ⌘ + H to hide the current window and do something else while you wait.",
+                "Please bear with us for a moment.",
+                "Warming up the Hemi™ V8."
+            ],
+            classical: [
+                "按 ⌘ + D，置吾網於 Safari 之「最愛」中。",
+                "促絃繁音，方奏未歇。",
+                "且先煮茗一盞，可乎？",
+                "方為君備佳篇美什，稍候即呈。",
+                "按 ⌘ + H 以隱此窗，且待且為他事。",
+                "請少待片晌。",
+                "Hemi™ V8 方熱機以待。"
+            ],
+            trad: [
+                "使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。",
+                "急促的音樂正在演奏。",
+                "要不要先泡一杯茶？",
+                "我們正在竭力為您準備精美內容。",
+                "使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。",
+                "請稍等片刻。",
+                "正在預熱 Hemi™ V8。"
+            ],
+            simp: [
+                "用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。",
+                "急促的音乐正在演奏",
+                "要不要先泡一杯茶？",
+                "我们正在为您准备精美内容",
+                "用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的",
+                "请稍等片刻",
+                "正在预热Hemi™ V8"
+            ]
+        };
+        
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingSubtitle = document.getElementById('loadingSubtitle');
+        let subtitleInterval = null;
+        
+        function startRandomSubtitle(lang) {
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            const arr = subtitlesMap[lang];
+            if (!arr) return;
+            let currentIdx = Math.floor(Math.random() * arr.length);
+            loadingSubtitle.innerText = arr[currentIdx];
+            loadingSubtitle.style.opacity = '1';
+            subtitleInterval = setInterval(() => {
+                // 淡入淡出过渡
+                loadingSubtitle.style.opacity = '0';
+                setTimeout(() => {
+                    let newIdx = Math.floor(Math.random() * arr.length);
+                    if (newIdx === currentIdx) newIdx = (newIdx+1)%arr.length;
+                    currentIdx = newIdx;
+                    loadingSubtitle.innerText = arr[currentIdx];
+                    loadingSubtitle.style.opacity = '1';
+                }, 200);
+            }, 900);
+        }
+        
+        // 检测连接 (ping 模拟)
+        async function checkConnectivity(hostname, timeoutMs = 4000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                // 使用 fetch 带 no-cors 模式探测，仅判断能否到达, 使用随机参数防缓存
+                await fetch(`https://${hostname}/favicon.ico?noCache=${Date.now()}`, { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
+                clearTimeout(id);
+                return true;
+            } catch(e) {
+                clearTimeout(id);
+                return false;
+            }
+        }
+        
+        async function testMultipleEndpoints() {
+            const endpoints = ['youtube.com', 'google.co.uk', 'translate.google.co.uk', 'openstreetmap.org', 'github.com'];
+            let failCount = 0;
+            for (let ep of endpoints) {
+                let success = false;
+                for (let attempt = 1; attempt <= 2; attempt++) { // 每个重试一次+第一次，最多2次
+                    const res = await checkConnectivity(ep, 3500);
+                    if (res) { success = true; break; }
+                    if (attempt === 1) await new Promise(r => setTimeout(r, 800));
+                }
+                if (!success) failCount++;
+                if (failCount >= 3) break;
+            }
+            return failCount >= 3;
+        }
+        
+        function getWarningMessage(lang) {
+            const warnMap = {
+                en: "You may be experiencing a poor internet connection. The experience may be degraded.",
+                classical: "汝或遭網路不暢，致體驗不佳。",
+                trad: "你可能在遭遇一個不良的網際網路連接。體驗可能變差。",
+                simp: "你可能在遭遇一个不良的互联网连接。体验可能变差。"
+            };
+            return warnMap[lang] || warnMap.en;
+        }
+        
+        async function startLoadingSequence() {
+            // 模糊暗化主界面
+            mainInterface.style.filter = 'blur(8px) brightness(0.6)';
+            loadingOverlay.style.visibility = 'visible';
+            loadingOverlay.style.opacity = '1';
+            startRandomSubtitle(selectedLanguage);
+            // 等待0.5秒
+            await new Promise(r => setTimeout(r, 500));
+            const poorConnection = await testMultipleEndpoints();
+            if (poorConnection) {
+                const warnMsg = getWarningMessage(selectedLanguage);
+                // 显示警告3秒，然后继续
+                const originalText = loadingSubtitle.innerText;
+                loadingSubtitle.innerText = warnMsg;
+                await new Promise(r => setTimeout(r, 2800));
+                loadingSubtitle.innerText = originalText;
+            }
+            // 结束加载，清除旋转及字幕
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.visibility = 'hidden';
+                mainInterface.style.filter = 'none';
+                // 将左侧图片改为airspeed.jpg，右侧保留原本图片（但背景不重置，保持最后选择的背景）
+                leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg')";
+                // 展示模式选择界面
+                showModeSelector();
+            }, 300);
+        }
+        
+        // 模式选择界面
+        const modeSelectorDiv = document.getElementById('modeSelector');
+        const modeTooltip = document.getElementById('modeTooltip');
+        const fullBtn = document.getElementById('fullExpBtn');
+        const lowBtn = document.getElementById('lowStressBtn');
+        const modeTitleSpan = document.getElementById('modeTitle');
+        
+        function translateModeUI() {
+            const lang = selectedLanguage;
+            const titles = {
+                en: "Choose the experience that suits you",
+                classical: "擇合君之模式",
+                trad: "選擇符合你的模式",
+                simp: "选择符合你的模式"
+            };
+            modeTitleSpan.innerText = titles[lang] || titles.en;
+            // tooltips handled by hover
+        }
+        
+        function getTooltipText(option, lang) {
+            if (option === 'full') {
+                const map = {
+                    en: "You are using a modern computer with a good internet connection and no data limit concerns.",
+                    classical: "君用新式電腦，網路暢達，無流量之憂。",
+                    trad: "你當前使用的是現代化計算機、網絡連接良好，且無流量限制顧慮。",
+                    simp: "你当前使用的是现代化计算机、网络连接良好，且无流量限制顾虑。"
+                };
+                return map[lang] || map.en;
+            } else {
+                const map = {
+                    en: "This is our lightweight website version. It uses simpler .htm pages, ensuring a fast and smooth experience even on older computers or slower connections. Perfect when you want to access information effortlessly. This version lacks visual effects.",
+                    classical: "此為輕量網站。採用簡約 .htm 頁面，即使老舊電腦或慢速網路亦快速流暢。無視覺特效。",
+                    trad: "這是我們的輕量級網站版本。它使用更簡單的 .htm 頁面，確保即使是在老式電腦或較慢的網絡連接上，也能獲得快速流暢的體驗。此模式缺少視覺效果。",
+                    simp: "这是我们的轻量级网站版本。它使用更简单的 .htm 页面，确保即使是在老式电脑或较慢的网络连接上，也能获得快速流畅的体验。当你只想毫不费力地获取信息时，这个模式非常完美。此模式缺少视觉效果。"
+                };
+                return map[lang] || map.en;
+            }
+        }
+        
+        fullBtn.addEventListener('mouseenter', () => {
+            modeTooltip.innerText = getTooltipText('full', selectedLanguage);
+        });
+        lowBtn.addEventListener('mouseenter', () => {
+            modeTooltip.innerText = getTooltipText('low', selectedLanguage);
+        });
+        
+        function showModeSelector() {
+            translateModeUI();
+            // 默认显示完整工具的提示
+            modeTooltip.innerText = getTooltipText('full', selectedLanguage);
+            modeSelectorDiv.style.visibility = 'visible';
+            modeSelectorDiv.style.opacity = '1';
+        }
+        
+        // 跳转逻辑
+        function getRedirectPath(experienceType) {
+            let subfolder, fileMap;
+            if (experienceType === 'full') {
+                subfolder = 'Prime-Universe';
+                fileMap = { en: 'en-GB.html', classical: 'zh-LT.html', trad: 'zh-TW.html', simp: 'zh-CN.html' };
+            } else {
+                subfolder = 'Alternate-Universe';
+                fileMap = { en: 'en-GB.htm', classical: 'zh-LT.htm', trad: 'zh-TW.htm', simp: 'zh-CN.htm' };
+            }
+            const fileName = fileMap[selectedLanguage] || (selectedLanguage === 'en' ? 'en-GB.html' : (selectedLanguage === 'classical' ? 'zh-LT.html' : (selectedLanguage === 'trad' ? 'zh-TW.html' : 'zh-CN.html')));
+            return `https://uplgov.github.io/iubanova-TestOnly/${subfolder}/${fileName}`;
+        }
+        
+        fullBtn.addEventListener('click', () => {
+            window.location.href = getRedirectPath('full');
+        });
+        lowBtn.addEventListener('click', () => {
+            window.location.href = getRedirectPath('low');
+        });
+        
+        // 预置左边图片和右边正常背景毛玻璃存在
+        // 右边默认黑色但按钮可见，初始无背景图片 但选择了才展示背景
+        rightPanel.style.backgroundSize = 'cover';
+        // 确保左右渐变衔接生效
+    })();
 </script>
 </body>
 </html>
