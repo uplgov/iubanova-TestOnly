@@ -168,18 +168,6 @@
             background: linear-gradient(to left, rgba(0,0,0,0.95), rgba(0,0,0,0));
             pointer-events: none;
         }
-        .center-vertical-shadow {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90px;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.85) 25%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0.98) 100%);
-            pointer-events: none;
-            z-index: 15;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-        }
         .lang-btn {
             position: relative;
             width: 260px;
@@ -224,7 +212,7 @@
             background: rgba(210,210,210,0.4);
             border-radius: 50%;
             pointer-events: none;
-            opacity: 0.28;
+            opacity: 0.35;
             box-shadow: 0 0 1px rgba(200,200,180,0.2);
             transition: opacity 0.08s linear;
         }
@@ -232,9 +220,9 @@
             animation: starBlink 0.18s ease-in-out 2;
         }
         @keyframes starBlink {
-            0% { opacity: 0.28; transform: scale(1); }
+            0% { opacity: 0.35; transform: scale(1); }
             50% { opacity: 0.02; transform: scale(0.92); }
-            100% { opacity: 0.28; transform: scale(1); }
+            100% { opacity: 0.35; transform: scale(1); }
         }
         .hover-glow {
             position: absolute;
@@ -352,7 +340,6 @@
                 <button id="backToLangBtn" class="lang-btn back-btn">← 返回</button>
             </div>
         </div>
-        <div class="center-vertical-shadow"></div>
     </div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
