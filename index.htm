@@ -326,6 +326,7 @@
         document.addEventListener('contextmenu', (e) => e.preventDefault());
         document.addEventListener('dragstart', (e) => e.preventDefault());
         document.addEventListener('selectstart', (e) => e.preventDefault());
+        
         const imagesToPreload = [
             "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
             "https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg",
@@ -340,11 +341,15 @@
         const totalImages = imagesToPreload.length;
         const progressFill = document.getElementById('progressFill');
         const percentText = document.getElementById('percentText');
+        let finishTriggered = false;
+        
         function updateProgress(){
+            if(finishTriggered) return;
             const percent = Math.floor((loadedCount / totalImages) * 100);
             progressFill.style.width = percent+'%';
             percentText.innerText = percent+'%';
-            if(loadedCount === totalImages){
+            if(loadedCount >= totalImages && !finishTriggered){
+                finishTriggered = true;
                 setTimeout(()=>{
                     initialLoader.style.opacity = '0';
                     setTimeout(()=>{
@@ -355,13 +360,27 @@
                 },200);
             }
         }
+        
+        let preloadFinishTimeout = setTimeout(() => {
+            if(!finishTriggered && loadedCount < totalImages){
+                loadedCount = totalImages;
+                updateProgress();
+            }
+        }, 8000);
+        
         function preloadImage(url){
             const img = new Image();
-            img.onload = () => { loadedCount++; updateProgress(); };
-            img.onerror = () => { loadedCount++; updateProgress(); };
+            let oneDone = false;
+            img.onload = () => {
+                if(!oneDone){ oneDone=true; loadedCount++; updateProgress(); }
+            };
+            img.onerror = () => {
+                if(!oneDone){ oneDone=true; loadedCount++; updateProgress(); }
+            };
             img.src = url;
         }
         imagesToPreload.forEach(url => preloadImage(url));
+        
         const leftPanel = document.getElementById('leftPanel');
         const rightPanel = document.getElementById('rightPanel');
         const btnEn = document.getElementById('btnEn');
@@ -374,6 +393,7 @@
         const lowStressBtn = document.getElementById('lowStressBtn');
         const backToLangBtn = document.getElementById('backToLangBtn');
         let selectedLanguage = 'en';
+        
         function setRightBgByLang(lang){
             if(lang === 'en') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/bigben.jpg')";
             else if(lang === 'classical') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/teapot.jpg')";
@@ -382,6 +402,7 @@
             rightPanel.style.backgroundSize = "cover";
             rightPanel.style.backgroundPosition = "center";
         }
+        
         function addRipple(btn, event){
             const rect = btn.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
@@ -397,9 +418,9 @@
             btn.appendChild(ripple);
             setTimeout(() => ripple.remove(), 600);
         }
+        
         function attachHoverEffects(btn){
             let glowDiv = null;
-            let starsInterval = null;
             let activeStars = [];
             btn.addEventListener('mouseenter', (e) => {
                 if(!glowDiv){
@@ -443,6 +464,7 @@
                 });
             });
         }
+        
         function attachClickWave(btn){
             btn.addEventListener('click', (e) => {
                 addRipple(btn, e);
@@ -462,14 +484,17 @@
                 setTimeout(() => slowRipple.remove(), 1000);
             });
         }
+        
         document.querySelectorAll('.lang-btn').forEach(btn => {
             attachHoverEffects(btn);
             attachClickWave(btn);
         });
+        
         btnEn.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg')"; });
         btnClassical.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
         btnTrad.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
         btnSimp.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
+        
         function switchToModeSelection(){
             langContainer.style.display = 'none';
             modeContainer.style.display = 'flex';
@@ -477,11 +502,13 @@
             updateModeUIText();
             attachModeHover();
         }
+        
         function backToLanguageSelection(){
             modeContainer.style.display = 'none';
             langContainer.style.display = 'flex';
             rightPanel.style.justifyContent = 'center';
         }
+        
         function updateModeUIText(){
             const lang = selectedLanguage;
             const fullText = { en:"Full Experience", classical:"完整體驗", trad:"完整的體驗", simp:"完整的體驗" };
@@ -490,9 +517,8 @@
             fullExpBtn.innerText = fullText[lang] || "完整的体验";
             lowStressBtn.innerText = lowText[lang] || "较低的压力";
             backToLangBtn.innerText = backText[lang] || "← 返回";
-            fullExpBtn.setAttribute('data-full', 'true');
-            lowStressBtn.setAttribute('data-low', 'true');
         }
+        
         function attachModeHover(){
             [fullExpBtn, lowStressBtn, backToLangBtn].forEach(btn => {
                 btn.removeEventListener('mouseenter', modeHoverHandler);
@@ -516,6 +542,7 @@
                 hideTempTooltip();
             }
         }
+        
         let tooltipDiv = null;
         function showTempTooltip(text){
             if(!tooltipDiv){
@@ -542,6 +569,7 @@
         function hideTempTooltip(){
             if(tooltipDiv) tooltipDiv.style.opacity = '0';
         }
+        
         const loadingOverlay = document.getElementById('loadingOverlay');
         const loadingSubtitle = document.getElementById('loadingSubtitle');
         let subtitleInterval = null;
@@ -551,6 +579,7 @@
             trad: ["使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。","急促的音樂正在演奏。","要不要先泡一杯茶？","我們正在竭力為您準備精美內容。","使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。","請稍等片刻。","正在預熱 Hemi™ V8。"],
             simp: ["用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。","急促的音乐正在演奏","要不要先泡一杯茶？","我们正在为您准备精美内容","用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的","请稍等片刻","正在预热Hemi™ V8"]
         };
+        
         function startRandomSubtitle(lang){
             if(subtitleInterval) clearInterval(subtitleInterval);
             const arr = subtitlesMap[lang];
@@ -569,6 +598,7 @@
                 }, 200);
             }, 1300);
         }
+        
         async function checkConnectivity(hostname, timeoutMs = 3500){
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -581,6 +611,7 @@
                 return false;
             }
         }
+        
         async function testMultipleEndpoints(){
             const endpoints = ['youtube.com','google.co.uk','translate.google.co.uk','openstreetmap.org','github.com'];
             let failCount = 0;
@@ -591,22 +622,17 @@
                     if(res) { success=true; break; }
                     if(attempt===1) await new Promise(r=>setTimeout(r,600));
                 }
-                if(!success)success) failCount failCount++;
-                if(f++;
-                ifailCount(failCount>=3>=3) break) break;
-           ;
+                if(!success) failCount++;
+                if(failCount>=3) break;
             }
-            return fail }
             return failCount>=3;
         }
-        functionCount>=3;
+        
+        function getWarningMessage(lang){
+            const warnMap = { en:"You may be experiencing a poor internet connection. The experience may be degraded.", classical:"汝或遭網路不暢，致體驗不佳。", trad:"你可能在遭遇一個不良的網際網路連接。體驗可能變差。", simp:"你可能在遭遇一个不良的互联网连接。体验可能变差。" };
+            return warnMap[lang] || warnMap.en;
         }
-        function getWarningMessage(l getWarningMessage(lang){
-ang){
-            const            const warnMap warnMap = { = { en:"You may en:"You may be experiencing be experiencing a poor a poor internet connection. The internet connection. The experience may experience may be degraded be degraded.", classical:"汝.", classical:"汝或遭或遭網路不網路不暢，致體驗不佳。暢，致體驗不佳。", trad:"你可能", trad在遭遇:"你可能一個不良在遭遇一個不良的網的網際網路際網路連接。連接。體驗可能體驗可能變差變差。",。", simp:" simp:"你可能在你可能在遭遇一个遭遇一个不良的不良的互联网连接。体验可能互联网连接。体验可能变变差。"差。" };
-            };
-            return warnMap return warnMap[lang] || warn[lang] || warnMap.en;
-        }
+        
         async function startLoadingSequence(){
             mainInterface.style.filter = 'blur(8px) brightness(0.6)';
             await new Promise(r => setTimeout(r, 1200));
@@ -630,60 +656,22 @@ ang){
                 switchToModeSelection();
             }, 300);
         }
+        
         btnEn.addEventListener('click', () => { selectedLanguage = 'en'; setRightBgByLang('en'); startLoadingSequence(); });
         btnClassical.addEventListener('click', () => { selectedLanguage = 'classical'; setRightBgByLang('classical'); startLoadingSequence(); });
         btnTrad.addEventListener('click', () => { selectedLanguage = 'trad'; setRightBgByLang('trad'); startLoadingSequence(); });
         btnSimp.addEventListener('click', () => { selectedLanguage = 'simp'; setRightBgByLang('simp'); startLoadingSequence(); });
+        
         function getRedirectPath(experienceType){
             const subfolder = experienceType === 'full' ? 'Prime-Universe' : 'Alternate-Universe';
             const fileMap = { en: (experienceType==='full'?'en-GB.html':'en-GB.htm'), classical: (experienceType==='full'?'zh-LT.html':'zh-LT.htm'), trad: (experienceType==='full'?'zh-TW.html':'zh-TW.htm'), simp: (experienceType==='full'?'zh-CN.html':'zh-CN.htm') };
             return `https://uplgov.github.io/iubanova-TestOnly/${subfolder}/${fileMap[selectedLanguage]}`;
         }
+        
         fullExpBtn.addEventListener('click', () => { window.location.href = getRedirectPath('full'); });
         lowStressBtn.addEventListener('click', () => { window.location.href = getRedirectPath('low'); });
         backToLangBtn.addEventListener('click', () => { backToLanguageSelection(); });
-        rightPanel.style.backgroundSize = 'cover';
-    })();
-</script>
-</body>
-</html>
-```Map.en;
-        }
-        async function startLoadingSequence(){
-            mainInterface.style.filter = 'blur(8px) brightness(0.6)';
-            await new Promise(r => setTimeout(r, 1200));
-            loadingOverlay.style.visibility = 'visible';
-            loadingOverlay.style.opacity = '1';
-            startRandomSubtitle(selectedLanguage);
-            const poorConnection = await testMultipleEndpoints();
-            if(poorConnection){
-                const warnMsg = getWarningMessage(selectedLanguage);
-                const originalText = loadingSubtitle.innerText;
-                loadingSubtitle.innerText = warnMsg;
-                await new Promise(r => setTimeout(r, 2800));
-                loadingSubtitle.innerText = originalText;
-            }
-            if(subtitleInterval) clearInterval(subtitleInterval);
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.style.visibility = 'hidden';
-                mainInterface.style.filter = 'none';
-                leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg')";
-                switchToModeSelection();
-            }, 300);
-        }
-        btnEn.addEventListener('click', () => { selectedLanguage = 'en'; setRightBgByLang('en'); startLoadingSequence(); });
-        btnClassical.addEventListener('click', () => { selectedLanguage = 'classical'; setRightBgByLang('classical'); startLoadingSequence(); });
-        btnTrad.addEventListener('click', () => { selectedLanguage = 'trad'; setRightBgByLang('trad'); startLoadingSequence(); });
-        btnSimp.addEventListener('click', () => { selectedLanguage = 'simp'; setRightBgByLang('simp'); startLoadingSequence(); });
-        function getRedirectPath(experienceType){
-            const subfolder = experienceType === 'full' ? 'Prime-Universe' : 'Alternate-Universe';
-            const fileMap = { en: (experienceType==='full'?'en-GB.html':'en-GB.htm'), classical: (experienceType==='full'?'zh-LT.html':'zh-LT.htm'), trad: (experienceType==='full'?'zh-TW.html':'zh-TW.htm'), simp: (experienceType==='full'?'zh-CN.html':'zh-CN.htm') };
-            return `https://uplgov.github.io/iubanova-TestOnly/${subfolder}/${fileMap[selectedLanguage]}`;
-        }
-        fullExpBtn.addEventListener('click', () => { window.location.href = getRedirectPath('full'); });
-        lowStressBtn.addEventListener('click', () => { window.location.href = getRedirectPath('low'); });
-        backToLangBtn.addEventListener('click', () => { backToLanguageSelection(); });
+        
         rightPanel.style.backgroundSize = 'cover';
     })();
 </script>
