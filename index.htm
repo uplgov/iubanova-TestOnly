@@ -140,21 +140,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.95) 100%);
+            background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.65) 75%, rgba(0,0,0,0.92) 100%);
             pointer-events: none;
             z-index: 2;
         }
-        .right-panel::after {
-            content: "";
+        .right-panel-blur {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            backdrop-filter: blur(0px);
-            background: rgba(0,0,0,0.2);
-            mask: linear-gradient(90deg, transparent 0%, transparent 50%, black 80%, black 100%);
-            -webkit-mask: linear-gradient(90deg, transparent 0%, transparent 50%, black 80%, black 100%);
+            backdrop-filter: blur(6px);
+            mask: linear-gradient(90deg, transparent 0%, transparent 30%, black 70%, black 100%);
+            -webkit-mask: linear-gradient(90deg, transparent 0%, transparent 30%, black 70%, black 100%);
             pointer-events: none;
             z-index: 1;
         }
@@ -163,9 +161,9 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 60px;
+            width: 70px;
             height: 100%;
-            background: linear-gradient(to left, rgba(0,0,0,0.9), rgba(0,0,0,0));
+            background: linear-gradient(to left, rgba(0,0,0,0.95), rgba(0,0,0,0));
             pointer-events: none;
         }
         .lang-btn {
@@ -174,39 +172,38 @@
             max-width: 80%;
             padding: 14px 0;
             margin: 8px 0;
-            background: rgba(0,0,0,0.65);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: rgba(255,255,240,0.85);
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,235,0.9);
             font-weight: 500;
             font-size: 1rem;
             border-radius: 60px;
             cursor: pointer;
             text-align: center;
-            backdrop-filter: blur(3px);
+            backdrop-filter: blur(4px);
             overflow: hidden;
             transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 20;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
         .lang-btn:hover {
-            background: rgba(25,25,40,0.8);
+            background: rgba(25,25,45,0.75);
             transform: scale(1.01);
-            border-color: rgba(255,255,200,0.2);
-            box-shadow: 0 0 12px rgba(255,255,200,0.3);
-            transition: box-shadow 0.08s;
+            border-color: rgba(255,255,210,0.15);
+            box-shadow: 0 0 10px rgba(255,255,200,0.2);
         }
         .btn-ripple {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,245,0.8) 0%, rgba(255,255,210,0.3) 80%);
+            background: radial-gradient(circle, rgba(255,255,245,0.6) 0%, rgba(255,255,210,0.2) 80%);
             transform: scale(0);
-            animation: rippleEffectVerySlow 1.6s ease-out forwards;
+            animation: rippleEffectVerySlow 1.7s ease-out forwards;
             pointer-events: none;
-            filter: blur(3px);
+            filter: blur(4px);
         }
         @keyframes rippleEffectVerySlow {
-            0% { transform: scale(0); opacity: 0.8; }
-            100% { transform: scale(9); opacity: 0; }
+            0% { transform: scale(0); opacity: 0.6; }
+            100% { transform: scale(10); opacity: 0; }
         }
         .star {
             position: absolute;
@@ -214,26 +211,26 @@
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
-            animation: starTwinkleFlash 0.6s ease-out forwards;
-            filter: blur(0.5px);
+            animation: starFlicker 0.2s ease-out forwards;
+            box-shadow: 0 0 1px rgba(255,255,200,0.3);
         }
-        @keyframes starTwinkleFlash {
-            0% { transform: scale(0); opacity: 1; box-shadow: 0 0 4px rgba(255,255,200,0.9); }
-            50% { opacity: 0.9; transform: scale(1.2); box-shadow: 0 0 8px rgba(255,255,180,1); }
-            100% { transform: scale(0.8); opacity: 0; box-shadow: 0 0 0px rgba(255,255,200,0); }
+        @keyframes starFlicker {
+            0% { transform: scale(0); opacity: 0.5; }
+            30% { opacity: 0.9; transform: scale(1.1); }
+            100% { transform: scale(0.6); opacity: 0; }
         }
         .hover-glow {
             position: absolute;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(255,255,220,0.55) 0%, rgba(255,255,180,0.2) 60%, rgba(255,255,255,0) 90%);
+            width: 110px;
+            height: 110px;
+            background: radial-gradient(circle, rgba(255,255,220,0.45) 0%, rgba(255,255,180,0.15) 50%, rgba(255,255,255,0) 85%);
             border-radius: 50%;
-            filter: blur(12px);
+            filter: blur(14px);
             pointer-events: none;
             transform: translate(-50%, -50%);
             opacity: 0;
-            transition: opacity 0.15s ease;
-            z-index: 5;
+            transition: opacity 0.12s ease;
+            z-index: 6;
         }
         .mode-buttons-wrapper {
             display: flex;
@@ -244,8 +241,8 @@
             z-index: 20;
         }
         .back-btn {
-            background: rgba(30,30,50,0.7);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(30,30,55,0.7);
+            border: 1px solid rgba(255,255,255,0.04);
             margin-top: 20px;
             width: 180px;
             padding: 10px 0;
@@ -291,8 +288,18 @@
         .hidden {
             display: none;
         }
-        .airspeed-dim {
-            filter: brightness(0.55) contrast(1.1);
+        .tooltip-pop {
+            animation: fadeSlideUp 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(6px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .en-font {
+            font-family: 'Times New Roman', Georgia, 'Playfair Display', serif;
+        }
+        .cjk-font {
+            font-family: '华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', 'Noto Sans CJK SC', serif;
         }
     </style>
 </head>
@@ -315,11 +322,12 @@
     <div id="mainInterface" class="main-interface">
         <div id="leftPanel" class="left-panel" style="background-image: url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg');"></div>
         <div id="rightPanel" class="right-panel" style="background-image: none; background-color: #000;">
+            <div class="right-panel-blur"></div>
             <div id="langButtonsContainer" class="mode-buttons-wrapper">
-                <button id="btnEn" class="lang-btn">British English</button>
-                <button id="BtnClassical" class="lang-btn">華夏文言</button>
-                <button id="BtnTrad" class="lang-btn">正體官話</button>
-                <button id="BtnSimp" class="lang-btn">简体白话</button>
+                <button id="btnEn" class="lang-btn en-font">British English</button>
+                <button id="BtnClassical" class="lang-btn cjk-font">華夏文言</button>
+                <button id="BtnTrad" class="lang-btn cjk-font">正體官話</button>
+                <button id="BtnSimp" class="lang-btn cjk-font">简体白话</button>
             </div>
             <div id="modeContainer" class="mode-buttons-wrapper" style="display: none;">
                 <button id="fullExpBtn" class="lang-btn">完整的体验</button>
@@ -335,13 +343,6 @@
 </div>
 <script>
     (function(){
-        if(window.clearOldCache){
-            try {
-                if('caches' in window) caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
-                sessionStorage.clear();
-                localStorage.removeItem('preloadTimestamp');
-            } catch(e){}
-        }
         try {
             if('caches' in window) caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
             sessionStorage.clear();
@@ -446,47 +447,51 @@
             let y = event.clientY - rect.top;
             const ripple = document.createElement('span');
             ripple.className = 'btn-ripple';
-            if(isSlow){
-                ripple.style.animation = 'rippleEffectVerySlow 1.6s ease-out forwards';
-            } else {
-                ripple.style.animation = 'rippleEffectVerySlow 1.4s ease-out forwards';
-            }
+            ripple.style.animation = 'rippleEffectVerySlow 1.7s ease-out forwards';
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = (x - size/2) + 'px';
             ripple.style.top = (y - size/2) + 'px';
             btn.style.position = 'relative';
             btn.style.overflow = 'hidden';
             btn.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 1700);
+            setTimeout(() => ripple.remove(), 1800);
+        }
+        
+        function addSubtleStars(btn){
+            if(!btn.matches(':hover')) return;
+            const starCount = Math.floor(Math.random() * 4) + 2;
+            let starsAdded = 0;
+            for(let i=0;i<starCount && starsAdded<6;i++){
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2.2 + 1.2;
+                star.style.width = size+'px';
+                star.style.height = size+'px';
+                star.style.left = (Math.random() * (btn.clientWidth - 14) + 7) + 'px';
+                star.style.top = (Math.random() * (btn.clientHeight - 14) + 7) + 'px';
+                star.style.opacity = '0.65';
+                star.style.filter = 'blur(0.2px)';
+                btn.appendChild(star);
+                starsAdded++;
+                setTimeout(() => { if(star.parentNode) star.remove(); }, 280);
+            }
         }
         
         function attachHoverEffects(btn){
             let glowDiv = null;
             let starInterval = null;
-            btn.addEventListener('mouseenter', (e) => {
+            btn.addEventListener('mouseenter', () => {
                 if(!glowDiv){
                     glowDiv = document.createElement('div');
                     glowDiv.className = 'hover-glow';
                     btn.style.position = 'relative';
                     btn.appendChild(glowDiv);
                 }
-                const starGen = () => {
+                const twinkleStar = () => {
                     if(!btn.matches(':hover')) return;
-                    const starCount = Math.floor(Math.random() * 8) + 5;
-                    for(let i=0;i<starCount;i++){
-                        const star = document.createElement('div');
-                        star.className = 'star';
-                        const size = Math.random() * 3.5 + 1.2;
-                        star.style.width = size+'px';
-                        star.style.height = size+'px';
-                        star.style.left = (Math.random() * (btn.clientWidth - 12) + 6) + 'px';
-                        star.style.top = (Math.random() * (btn.clientHeight - 12) + 6) + 'px';
-                        btn.appendChild(star);
-                        setTimeout(() => { if(star.parentNode) star.remove(); }, 550);
-                    }
+                    if(Math.random() > 0.55) addSubtleStars(btn);
                 };
-                starGen();
-                starInterval = setInterval(starGen, 280);
+                starInterval = setInterval(twinkleStar, 420);
                 function updateGlow(e){
                     if(!glowDiv) return;
                     const rectBtn = btn.getBoundingClientRect();
@@ -496,7 +501,7 @@
                     mouseY = Math.min(Math.max(mouseY, 0), rectBtn.height);
                     glowDiv.style.left = mouseX + 'px';
                     glowDiv.style.top = mouseY + 'px';
-                    glowDiv.style.opacity = '1';
+                    glowDiv.style.opacity = '0.85';
                 }
                 btn.addEventListener('mousemove', updateGlow);
                 btn.addEventListener('mouseleave', function onLeave(){
@@ -533,10 +538,10 @@
             rightPanel.style.justifyContent = 'center';
             updateModeUIText();
             attachModeHover();
-            const airspeedImg = new Image();
-            airspeedImg.src = "https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg";
             leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg')";
-            leftPanel.style.filter = "brightness(0.48) contrast(1.15)";
+            leftPanel.style.filter = "brightness(0.45) contrast(1.1)";
+            const blurDiv = document.querySelector('.right-panel-blur');
+            if(blurDiv) blurDiv.style.backdropFilter = 'blur(7px)';
         }
         
         function backToLanguageSelection(){
@@ -545,12 +550,25 @@
         
         function updateModeUIText(){
             const lang = selectedLanguage;
-            const fullText = { en:"Full Experience", classical:"完整體驗", trad:"完整的體驗", simp:"完整的體驗" };
-            const lowText = { en:"Low Stress", classical:"低壓模式", trad:"較低的壓力", simp:"较低的压力" };
-            const backText = { en:"← Back", classical:"← 返回", trad:"← 返回", simp:"← 返回" };
-            fullExpBtn.innerText = fullText[lang] || "完整的体验";
-            lowStressBtn.innerText = lowText[lang] || "较低的压力";
-            backToLangBtn.innerText = backText[lang] || "← 返回";
+            let fullText = "";
+            if(lang === 'en') fullText = "Full Experience";
+            else if(lang === 'classical') fullText = "完整體驗";
+            else if(lang === 'trad') fullText = "完整的體驗";
+            else fullText = "完整的体验";
+            const lowTextMap = { en:"Low Stress", classical:"低壓模式", trad:"較低的壓力", simp:"较低的压力" };
+            const backTextMap = { en:"← Back", classical:"← 返回", trad:"← 返回", simp:"← 返回" };
+            fullExpBtn.innerText = fullText;
+            lowStressBtn.innerText = lowTextMap[lang];
+            backToLangBtn.innerText = backTextMap[lang];
+            if(lang === 'en'){
+                fullExpBtn.classList.add('en-font');
+                lowStressBtn.classList.add('en-font');
+                backToLangBtn.classList.add('en-font');
+            } else {
+                fullExpBtn.classList.add('cjk-font');
+                lowStressBtn.classList.add('cjk-font');
+                backToLangBtn.classList.add('cjk-font');
+            }
         }
         
         function attachModeHover(){
@@ -564,12 +582,12 @@
                 const target = e.currentTarget;
                 if(target.id === 'fullExpBtn'){
                     const tipMap = { en:"You are using a modern computer with a good internet connection and no data limit concerns.", classical:"君用新式電腦，網路暢達，無流量之憂。", trad:"你當前使用的是現代化計算機、網絡連接良好，且無流量限制顧慮。", simp:"你当前使用的是现代化计算机、网络连接良好，且无流量限制顾虑。" };
-                    showTempTooltip(tipMap[selectedLanguage] || tipMap.en);
+                    showTempTooltip(tipMap[selectedLanguage] || tipMap.en, selectedLanguage);
                 } else if(target.id === 'lowStressBtn'){
                     const tipMap = { en:"This is our lightweight website version. It uses simpler .htm pages, ensuring a fast and smooth experience even on older computers or slower connections. This version lacks visual effects.", classical:"此為輕量網站。採用簡約 .htm 頁面，即使老舊電腦或慢速網路亦快速流暢。無視覺特效。", trad:"這是我們的輕量級網站版本。它使用更簡單的 .htm 頁面，確保即使是在老式電腦或較慢的網絡連接上，也能獲得快速流暢的體驗。此模式缺少視覺效果。", simp:"这是我们的轻量级网站版本。它使用更简单的 .htm 页面，确保即使是在老式电脑或较慢的网络连接上，也能获得快速流畅的体验。当你只想毫不费力地获取信息时，这个模式非常完美。此模式缺少视觉效果。" };
-                    showTempTooltip(tipMap[selectedLanguage] || tipMap.en);
+                    showTempTooltip(tipMap[selectedLanguage] || tipMap.en, selectedLanguage);
                 } else if(target.id === 'backToLangBtn'){
-                    showTempTooltip("");
+                    showTempTooltip("", selectedLanguage);
                 }
             }
             function modeLeaveHandler(){
@@ -578,28 +596,37 @@
         }
         
         let tooltipDiv = null;
-        function showTempTooltip(text){
+        function showTempTooltip(text, langCode){
             if(!tooltipDiv){
                 tooltipDiv = document.createElement('div');
                 tooltipDiv.style.position = 'fixed';
-                tooltipDiv.style.bottom = '20px';
+                tooltipDiv.style.bottom = '28px';
                 tooltipDiv.style.left = '50%';
                 tooltipDiv.style.transform = 'translateX(-50%)';
-                tooltipDiv.style.backgroundColor = 'rgba(15,15,25,0.75)';
-                tooltipDiv.style.backdropFilter = 'blur(12px)';
-                tooltipDiv.style.padding = '8px 18px';
-                tooltipDiv.style.borderRadius = '40px';
-                tooltipDiv.style.color = '#eee';
-                tooltipDiv.style.fontSize = '0.8rem';
-                tooltipDiv.style.maxWidth = '80%';
+                tooltipDiv.style.backgroundColor = 'rgba(8,8,16,0.82)';
+                tooltipDiv.style.backdropFilter = 'blur(16px)';
+                tooltipDiv.style.padding = '10px 20px';
+                tooltipDiv.style.borderRadius = '36px';
+                tooltipDiv.style.color = '#f0f0e0';
+                tooltipDiv.style.fontSize = '0.85rem';
+                tooltipDiv.style.maxWidth = '76%';
                 tooltipDiv.style.textAlign = 'center';
                 tooltipDiv.style.zIndex = '5000';
                 tooltipDiv.style.pointerEvents = 'none';
-                tooltipDiv.style.border = '1px solid rgba(255,255,200,0.15)';
+                tooltipDiv.style.border = '1px solid rgba(255,255,200,0.2)';
+                tooltipDiv.style.fontStyle = 'italic';
                 document.body.appendChild(tooltipDiv);
             }
+            if(langCode === 'en') tooltipDiv.style.fontFamily = "'Times New Roman', Georgia, serif";
+            else tooltipDiv.style.fontFamily = "'华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', serif";
             tooltipDiv.innerText = text;
-            tooltipDiv.style.opacity = text ? '1' : '0';
+            if(text && text !== ""){
+                tooltipDiv.style.opacity = '1';
+                tooltipDiv.classList.add('tooltip-pop');
+                setTimeout(() => tooltipDiv.classList.remove('tooltip-pop'), 220);
+            } else {
+                tooltipDiv.style.opacity = '0';
+            }
         }
         function hideTempTooltip(){
             if(tooltipDiv) tooltipDiv.style.opacity = '0';
@@ -707,6 +734,9 @@
         backToLangBtn.addEventListener('click', () => { backToLanguageSelection(); });
         
         rightPanel.style.backgroundSize = 'cover';
+        const blurLayer = document.createElement('div');
+        blurLayer.className = 'right-panel-blur';
+        rightPanel.insertBefore(blurLayer, rightPanel.firstChild);
     })();
 </script>
 </body>
