@@ -138,9 +138,23 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 60px;
+            width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0));
+            background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.95) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .right-panel::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(0px);
+            background: rgba(0,0,0,0.2);
+            mask: linear-gradient(90deg, transparent 0%, transparent 50%, black 80%, black 100%);
+            -webkit-mask: linear-gradient(90deg, transparent 0%, transparent 50%, black 80%, black 100%);
             pointer-events: none;
             z-index: 1;
         }
@@ -160,35 +174,39 @@
             max-width: 80%;
             padding: 14px 0;
             margin: 8px 0;
-            background: #000000cc;
-            border: 1px solid #3a3a44;
-            color: white;
+            background: rgba(0,0,0,0.65);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,240,0.85);
             font-weight: 500;
             font-size: 1rem;
             border-radius: 60px;
             cursor: pointer;
             text-align: center;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(3px);
             overflow: hidden;
-            transition: transform 0.1s ease, background 0.2s;
+            transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
             z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .lang-btn:hover {
-            background: #1e1e2e;
-            transform: scale(1.02);
+            background: rgba(25,25,40,0.8);
+            transform: scale(1.01);
+            border-color: rgba(255,255,200,0.2);
+            box-shadow: 0 0 12px rgba(255,255,200,0.3);
+            transition: box-shadow 0.08s;
         }
         .btn-ripple {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 70%);
+            background: radial-gradient(circle, rgba(255,255,245,0.8) 0%, rgba(255,255,210,0.3) 80%);
             transform: scale(0);
-            animation: rippleEffect 0.6s ease-out forwards;
+            animation: rippleEffectVerySlow 1.6s ease-out forwards;
             pointer-events: none;
-            filter: blur(2px);
+            filter: blur(3px);
         }
-        @keyframes rippleEffect {
-            0% { transform: scale(0); opacity: 0.7; }
-            100% { transform: scale(8); opacity: 0; }
+        @keyframes rippleEffectVerySlow {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(9); opacity: 0; }
         }
         .star {
             position: absolute;
@@ -196,23 +214,25 @@
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
-            animation: starTwinkle 0.25s ease-out forwards;
+            animation: starTwinkleFlash 0.6s ease-out forwards;
+            filter: blur(0.5px);
         }
-        @keyframes starTwinkle {
-            0% { transform: scale(0); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 0; }
+        @keyframes starTwinkleFlash {
+            0% { transform: scale(0); opacity: 1; box-shadow: 0 0 4px rgba(255,255,200,0.9); }
+            50% { opacity: 0.9; transform: scale(1.2); box-shadow: 0 0 8px rgba(255,255,180,1); }
+            100% { transform: scale(0.8); opacity: 0; box-shadow: 0 0 0px rgba(255,255,200,0); }
         }
         .hover-glow {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, rgba(255,255,245,0.6) 0%, rgba(255,255,255,0) 70%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,220,0.55) 0%, rgba(255,255,180,0.2) 60%, rgba(255,255,255,0) 90%);
             border-radius: 50%;
-            filter: blur(8px);
+            filter: blur(12px);
             pointer-events: none;
             transform: translate(-50%, -50%);
             opacity: 0;
-            transition: opacity 0.1s;
+            transition: opacity 0.15s ease;
             z-index: 5;
         }
         .mode-buttons-wrapper {
@@ -221,10 +241,11 @@
             align-items: center;
             gap: 1rem;
             width: 100%;
+            z-index: 20;
         }
         .back-btn {
-            background: #2a2a3ccc;
-            border: 1px solid #5a5a6e;
+            background: rgba(30,30,50,0.7);
+            border: 1px solid rgba(255,255,255,0.06);
             margin-top: 20px;
             width: 180px;
             padding: 10px 0;
@@ -236,8 +257,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(14px);
             z-index: 3000;
             display: flex;
             flex-direction: column;
@@ -269,6 +290,9 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden {
             display: none;
+        }
+        .airspeed-dim {
+            filter: brightness(0.55) contrast(1.1);
         }
     </style>
 </head>
@@ -311,6 +335,18 @@
 </div>
 <script>
     (function(){
+        if(window.clearOldCache){
+            try {
+                if('caches' in window) caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+                sessionStorage.clear();
+                localStorage.removeItem('preloadTimestamp');
+            } catch(e){}
+        }
+        try {
+            if('caches' in window) caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
+            sessionStorage.clear();
+            localStorage.clear();
+        } catch(e){}
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
         const mobileWarningDiv = document.getElementById('mobileWarning');
         const initialLoader = document.getElementById('initialLoader');
@@ -403,25 +439,30 @@
             rightPanel.style.backgroundPosition = "center";
         }
         
-        function addRipple(btn, event){
+        function addRipple(btn, event, isSlow=false){
             const rect = btn.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
+            const size = Math.max(rect.width, rect.height)*1.2;
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
             const ripple = document.createElement('span');
             ripple.className = 'btn-ripple';
+            if(isSlow){
+                ripple.style.animation = 'rippleEffectVerySlow 1.6s ease-out forwards';
+            } else {
+                ripple.style.animation = 'rippleEffectVerySlow 1.4s ease-out forwards';
+            }
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = (x - size/2) + 'px';
             ripple.style.top = (y - size/2) + 'px';
             btn.style.position = 'relative';
             btn.style.overflow = 'hidden';
             btn.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
+            setTimeout(() => ripple.remove(), 1700);
         }
         
         function attachHoverEffects(btn){
             let glowDiv = null;
-            let activeStars = [];
+            let starInterval = null;
             btn.addEventListener('mouseenter', (e) => {
                 if(!glowDiv){
                     glowDiv = document.createElement('div');
@@ -429,20 +470,23 @@
                     btn.style.position = 'relative';
                     btn.appendChild(glowDiv);
                 }
-                const starCount = Math.floor(Math.random() * 15) + 6;
-                for(let i=0;i<starCount;i++){
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    const size = Math.random() * 3 + 1.5;
-                    star.style.width = size+'px';
-                    star.style.height = size+'px';
-                    star.style.left = (Math.random() * (btn.clientWidth - 10) + 5) + 'px';
-                    star.style.top = (Math.random() * (btn.clientHeight - 10) + 5) + 'px';
-                    star.style.opacity = '0.9';
-                    btn.appendChild(star);
-                    activeStars.push(star);
-                    setTimeout(() => { if(star.parentNode) star.remove(); }, 280);
-                }
+                const starGen = () => {
+                    if(!btn.matches(':hover')) return;
+                    const starCount = Math.floor(Math.random() * 8) + 5;
+                    for(let i=0;i<starCount;i++){
+                        const star = document.createElement('div');
+                        star.className = 'star';
+                        const size = Math.random() * 3.5 + 1.2;
+                        star.style.width = size+'px';
+                        star.style.height = size+'px';
+                        star.style.left = (Math.random() * (btn.clientWidth - 12) + 6) + 'px';
+                        star.style.top = (Math.random() * (btn.clientHeight - 12) + 6) + 'px';
+                        btn.appendChild(star);
+                        setTimeout(() => { if(star.parentNode) star.remove(); }, 550);
+                    }
+                };
+                starGen();
+                starInterval = setInterval(starGen, 280);
                 function updateGlow(e){
                     if(!glowDiv) return;
                     const rectBtn = btn.getBoundingClientRect();
@@ -457,8 +501,7 @@
                 btn.addEventListener('mousemove', updateGlow);
                 btn.addEventListener('mouseleave', function onLeave(){
                     if(glowDiv) glowDiv.style.opacity = '0';
-                    activeStars.forEach(s => { if(s.parentNode) s.remove(); });
-                    activeStars = [];
+                    if(starInterval) clearInterval(starInterval);
                     btn.removeEventListener('mousemove', updateGlow);
                     btn.removeEventListener('mouseleave', onLeave);
                 });
@@ -467,21 +510,10 @@
         
         function attachClickWave(btn){
             btn.addEventListener('click', (e) => {
-                addRipple(btn, e);
+                addRipple(btn, e, false);
             });
             btn.addEventListener('mousedown', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const slowRipple = document.createElement('span');
-                slowRipple.className = 'btn-ripple';
-                slowRipple.style.animation = 'rippleEffect 0.95s ease-out forwards';
-                slowRipple.style.width = slowRipple.style.height = size + 'px';
-                slowRipple.style.left = (x - size/2) + 'px';
-                slowRipple.style.top = (y - size/2) + 'px';
-                btn.appendChild(slowRipple);
-                setTimeout(() => slowRipple.remove(), 1000);
+                addRipple(btn, e, true);
             });
         }
         
@@ -501,12 +533,14 @@
             rightPanel.style.justifyContent = 'center';
             updateModeUIText();
             attachModeHover();
+            const airspeedImg = new Image();
+            airspeedImg.src = "https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg";
+            leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg')";
+            leftPanel.style.filter = "brightness(0.48) contrast(1.15)";
         }
         
         function backToLanguageSelection(){
-            modeContainer.style.display = 'none';
-            langContainer.style.display = 'flex';
-            rightPanel.style.justifyContent = 'center';
+            window.location.reload();
         }
         
         function updateModeUIText(){
@@ -551,16 +585,17 @@
                 tooltipDiv.style.bottom = '20px';
                 tooltipDiv.style.left = '50%';
                 tooltipDiv.style.transform = 'translateX(-50%)';
-                tooltipDiv.style.backgroundColor = '#1e1e2ecc';
-                tooltipDiv.style.backdropFilter = 'blur(8px)';
+                tooltipDiv.style.backgroundColor = 'rgba(15,15,25,0.75)';
+                tooltipDiv.style.backdropFilter = 'blur(12px)';
                 tooltipDiv.style.padding = '8px 18px';
                 tooltipDiv.style.borderRadius = '40px';
-                tooltipDiv.style.color = 'white';
-                tooltipDiv.style.fontSize = '0.85rem';
+                tooltipDiv.style.color = '#eee';
+                tooltipDiv.style.fontSize = '0.8rem';
                 tooltipDiv.style.maxWidth = '80%';
                 tooltipDiv.style.textAlign = 'center';
                 tooltipDiv.style.zIndex = '5000';
                 tooltipDiv.style.pointerEvents = 'none';
+                tooltipDiv.style.border = '1px solid rgba(255,255,200,0.15)';
                 document.body.appendChild(tooltipDiv);
             }
             tooltipDiv.innerText = text;
@@ -652,7 +687,6 @@
             setTimeout(() => {
                 loadingOverlay.style.visibility = 'hidden';
                 mainInterface.style.filter = 'none';
-                leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg')";
                 switchToModeSelection();
             }, 300);
         }
