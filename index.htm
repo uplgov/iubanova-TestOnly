@@ -120,6 +120,7 @@
             background-position: center;
             background-repeat: no-repeat;
             position: relative;
+            transition: filter 0.7s cubic-bezier(0.23, 1, 0.32, 1), brightness 0.7s ease;
         }
         .right-panel {
             flex: 1;
@@ -132,6 +133,7 @@
             align-items: center;
             justify-content: center;
             gap: 1rem;
+            transition: filter 0.7s cubic-bezier(0.23, 1, 0.32, 1), brightness 0.7s ease;
         }
         .right-panel::before {
             content: "";
@@ -174,7 +176,7 @@
             margin: 8px 0;
             background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.05);
-            color: rgba(255,255,235,0.9);
+            color: rgba(255,255,235,0.92);
             font-weight: 500;
             font-size: 1rem;
             border-radius: 60px;
@@ -195,42 +197,45 @@
         .btn-ripple {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,245,0.6) 0%, rgba(255,255,210,0.2) 80%);
+            background: radial-gradient(circle, rgba(255,255,245,0.5) 0%, rgba(255,255,210,0.15) 80%);
             transform: scale(0);
             animation: rippleEffectVerySlow 1.7s ease-out forwards;
             pointer-events: none;
             filter: blur(4px);
         }
         @keyframes rippleEffectVerySlow {
-            0% { transform: scale(0); opacity: 0.6; }
+            0% { transform: scale(0); opacity: 0.55; }
             100% { transform: scale(10); opacity: 0; }
         }
         .star {
             position: absolute;
-            background: white;
+            background: rgba(210,210,210,0.4);
             border-radius: 50%;
             pointer-events: none;
-            opacity: 0;
-            animation: starFlicker 0.2s ease-out forwards;
-            box-shadow: 0 0 1px rgba(255,255,200,0.3);
+            opacity: 0.35;
+            box-shadow: 0 0 1px rgba(200,200,180,0.2);
+            transition: opacity 0.08s linear;
         }
-        @keyframes starFlicker {
-            0% { transform: scale(0); opacity: 0.5; }
-            30% { opacity: 0.9; transform: scale(1.1); }
-            100% { transform: scale(0.6); opacity: 0; }
+        .star-flicker {
+            animation: starBlink 0.18s ease-in-out 2;
+        }
+        @keyframes starBlink {
+            0% { opacity: 0.35; transform: scale(1); }
+            50% { opacity: 0.02; transform: scale(0.92); }
+            100% { opacity: 0.35; transform: scale(1); }
         }
         .hover-glow {
             position: absolute;
             width: 110px;
             height: 110px;
-            background: radial-gradient(circle, rgba(255,255,220,0.45) 0%, rgba(255,255,180,0.15) 50%, rgba(255,255,255,0) 85%);
+            background: radial-gradient(circle, rgba(255,255,210,0.32) 0%, rgba(255,255,180,0.08) 50%, rgba(255,255,255,0) 85%);
             border-radius: 50%;
-            filter: blur(14px);
+            filter: blur(15px);
             pointer-events: none;
             transform: translate(-50%, -50%);
             opacity: 0;
-            transition: opacity 0.12s ease;
-            z-index: 6;
+            transition: opacity 0.1s linear;
+            z-index: 7;
         }
         .mode-buttons-wrapper {
             display: flex;
@@ -254,8 +259,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.88);
-            backdrop-filter: blur(14px);
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(16px);
             z-index: 3000;
             display: flex;
             flex-direction: column;
@@ -263,7 +268,7 @@
             justify-content: center;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             color: white;
         }
         .spinner {
@@ -285,9 +290,6 @@
             transition: opacity 0.25s ease-in-out;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden {
-            display: none;
-        }
         .tooltip-pop {
             animation: fadeSlideUp 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
@@ -300,6 +302,9 @@
         }
         .cjk-font {
             font-family: '华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', 'Noto Sans CJK SC', serif;
+        }
+        .dim-brightness {
+            filter: brightness(0.45) blur(3px);
         }
     </style>
 </head>
@@ -457,24 +462,27 @@
             setTimeout(() => ripple.remove(), 1800);
         }
         
+        let currentBlinkingStar = null;
         function addSubtleStars(btn){
             if(!btn.matches(':hover')) return;
-            const starCount = Math.floor(Math.random() * 4) + 2;
-            let starsAdded = 0;
-            for(let i=0;i<starCount && starsAdded<6;i++){
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 2.2 + 1.2;
-                star.style.width = size+'px';
-                star.style.height = size+'px';
-                star.style.left = (Math.random() * (btn.clientWidth - 14) + 7) + 'px';
-                star.style.top = (Math.random() * (btn.clientHeight - 14) + 7) + 'px';
-                star.style.opacity = '0.65';
-                star.style.filter = 'blur(0.2px)';
-                btn.appendChild(star);
-                starsAdded++;
-                setTimeout(() => { if(star.parentNode) star.remove(); }, 280);
-            }
+            if(currentBlinkingStar && document.body.contains(currentBlinkingStar)) return;
+            const existingStars = btn.querySelectorAll('.star');
+            if(existingStars.length >= 6) return;
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 1.2;
+            star.style.width = size+'px';
+            star.style.height = size+'px';
+            star.style.left = (Math.random() * (btn.clientWidth - 16) + 8) + 'px';
+            star.style.top = (Math.random() * (btn.clientHeight - 16) + 8) + 'px';
+            star.style.opacity = '0.28';
+            btn.appendChild(star);
+            currentBlinkingStar = star;
+            star.classList.add('star-flicker');
+            setTimeout(() => {
+                if(star && star.parentNode) star.remove();
+                if(currentBlinkingStar === star) currentBlinkingStar = null;
+            }, 400);
         }
         
         function attachHoverEffects(btn){
@@ -487,11 +495,11 @@
                     btn.style.position = 'relative';
                     btn.appendChild(glowDiv);
                 }
-                const twinkleStar = () => {
+                const scheduleStar = () => {
                     if(!btn.matches(':hover')) return;
-                    if(Math.random() > 0.55) addSubtleStars(btn);
+                    if(!currentBlinkingStar) addSubtleStars(btn);
                 };
-                starInterval = setInterval(twinkleStar, 420);
+                starInterval = setInterval(scheduleStar, 620);
                 function updateGlow(e){
                     if(!glowDiv) return;
                     const rectBtn = btn.getBoundingClientRect();
@@ -501,12 +509,14 @@
                     mouseY = Math.min(Math.max(mouseY, 0), rectBtn.height);
                     glowDiv.style.left = mouseX + 'px';
                     glowDiv.style.top = mouseY + 'px';
-                    glowDiv.style.opacity = '0.85';
+                    glowDiv.style.opacity = '0.7';
                 }
                 btn.addEventListener('mousemove', updateGlow);
                 btn.addEventListener('mouseleave', function onLeave(){
                     if(glowDiv) glowDiv.style.opacity = '0';
                     if(starInterval) clearInterval(starInterval);
+                    if(currentBlinkingStar && currentBlinkingStar.parentNode) currentBlinkingStar.remove();
+                    currentBlinkingStar = null;
                     btn.removeEventListener('mousemove', updateGlow);
                     btn.removeEventListener('mouseleave', onLeave);
                 });
@@ -696,8 +706,11 @@
         }
         
         async function startLoadingSequence(){
-            mainInterface.style.filter = 'blur(8px) brightness(0.6)';
-            await new Promise(r => setTimeout(r, 1200));
+            mainInterface.style.transition = "filter 0.7s cubic-bezier(0.23,1,0.32,1), opacity 0.6s";
+            leftPanel.style.transition = "filter 0.7s ease, brightness 0.7s ease";
+            rightPanel.style.transition = "filter 0.7s ease, brightness 0.7s ease";
+            mainInterface.style.filter = "brightness(0.35) blur(4px)";
+            await new Promise(r => setTimeout(r, 700));
             loadingOverlay.style.visibility = 'visible';
             loadingOverlay.style.opacity = '1';
             startRandomSubtitle(selectedLanguage);
