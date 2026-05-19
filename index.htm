@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Portal</title>
     <style>
+        @font-face {
+            font-family: 'GDS Transport';
+            src: local('GDS Transport'), url('https://assets.publishing.service.gov.uk/static/gds-transport-regular-9e6b1b4b3b7e3b3b9b1b3b1b3b1b3b1b.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -169,16 +176,24 @@
             pointer-events: none;
         }
         .greeting-text {
-            font-size: 1.4rem;
+            font-family: 'GDS Transport', 'Segoe UI', system-ui;
+            font-size: 1.5rem;
             text-align: center;
             margin-bottom: 1rem;
-            color: rgba(255,248,220,0.9);
+            color: rgba(255,248,220,0.92);
             text-shadow: 0 0 8px rgba(0,0,0,0.5);
             letter-spacing: 1px;
             font-weight: 400;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(0px);
             padding: 0 12px;
-            transition: opacity 0.2s;
+            transition: all 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+            filter: blur(6px);
+            opacity: 0.55;
+        }
+        .greeting-text.reveal {
+            filter: blur(0px);
+            opacity: 1;
+            transform: scale(1.01);
         }
         .lang-btn {
             position: relative;
@@ -284,15 +299,15 @@
             color: white;
         }
         .spinner {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: 3px solid rgba(255,255,255,0.2);
             border-top: 3px solid white;
             border-radius: 50%;
-            animation: spinSlow 1.4s linear infinite;
+            animation: spinVerySlow 1.8s linear infinite;
             margin-bottom: 1.2rem;
         }
-        @keyframes spinSlow {
+        @keyframes spinVerySlow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -319,7 +334,8 @@
             font-family: '华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', 'Noto Sans CJK SC', serif;
         }
         .mode-title {
-            font-size: 1.2rem;
+            font-family: 'GDS Transport', 'Segoe UI', system-ui;
+            font-size: 1.3rem;
             margin-bottom: 1rem;
             font-weight: 400;
             text-align: center;
@@ -329,6 +345,40 @@
             background-clip: text;
             color: transparent;
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .footer-scroll {
+            position: fixed;
+            bottom: 16px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(200,200,180,0.6);
+            font-style: italic;
+            z-index: 100;
+            pointer-events: none;
+            backdrop-filter: blur(2px);
+            padding: 4px;
+            transition: opacity 0.5s;
+        }
+        .footer-copyright {
+            position: fixed;
+            bottom: 12px;
+            left: 16px;
+            font-size: 0.7rem;
+            color: rgba(180,180,160,0.5);
+            font-family: monospace;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .scroll-text {
+            display: inline-block;
+            animation: fadeScroll 2s ease-in-out infinite;
+        }
+        @keyframes fadeScroll {
+            0% { opacity: 0.2; transform: translateY(1px); }
+            50% { opacity: 0.9; transform: translateY(0px); }
+            100% { opacity: 0.2; transform: translateY(-1px); }
         }
     </style>
 </head>
@@ -373,6 +423,8 @@
         <div class="spinner"></div>
         <div id="loadingSubtitle" class="loading-subtitle"> </div>
     </div>
+    <div class="footer-copyright">© 2026 iubanova</div>
+    <div id="footerScroll" class="footer-scroll"></div>
 </div>
 <script>
     (function(){
@@ -426,6 +478,7 @@
                         initialLoader.style.display = 'none';
                         mainInterface.style.visibility = 'visible';
                         mainInterface.style.opacity = '1';
+                        startFooterScrolling();
                     },400);
                 },200);
             }
@@ -463,7 +516,32 @@
         const lowStressBtn = document.getElementById('lowStressBtn');
         const backToLangBtn = document.getElementById('backToLangBtn');
         const greetingDiv = document.getElementById('greetingMsg');
+        const footerScrollDiv = document.getElementById('footerScroll');
         let selectedLanguage = 'en';
+        let scrollInterval = null;
+        
+        function startFooterScrolling() {
+            if(scrollInterval) clearInterval(scrollInterval);
+            const texts = [
+                "Use the tab key to navigate and press return or space to proceed.",
+                "ใช้ปุ่ม Tab เพื่อนำทางและกด Return หรือ Space เพื่อดำเนินการ",
+                "使用 Tab 鍵導航，然後按 Return 或 Space 繼續。",
+                "使用 Tab 键导航，然后按 Return 或 Space 继续。"
+            ];
+            let idx = 0;
+            function updateScrollText() {
+                footerScrollDiv.innerHTML = `<span class="scroll-text">${texts[idx]}</span>`;
+                idx = (idx + 1) % texts.length;
+            }
+            updateScrollText();
+            scrollInterval = setInterval(updateScrollText, 4200);
+        }
+        
+        function stopFooterScrolling() {
+            if(scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; }
+            footerScrollDiv.style.opacity = '0';
+            setTimeout(() => { footerScrollDiv.style.display = 'none'; }, 500);
+        }
         
         function getGreeting(lang, hour) {
             let period = '';
@@ -491,12 +569,22 @@
             }
         }
         
+        function revealGreeting() {
+            greetingDiv.classList.add('reveal');
+        }
+        
+        function resetGreetingBlur() {
+            greetingDiv.classList.remove('reveal');
+            void greetingDiv.offsetWidth;
+            greetingDiv.classList.add('reveal');
+        }
+        
         function updateGreetingForHover(lang) {
             const now = new Date();
             const hour = now.getHours();
             const greetingText = getGreeting(lang, hour);
             greetingDiv.innerText = greetingText;
-            greetingDiv.style.opacity = '1';
+            resetGreetingBlur();
         }
         
         function setRightBgByLang(lang){
@@ -583,6 +671,13 @@
                     currentBlinkingStar = null;
                     btn.removeEventListener('mousemove', updateGlow);
                     btn.removeEventListener('mouseleave', onLeave);
+                    if(langCodeForGreeting) {
+                        const nowHour = new Date().getHours();
+                        greetingDiv.innerText = getGreeting('en', nowHour);
+                        greetingDiv.classList.remove('reveal');
+                        void greetingDiv.offsetWidth;
+                        greetingDiv.classList.add('reveal');
+                    }
                 });
             });
         }
@@ -611,6 +706,7 @@
         btnSimp.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
         
         function switchToModeSelection(){
+            stopFooterScrolling();
             document.getElementById('langContainerWrapper').style.display = 'none';
             modeContainer.style.display = 'flex';
             rightPanel.style.justifyContent = 'center';
@@ -621,7 +717,7 @@
             const blurDiv = document.querySelector('.right-panel-blur');
             if(blurDiv) blurDiv.style.backdropFilter = 'blur(7px)';
             const modeTitleDiv = document.getElementById('modeTitle');
-            const titleMap = { en:"How would you like to browse this website?", classical:"君欲以何式覽此網？", trad:"您希望以哪種方式瀏覽本網站？", simp:"您希望以哪种方式浏览本网站？" };
+            const titleMap = { en:"How would you like to browse today?", classical:"君欲以何式覽今日之網？", trad:"您希望以哪種方式瀏覽今日的網站？", simp:"您希望以哪种方式浏览今日的网站？" };
             modeTitleDiv.innerText = titleMap[selectedLanguage] || titleMap.en;
         }
         
@@ -825,8 +921,10 @@
         rightPanel.insertBefore(blurLayer, rightPanel.firstChild);
         
         const nowHour = new Date().getHours();
-        const defaultLang = 'en';
-        greetingDiv.innerText = getGreeting(defaultLang, nowHour);
+        greetingDiv.innerText = getGreeting('en', nowHour);
+        setTimeout(() => {
+            greetingDiv.classList.add('reveal');
+        }, 100);
     })();
 </script>
 </body>
