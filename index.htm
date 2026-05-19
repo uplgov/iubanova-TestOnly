@@ -168,31 +168,43 @@
             background: linear-gradient(to left, rgba(0,0,0,0.95), rgba(0,0,0,0));
             pointer-events: none;
         }
+        .greeting-text {
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: rgba(255,248,220,0.9);
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+            font-weight: 400;
+            backdrop-filter: blur(2px);
+            padding: 0 12px;
+            transition: opacity 0.2s;
+        }
         .lang-btn {
             position: relative;
-            width: 260px;
-            max-width: 80%;
-            padding: 14px 0;
-            margin: 8px 0;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.05);
-            color: rgba(255,255,235,0.92);
+            width: 240px;
+            max-width: 75%;
+            padding: 10px 0;
+            margin: 6px 0;
+            background: rgba(20,20,35,0.7);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,235,0.95);
             font-weight: 500;
-            font-size: 1rem;
-            border-radius: 60px;
+            font-size: 0.95rem;
+            border-radius: 40px;
             cursor: pointer;
             text-align: center;
             backdrop-filter: blur(4px);
             overflow: hidden;
             transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
             z-index: 20;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
         }
         .lang-btn:hover {
-            background: rgba(25,25,45,0.75);
+            background: rgba(45,45,70,0.8);
             transform: scale(1.01);
-            border-color: rgba(255,255,210,0.15);
-            box-shadow: 0 0 10px rgba(255,255,200,0.2);
+            border-color: rgba(255,255,210,0.4);
+            box-shadow: 0 0 12px rgba(255,255,200,0.25), inset 0 1px 1px rgba(255,255,255,0.2);
         }
         .btn-ripple {
             position: absolute;
@@ -209,26 +221,26 @@
         }
         .star {
             position: absolute;
-            background: rgba(210,210,210,0.4);
+            background: rgba(210,210,210,0.3);
             border-radius: 50%;
             pointer-events: none;
-            opacity: 0.35;
-            box-shadow: 0 0 1px rgba(200,200,180,0.2);
+            opacity: 0.28;
+            box-shadow: 0 0 1px rgba(200,200,180,0.15);
             transition: opacity 0.08s linear;
         }
         .star-flicker {
             animation: starBlink 0.18s ease-in-out 2;
         }
         @keyframes starBlink {
-            0% { opacity: 0.35; transform: scale(1); }
+            0% { opacity: 0.28; transform: scale(1); }
             50% { opacity: 0.02; transform: scale(0.92); }
-            100% { opacity: 0.35; transform: scale(1); }
+            100% { opacity: 0.28; transform: scale(1); }
         }
         .hover-glow {
             position: absolute;
             width: 110px;
             height: 110px;
-            background: radial-gradient(circle, rgba(255,255,210,0.32) 0%, rgba(255,255,180,0.08) 50%, rgba(255,255,255,0) 85%);
+            background: radial-gradient(circle, rgba(255,255,210,0.28) 0%, rgba(255,255,180,0.06) 50%, rgba(255,255,255,0) 85%);
             border-radius: 50%;
             filter: blur(15px);
             pointer-events: none;
@@ -241,17 +253,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             width: 100%;
             z-index: 20;
         }
         .back-btn {
             background: rgba(30,30,55,0.7);
-            border: 1px solid rgba(255,255,255,0.04);
-            margin-top: 20px;
-            width: 180px;
-            padding: 10px 0;
-            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-top: 12px;
+            width: 170px;
+            padding: 8px 0;
+            font-size: 0.85rem;
         }
         .loading-overlay {
             position: fixed;
@@ -272,24 +284,27 @@
             color: white;
         }
         .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(255,255,255,0.2);
-            border-top: 4px solid white;
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1.5rem;
+            animation: spinSlow 1.4s linear infinite;
+            margin-bottom: 1.2rem;
+        }
+        @keyframes spinSlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         .loading-subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             max-width: 80%;
             text-align: center;
             background: rgba(0,0,0,0.5);
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 60px;
             transition: opacity 0.25s ease-in-out;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .tooltip-pop {
             animation: fadeSlideUp 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
@@ -303,8 +318,17 @@
         .cjk-font {
             font-family: '华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', 'Noto Sans CJK SC', serif;
         }
-        .dim-brightness {
-            filter: brightness(0.45) blur(3px);
+        .mode-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 400;
+            text-align: center;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, rgba(255,245,200,0.9), rgba(220,210,170,0.7));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -328,13 +352,17 @@
         <div id="leftPanel" class="left-panel" style="background-image: url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg');"></div>
         <div id="rightPanel" class="right-panel" style="background-image: none; background-color: #000;">
             <div class="right-panel-blur"></div>
-            <div id="langButtonsContainer" class="mode-buttons-wrapper">
-                <button id="btnEn" class="lang-btn en-font">British English</button>
-                <button id="BtnClassical" class="lang-btn cjk-font">華夏文言</button>
-                <button id="BtnTrad" class="lang-btn cjk-font">正體官話</button>
-                <button id="BtnSimp" class="lang-btn cjk-font">简体白话</button>
+            <div id="langContainerWrapper" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                <div id="greetingMsg" class="greeting-text"></div>
+                <div id="langButtonsContainer" class="mode-buttons-wrapper">
+                    <button id="btnEn" class="lang-btn en-font">British English</button>
+                    <button id="BtnClassical" class="lang-btn cjk-font">華夏文言</button>
+                    <button id="BtnTrad" class="lang-btn cjk-font">正體官話</button>
+                    <button id="BtnSimp" class="lang-btn cjk-font">简体白话</button>
+                </div>
             </div>
             <div id="modeContainer" class="mode-buttons-wrapper" style="display: none;">
+                <div id="modeTitle" class="mode-title"></div>
                 <button id="fullExpBtn" class="lang-btn">完整的体验</button>
                 <button id="lowStressBtn" class="lang-btn">较低的压力</button>
                 <button id="backToLangBtn" class="lang-btn back-btn">← 返回</button>
@@ -434,7 +462,42 @@
         const fullExpBtn = document.getElementById('fullExpBtn');
         const lowStressBtn = document.getElementById('lowStressBtn');
         const backToLangBtn = document.getElementById('backToLangBtn');
+        const greetingDiv = document.getElementById('greetingMsg');
         let selectedLanguage = 'en';
+        
+        function getGreeting(lang, hour) {
+            let period = '';
+            if (hour < 12) period = 'morning';
+            else if (hour < 18) period = 'afternoon';
+            else period = 'evening';
+            const random = Math.random();
+            const isRandomQuestion = random < 0.03;
+            const greetingMap = {
+                en: { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' },
+                classical: { morning: '晨安', afternoon: '午安', evening: '夕安' },
+                trad: { morning: '早上好', afternoon: '下午好', evening: '晚上好' },
+                simp: { morning: '早上好', afternoon: '下午好', evening: '晚上好' }
+            };
+            const questionMap = {
+                en: { morning: 'What did you have for breakfast?', afternoon: 'What did you have for lunch?', evening: 'What did you have for dinner?' },
+                classical: { morning: '朝食何如？', afternoon: '午膳用何？', evening: '晚餐所食何物？' },
+                trad: { morning: '早餐吃了什麼？', afternoon: '午餐吃了什麼？', evening: '晚餐吃了什麼？' },
+                simp: { morning: '早上吃了什么？', afternoon: '中午吃了什么？', evening: '晚上吃了什么？' }
+            };
+            if (isRandomQuestion) {
+                return questionMap[lang][period] || questionMap.en[period];
+            } else {
+                return greetingMap[lang][period] || greetingMap.en[period];
+            }
+        }
+        
+        function updateGreetingForHover(lang) {
+            const now = new Date();
+            const hour = now.getHours();
+            const greetingText = getGreeting(lang, hour);
+            greetingDiv.innerText = greetingText;
+            greetingDiv.style.opacity = '1';
+        }
         
         function setRightBgByLang(lang){
             if(lang === 'en') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/bigben.jpg')";
@@ -470,12 +533,12 @@
             if(existingStars.length >= 6) return;
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 2 + 1.2;
+            const size = Math.random() * 2 + 1;
             star.style.width = size+'px';
             star.style.height = size+'px';
             star.style.left = (Math.random() * (btn.clientWidth - 16) + 8) + 'px';
             star.style.top = (Math.random() * (btn.clientHeight - 16) + 8) + 'px';
-            star.style.opacity = '0.28';
+            star.style.opacity = '0.22';
             btn.appendChild(star);
             currentBlinkingStar = star;
             star.classList.add('star-flicker');
@@ -485,10 +548,11 @@
             }, 400);
         }
         
-        function attachHoverEffects(btn){
+        function attachHoverEffects(btn, langCodeForGreeting = null){
             let glowDiv = null;
             let starInterval = null;
             btn.addEventListener('mouseenter', () => {
+                if(langCodeForGreeting) updateGreetingForHover(langCodeForGreeting);
                 if(!glowDiv){
                     glowDiv = document.createElement('div');
                     glowDiv.className = 'hover-glow';
@@ -532,10 +596,14 @@
             });
         }
         
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            attachHoverEffects(btn);
-            attachClickWave(btn);
-        });
+        attachHoverEffects(btnEn, 'en');
+        attachHoverEffects(btnClassical, 'classical');
+        attachHoverEffects(btnTrad, 'trad');
+        attachHoverEffects(btnSimp, 'simp');
+        attachClickWave(btnEn);
+        attachClickWave(btnClassical);
+        attachClickWave(btnTrad);
+        attachClickWave(btnSimp);
         
         btnEn.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg')"; });
         btnClassical.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
@@ -543,7 +611,7 @@
         btnSimp.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
         
         function switchToModeSelection(){
-            langContainer.style.display = 'none';
+            document.getElementById('langContainerWrapper').style.display = 'none';
             modeContainer.style.display = 'flex';
             rightPanel.style.justifyContent = 'center';
             updateModeUIText();
@@ -552,6 +620,9 @@
             leftPanel.style.filter = "brightness(0.45) contrast(1.1)";
             const blurDiv = document.querySelector('.right-panel-blur');
             if(blurDiv) blurDiv.style.backdropFilter = 'blur(7px)';
+            const modeTitleDiv = document.getElementById('modeTitle');
+            const titleMap = { en:"How would you like to browse this website?", classical:"君欲以何式覽此網？", trad:"您希望以哪種方式瀏覽本網站？", simp:"您希望以哪种方式浏览本网站？" };
+            modeTitleDiv.innerText = titleMap[selectedLanguage] || titleMap.en;
         }
         
         function backToLanguageSelection(){
@@ -587,6 +658,8 @@
                 btn.removeEventListener('mouseleave', modeLeaveHandler);
                 btn.addEventListener('mouseenter', modeHoverHandler);
                 btn.addEventListener('mouseleave', modeLeaveHandler);
+                attachHoverEffects(btn);
+                attachClickWave(btn);
             });
             function modeHoverHandler(e){
                 const target = e.currentTarget;
@@ -615,10 +688,10 @@
                 tooltipDiv.style.transform = 'translateX(-50%)';
                 tooltipDiv.style.backgroundColor = 'rgba(8,8,16,0.82)';
                 tooltipDiv.style.backdropFilter = 'blur(16px)';
-                tooltipDiv.style.padding = '10px 20px';
+                tooltipDiv.style.padding = '8px 18px';
                 tooltipDiv.style.borderRadius = '36px';
                 tooltipDiv.style.color = '#f0f0e0';
-                tooltipDiv.style.fontSize = '0.85rem';
+                tooltipDiv.style.fontSize = '0.8rem';
                 tooltipDiv.style.maxWidth = '76%';
                 tooltipDiv.style.textAlign = 'center';
                 tooltipDiv.style.zIndex = '5000';
@@ -750,6 +823,10 @@
         const blurLayer = document.createElement('div');
         blurLayer.className = 'right-panel-blur';
         rightPanel.insertBefore(blurLayer, rightPanel.firstChild);
+        
+        const nowHour = new Date().getHours();
+        const defaultLang = 'en';
+        greetingDiv.innerText = getGreeting(defaultLang, nowHour);
     })();
 </script>
 </body>
