@@ -15,7 +15,7 @@ cd: >> 6604
     }
 .
 -
-<positive>#
+<negative>#
 -
 // ésada cosim em'stica: 44663B
 // positive, odeer negative ikotag
