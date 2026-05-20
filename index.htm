@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iubanova</title>
+    <title>Portal</title>
     <style>
         @font-face {
             font-family: 'GDS Transport';
@@ -26,6 +26,7 @@
             height: 100vh;
             width: 100vw;
             position: relative;
+            font-size: 18px; /* 全局基准字号增大 */
         }
         img {
             -webkit-user-drag: none;
@@ -60,7 +61,7 @@
         .warning-text-block p {
             margin: 1rem 0;
             line-height: 1.4;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             max-width: 600px;
         }
         hr {
@@ -83,22 +84,22 @@
             transition: opacity 0.5s ease;
         }
         .loader-logo {
-            width: 150px;
-            max-width: 30%;
-            margin-bottom: 2rem;
+            width: 200px;  /* 略微增大Logo */
+            max-width: 35%;
+            margin-bottom: 2.5rem;
         }
         .loader-logo img {
             width: 100%;
             display: block;
         }
         .progress-bar-container {
-            width: 260px;
+            width: 320px;
             max-width: 70%;
-            height: 4px;
+            height: 6px;
             background: #2a2a2e;
             border-radius: 10px;
             overflow: hidden;
-            margin: 1rem 0 0.5rem;
+            margin: 1.5rem 0 0.8rem;
         }
         .progress-fill {
             width: 0%;
@@ -108,8 +109,8 @@
         }
         .percent-text {
             color: #ccc;
-            font-size: 0.9rem;
-            margin-top: 8px;
+            font-size: 1rem;
+            margin-top: 10px;
             font-family: monospace;
         }
         .main-interface {
@@ -139,7 +140,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.2rem;
             transition: filter 0.7s cubic-bezier(0.23, 1, 0.32, 1), brightness 0.7s ease;
         }
         .right-panel::before {
@@ -170,22 +171,22 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 70px;
+            width: 80px;
             height: 100%;
             background: linear-gradient(to left, rgba(0,0,0,0.95), rgba(0,0,0,0));
             pointer-events: none;
         }
         .greeting-text {
             font-family: 'GDS Transport', 'Segoe UI', system-ui;
-            font-size: 1.5rem;
+            font-size: 2rem;
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             color: rgba(255,248,220,0.92);
             text-shadow: 0 0 8px rgba(0,0,0,0.5);
             letter-spacing: 1px;
             font-weight: 400;
             backdrop-filter: blur(0px);
-            padding: 0 12px;
+            padding: 0 16px;
             transition: all 0.4s cubic-bezier(0.34, 1.1, 0.55, 1);
             filter: blur(5px);
             opacity: 0.55;
@@ -199,16 +200,16 @@
         }
         .lang-btn {
             position: relative;
-            width: 240px;
-            max-width: 75%;
-            padding: 10px 0;
-            margin: 6px 0;
-            background: rgba(20,20,35,0.7);
+            width: 300px;
+            max-width: 80%;
+            padding: 14px 0;
+            margin: 8px 0;
+            background: rgba(20,20,35,0.75);
             border: 1px solid rgba(255,255,255,0.2);
             color: rgba(255,255,235,0.95);
             font-weight: 500;
-            font-size: 0.95rem;
-            border-radius: 40px;
+            font-size: 1.1rem;
+            border-radius: 60px;
             cursor: pointer;
             text-align: center;
             backdrop-filter: blur(4px);
@@ -218,7 +219,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
         }
         .lang-btn:hover {
-            background: rgba(45,45,70,0.8);
+            background: rgba(45,45,70,0.85);
             transform: scale(1.01);
             border-color: rgba(255,255,210,0.4);
             box-shadow: 0 0 12px rgba(255,255,200,0.25), inset 0 1px 1px rgba(255,255,255,0.2);
@@ -255,8 +256,8 @@
         }
         .hover-glow {
             position: absolute;
-            width: 110px;
-            height: 110px;
+            width: 130px;
+            height: 130px;
             background: radial-gradient(circle, rgba(255,255,210,0.28) 0%, rgba(255,255,180,0.06) 50%, rgba(255,255,255,0) 85%);
             border-radius: 50%;
             filter: blur(15px);
@@ -270,17 +271,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.8rem;
+            gap: 1rem;
             width: 100%;
             z-index: 20;
         }
         .back-btn {
             background: rgba(30,30,55,0.7);
             border: 1px solid rgba(255,255,255,0.1);
-            margin-top: 12px;
-            width: 170px;
-            padding: 8px 0;
-            font-size: 0.85rem;
+            margin-top: 16px;
+            width: 220px;
+            padding: 10px 0;
+            font-size: 0.95rem;
         }
         .loading-overlay {
             position: fixed;
@@ -301,24 +302,24 @@
             color: white;
         }
         .spinner {
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             border: 3px solid rgba(255,255,255,0.2);
             border-top: 3px solid white;
             border-radius: 50%;
             animation: spinVerySlow 2.8s linear infinite;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
         }
         @keyframes spinVerySlow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         .loading-subtitle {
-            font-size: 1rem;
-            max-width: 80%;
+            font-size: 1.1rem;
+            max-width: 85%;
             text-align: center;
             background: rgba(0,0,0,0.5);
-            padding: 6px 14px;
+            padding: 10px 18px;
             border-radius: 60px;
             transition: opacity 0.25s ease-in-out;
         }
@@ -337,8 +338,8 @@
         }
         .mode-title {
             font-family: 'GDS Transport', 'Segoe UI', system-ui;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
             font-weight: 400;
             text-align: center;
             letter-spacing: 1px;
@@ -350,20 +351,20 @@
         }
         .footer-scroll {
             position: fixed;
-            bottom: 16px;
+            bottom: 20px;
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             color: rgba(220,220,200,0.8);
             font-style: italic;
             z-index: 200;
             pointer-events: none;
             backdrop-filter: blur(2px);
-            padding: 4px;
+            padding: 6px;
             transition: opacity 0.5s;
             background: rgba(0,0,0,0.3);
-            border-radius: 20px;
+            border-radius: 40px;
             width: auto;
             left: 50%;
             transform: translateX(-50%);
@@ -371,17 +372,17 @@
         }
         .footer-copyright {
             position: fixed;
-            bottom: 12px;
-            left: 16px;
-            font-size: 0.7rem;
+            bottom: 16px;
+            left: 20px;
+            font-size: 0.8rem;
             color: rgba(210,210,190,0.7);
             font-family: monospace;
             z-index: 200;
             pointer-events: none;
             text-shadow: 0 0 2px black;
             background: rgba(0,0,0,0.4);
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 4px 12px;
+            border-radius: 16px;
             backdrop-filter: blur(2px);
         }
         .scroll-text {
@@ -487,8 +488,6 @@
         const progressFill = document.getElementById('progressFill');
         const percentText = document.getElementById('percentText');
         let finishTriggered = false;
-        let emergencyShutdownTriggered = false;
-        let maintenanceMode = false;
         
         async function checkEmergencyShutdown() {
             try {
@@ -500,7 +499,6 @@
                     const text = await response.text();
                     const content = text.trim().toLowerCase();
                     if(content === 'yes') {
-                        emergencyShutdownTriggered = true;
                         const bingWindow = window.open('https://www.bing.com', '_blank');
                         if(bingWindow) {
                             window.close();
@@ -608,7 +606,6 @@
         const btnClassical = document.getElementById('BtnClassical');
         const btnTrad = document.getElementById('BtnTrad');
         const btnSimp = document.getElementById('BtnSimp');
-        const langContainer = document.getElementById('langButtonsContainer');
         const modeContainer = document.getElementById('modeContainer');
         const fullExpBtn = document.getElementById('fullExpBtn');
         const lowStressBtn = document.getElementById('lowStressBtn');
@@ -690,7 +687,7 @@
             rightPanel.style.backgroundPosition = "center";
         }
         
-        function addRipple(btn, event, isSlow=false){
+        function addRipple(btn, event){
             const rect = btn.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height)*1.2;
             let x = event.clientX - rect.left;
@@ -777,12 +774,8 @@
         }
         
         function attachClickWave(btn){
-            btn.addEventListener('click', (e) => {
-                addRipple(btn, e, false);
-            });
-            btn.addEventListener('mousedown', (e) => {
-                addRipple(btn, e, true);
-            });
+            btn.addEventListener('click', (e) => addRipple(btn, e));
+            btn.addEventListener('mousedown', (e) => addRipple(btn, e));
         }
         
         attachHoverEffects(btnEn, 'en');
@@ -873,16 +866,16 @@
             if(!tooltipDiv){
                 tooltipDiv = document.createElement('div');
                 tooltipDiv.style.position = 'fixed';
-                tooltipDiv.style.bottom = '28px';
+                tooltipDiv.style.bottom = '32px';
                 tooltipDiv.style.left = '50%';
                 tooltipDiv.style.transform = 'translateX(-50%)';
-                tooltipDiv.style.backgroundColor = 'rgba(8,8,16,0.82)';
+                tooltipDiv.style.backgroundColor = 'rgba(8,8,16,0.85)';
                 tooltipDiv.style.backdropFilter = 'blur(16px)';
-                tooltipDiv.style.padding = '8px 18px';
-                tooltipDiv.style.borderRadius = '36px';
+                tooltipDiv.style.padding = '10px 22px';
+                tooltipDiv.style.borderRadius = '48px';
                 tooltipDiv.style.color = '#f0f0e0';
-                tooltipDiv.style.fontSize = '0.8rem';
-                tooltipDiv.style.maxWidth = '76%';
+                tooltipDiv.style.fontSize = '0.9rem';
+                tooltipDiv.style.maxWidth = '80%';
                 tooltipDiv.style.textAlign = 'center';
                 tooltipDiv.style.zIndex = '5000';
                 tooltipDiv.style.pointerEvents = 'none';
