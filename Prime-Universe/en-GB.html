@@ -1,700 +1,955 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iubanova · Advanced Healing System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            background: #000;
-            font-family: 'Georgia', 'Times New Roman', Times, serif;
-            overflow-x: hidden;
-            font-size: 20px;
-        }
-        body.light-mode {
-            background: #f5f7fb;
-            color: #111;
-        }
-        .initial-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            transition: opacity 0.5s ease;
-        }
-        .loader-logo { width: 280px; max-width: 40%; margin-bottom: 2.5rem; }
-        .loader-logo img { width: 100%; display: block; }
-        .progress-bar-container {
-            width: 480px;
-            max-width: 70%;
-            height: 8px;
-            background: #2a2a2e;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 2rem 0 0.8rem;
-        }
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            background: #f0f0f0;
-            transition: width 0.2s linear;
-        }
-        .percent-text { color: #ccc; font-size: 1.2rem; font-family: monospace; }
-        .main-content { opacity: 0; visibility: hidden; transition: opacity 0.6s ease; }
-        
-        /* consent gateway - stable version */
-        .consent-gateway {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0c12;
-            backdrop-filter: blur(12px);
-            z-index: 11000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        .consent-card {
-            max-width: 900px;
-            width: 100%;
-            background: rgba(20, 22, 32, 0.95);
-            border-radius: 40px;
-            padding: 2rem;
-            border: 1px solid rgba(255,255,210,0.2);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        .captcha-top-section {
-            background: rgba(0,0,0,0.5);
-            border-radius: 28px;
-            padding: 1.2rem 1.5rem;
-            margin-bottom: 1.8rem;
-            text-align: center;
-        }
-        .captcha-top-section .verification-text {
-            color: white;
-            font-size: 1.05rem;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-        #hcaptchaContainer {
-            display: flex;
-            justify-content: center;
-            min-height: 85px;
-        }
-        .consent-card h2 {
-            font-weight: 500;
-            margin-bottom: 1rem;
-            color: #ffe6c7;
-            font-size: 1.8rem;
-        }
-        .legal-text {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: white;
-            margin: 1rem 0;
-            border-left: 3px solid #ffd966;
-            padding-left: 1.5rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-        }
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin: 24px 0 20px;
-        }
-        .checkbox-row input { width: 24px; height: 24px; cursor: pointer; }
-        .checkbox-row label { font-size: 1.05rem; color: white; cursor: pointer; }
-        .btn-continue {
-            background: #2c6e9e;
-            border: none;
-            padding: 14px 32px;
-            color: white;
-            font-weight: bold;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.2s;
-            opacity: 0.6;
-            pointer-events: none;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            width: 100%;
-            margin-top: 0.5rem;
-        }
-        .btn-continue.active { opacity: 1; pointer-events: auto; background: #1e88e5; }
-        
-        /* invisible skip button */
-        .skip-captcha-trigger {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 100px;
-            height: 100px;
-            background: transparent;
-            cursor: pointer;
-            z-index: 11001;
-            opacity: 0;
-            border: none;
-        }
-        
-        /* navbar and rest of styling */
-        .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.2rem 2.5rem;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,200,0.2);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .nav-left { display: flex; align-items: center; gap: 38px; flex-wrap: wrap; }
-        .nav-logo { height: 48px; cursor: pointer; border-radius: 12px; padding: 4px; }
-        .nav-logo:hover { background: #1e1e2a; box-shadow: 0 0 0 3px #222; }
-        .nav-links { display: flex; gap: 32px; align-items: center; }
-        .nav-link { color: #f0f0ea; text-decoration: none; font-weight: 500; font-size: 1.15rem; padding: 8px 0; font-family: 'Georgia', 'Times New Roman', serif; }
-        .dropdown { position: relative; }
-        .dropdown-menu {
-            position: absolute;
-            top: 42px;
-            left: 0;
-            background: #1a1c28;
-            border-radius: 20px;
-            padding: 0.8rem 0;
-            min-width: 180px;
-            display: none;
-            flex-direction: column;
-            border: 1px solid rgba(255,255,200,0.2);
-            z-index: 1100;
-        }
-        .dropdown-menu a { padding: 10px 24px; color: #f0f0ea; text-decoration: none; font-size: 1rem; }
-        .dropdown:hover .dropdown-menu { display: flex; }
-        .nav-right { display: flex; align-items: center; gap: 28px; }
-        .icon-btn { background: none; border: none; cursor: pointer; }
-        .settings-icon { width: 34px; opacity: 0.8; }
-        .settings-panel {
-            position: fixed;
-            top: 85px;
-            right: 25px;
-            width: 320px;
-            background: #111217e6;
-            backdrop-filter: blur(20px);
-            border-radius: 28px;
-            padding: 1.4rem;
-            z-index: 2000;
-            border: 1px solid rgba(255,255,200,0.3);
-            display: none;
-            flex-direction: column;
-            gap: 18px;
-        }
-        .settings-panel.show { display: flex; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 1rem; }
-        input[type="range"] { width: 160px; }
-        select, .setting-row button {
-            background: #2a2a32;
-            border: 1px solid #aaa;
-            color: white;
-            border-radius: 28px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-        }
-        .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 4rem 2rem; }
-        .hero-img { max-width: 85%; border-radius: 40px; box-shadow: 0 25px 45px rgba(0,0,0,0.5); }
-        .hero-text { font-size: 2.6rem; font-weight: 500; margin: 1.5rem 0 0.8rem; }
-        .button-group { display: flex; gap: 2rem; justify-content: center; margin: 1.6rem 0 2.5rem; flex-wrap: wrap; }
-        .btn-primary {
-            background: #2c5a7a;
-            padding: 14px 34px;
-            border-radius: 80px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.15rem;
-            display: inline-block;
-        }
-        .grid-4 {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2.5rem;
-            max-width: 1300px;
-            margin: 3rem auto;
-            padding: 0 2rem;
-        }
-        .square-card {
-            flex: 1 1 280px;
-            background: #0f0f14cc;
-            backdrop-filter: blur(4px);
-            border-radius: 36px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,210,0.15);
-        }
-        .square-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-        .card-content { padding: 1.4rem; font-size: 1.05rem; }
-        .footer {
-            background: #0b0b10e0;
-            padding: 2.5rem 2.5rem 1.5rem;
-            margin-top: 4rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 2.5rem;
-        }
-        .footer-col { min-width: 180px; }
-        .footer-title { font-weight: 600; margin-bottom: 16px; color: #ddd; font-size: 1.2rem; }
-        .footer-link { display: block; color: #bbb; text-decoration: none; margin: 8px 0; font-size: 1rem; cursor: pointer; }
-        .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(10px);
-            z-index: 12000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-        .modal.active { visibility: visible; opacity: 1; }
-        .modal-content {
-            background: #1c1e2a;
-            max-width: 620px;
-            width: 90%;
-            border-radius: 40px;
-            padding: 2rem;
-            color: #f0f0ea;
-            max-height: 80vh;
-            overflow-y: auto;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-        hr { margin: 16px 0; border-color: #444; }
-        @media (max-width: 850px) {
-            .navbar { flex-direction: column; align-items: stretch; }
-            .hero-text { font-size: 2rem; }
-        }
-    </style>
-    <script src="https://js.hcaptcha.com/1/api.js?hl=en" async defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>iubanova</title>
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<style>
+@font-face {
+font-family: 'GDS Transport';
+src: local('GDS Transport'), url('https://assets.publishing.service.gov.uk/static/gds-transport-regular-9e6b1b4b3b7e3b3b9b1b3b1b3b1b3b1b.woff2') format('woff2');
+font-weight: normal;
+font-style: normal;
+font-display: swap;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+-webkit-tap-highlight-color: transparent;
+}
+:root {
+--bg-color: #000;
+--text-color: #eee;
+--panel-bg: rgba(20,20,35,0.75);
+--border-color: rgba(255,255,255,0.2);
+--hover-bg: rgba(45,45,70,0.85);
+--modal-overlay: rgba(0,0,0,0.8);
+}
+body.light-theme {
+--bg-color: #f4f4f5;
+--text-color: #111;
+--panel-bg: rgba(240,240,245,0.85);
+--border-color: rgba(0,0,0,0.1);
+--hover-bg: rgba(220,220,225,0.95);
+--modal-overlay: rgba(255,255,255,0.8);
+}
+body {
+background: var(--bg-color);
+color: var(--text-color);
+font-family: system-ui, 'Segoe UI', 'SF Pro Text', 'Noto Sans', sans-serif;
+font-size: 18px;
+width: 100vw;
+min-height: 100vh;
+overflow-x: hidden;
+transition: background 0.3s, color 0.3s;
+}
+img {
+-webkit-user-drag: none;
+user-drag: none;
+pointer-events: auto;
+}
+.mobile-warning {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: #0a0c12;
+backdrop-filter: blur(8px);
+z-index: 10000;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 2rem;
+text-align: center;
+flex-direction: column;
+gap: 2rem;
+color: #eee;
+font-weight: 500;
+}
+.warning-text-block p {
+margin: 1rem 0;
+line-height: 1.4;
+font-size: 1.2rem;
+max-width: 600px;
+}
+hr {
+width: 60px;
+margin: 0.5rem auto;
+border-color: #444;
+}
+.initial-loader {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: #000;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 2000;
+transition: opacity 0.5s ease;
+}
+.loader-logo {
+width: 200px;
+max-width: 35%;
+margin-bottom: 2.5rem;
+}
+.loader-logo img {
+width: 100%;
+display: block;
+}
+.progress-bar-container {
+width: 320px;
+max-width: 70%;
+height: 6px;
+background: #2a2a2e;
+border-radius: 10px;
+overflow: hidden;
+margin: 1.5rem 0 0.8rem;
+}
+.progress-fill {
+width: 0%;
+height: 100%;
+background: #f0f0f0;
+transition: width 0.2s linear;
+}
+.percent-text {
+color: #ccc;
+font-size: 1rem;
+margin-top: 10px;
+font-family: monospace;
+}
+.maintenance-frame {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+border: none;
+z-index: 10000;
+background: #000;
+}
+.btn {
+position: relative;
+padding: 14px 24px;
+margin: 8px;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+color: var(--text-color);
+font-weight: 500;
+font-size: 1.1rem;
+border-radius: 60px;
+cursor: pointer;
+text-align: center;
+backdrop-filter: blur(4px);
+overflow: hidden;
+transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+display: inline-block;
+text-decoration: none;
+font-family: 'GDS Transport', 'Segoe UI', system-ui;
+}
+body.light-theme .btn {
+box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.btn:hover {
+background: var(--hover-bg);
+transform: scale(1.01);
+border-color: rgba(150,150,150,0.4);
+}
+.btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+#gatekeeper {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+padding: 2rem;
+max-width: 800px;
+margin: 0 auto;
+text-align: center;
+}
+.gate-box {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 2rem;
+margin-bottom: 2rem;
+text-align: left;
+}
+.gate-box h2 {
+margin-bottom: 1rem;
+font-family: 'GDS Transport', 'Segoe UI', system-ui;
+}
+.gate-box ul {
+margin: 1rem 0 1rem 2rem;
+line-height: 1.6;
+}
+.gate-check {
+margin: 1.5rem 0;
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 1.1rem;
+cursor: pointer;
+}
+.gate-check input {
+width: 20px;
+height: 20px;
+cursor: pointer;
+}
+#mainApp {
+display: none;
+flex-direction: column;
+min-height: 100vh;
+}
+#visualWrapper {
+width: 100%;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+nav {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1rem 2rem;
+background: var(--panel-bg);
+backdrop-filter: blur(10px);
+border-bottom: 1px solid var(--border-color);
+position: sticky;
+top: 0;
+z-index: 100;
+}
+.nav-left, .nav-right, .nav-center {
+display: flex;
+align-items: center;
+gap: 1.5rem;
+}
+.nav-logo-container {
+width: 40px;
+height: 40px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
+transition: background 0.2s, box-shadow 0.2s;
+}
+.nav-logo-container:hover {
+background: #000;
+box-shadow: 0 0 0 2px #000;
+}
+.nav-logo {
+width: 100%;
+height: 100%;
+object-fit: contain;
+content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png');
+}
+.nav-logo-container:hover .nav-logo {
+content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png');
+}
+.nav-link {
+color: var(--text-color);
+text-decoration: none;
+font-weight: 500;
+cursor: pointer;
+font-family: 'GDS Transport', 'Segoe UI', system-ui;
+position: relative;
+}
+.nav-link:hover {
+opacity: 0.8;
+}
+.dropdown {
+position: relative;
+}
+.dropdown-menu {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 8px;
+min-width: 180px;
+flex-direction: column;
+padding: 0.5rem 0;
+backdrop-filter: blur(10px);
+}
+.dropdown:hover .dropdown-menu {
+display: flex;
+}
+.dropdown-item {
+padding: 0.75rem 1.5rem;
+color: var(--text-color);
+text-decoration: none;
+}
+.dropdown-item:hover {
+background: var(--hover-bg);
+}
+.settings-icon {
+width: 24px;
+height: 24px;
+cursor: pointer;
+filter: invert(1);
+transition: transform 0.2s;
+}
+body.light-theme .settings-icon {
+filter: invert(0);
+}
+.settings-icon:hover {
+transform: rotate(45deg);
+}
+main {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 4rem 2rem;
+gap: 4rem;
+}
+.hero {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+max-width: 1000px;
+width: 100%;
+}
+.hero img {
+width: 100%;
+max-width: 800px;
+border-radius: 16px;
+margin-bottom: 2rem;
+box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.hero h1 {
+font-size: 2.5rem;
+margin-bottom: 2rem;
+font-family: 'GDS Transport', 'Segoe UI', system-ui;
+}
+.hero-btns {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+justify-content: center;
+}
+.grid-container {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 2rem;
+max-width: 1000px;
+width: 100%;
+}
+@media(max-width: 768px) {
+.grid-container {
+grid-template-columns: 1fr;
+}
+}
+.grid-item {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 16px;
+padding: 1.5rem;
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+gap: 1rem;
+}
+.grid-item img {
+width: 100%;
+aspect-ratio: 1/1;
+object-fit: cover;
+border-radius: 12px;
+}
+.grid-item h3 {
+font-size: 1.25rem;
+font-family: 'GDS Transport', 'Segoe UI', system-ui;
+flex: 1;
+display: flex;
+align-items: center;
+}
+footer {
+background: var(--panel-bg);
+border-top: 1px solid var(--border-color);
+padding: 3rem 2rem;
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+gap: 2rem;
+}
+.footer-logo img {
+width: 150px;
+}
+.footer-section {
+display: flex;
+flex-direction: column;
+gap: 0.8rem;
+}
+.footer-section h4 {
+font-size: 1.2rem;
+margin-bottom: 0.5rem;
+font-family: 'GDS Transport', 'Segoe UI', system-ui;
+color: var(--text-color);
+}
+.footer-link {
+color: #888;
+text-decoration: none;
+cursor: pointer;
+transition: color 0.2s;
+}
+.footer-link:hover {
+color: var(--text-color);
+}
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: var(--modal-overlay);
+backdrop-filter: blur(5px);
+z-index: 3000;
+display: none;
+align-items: center;
+justify-content: center;
+}
+.modal-content {
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+padding: 2rem;
+border-radius: 16px;
+max-width: 600px;
+width: 90%;
+max-height: 80vh;
+overflow-y: auto;
+position: relative;
+}
+.modal-close {
+position: absolute;
+top: 1rem;
+right: 1rem;
+font-size: 1.5rem;
+cursor: pointer;
+background: none;
+border: none;
+color: var(--text-color);
+}
+.settings-group {
+margin-bottom: 1.5rem;
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+.settings-group label {
+display: flex;
+justify-content: space-between;
+}
+input[type="range"] {
+width: 100%;
+}
+#crosshairContainer {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: 9999;
+display: none;
+}
+.crosshair-line-x {
+position: absolute;
+top: 50%;
+left: 0;
+width: 100%;
+height: 2px;
+transform: translateY(-50%);
+}
+.crosshair-line-y {
+position: absolute;
+top: 0;
+left: 50%;
+width: 2px;
+height: 100%;
+transform: translateX(-50%);
+}
+</style>
 </head>
 <body>
+
+<div id="mobileWarning" class="mobile-warning" style="display: none;">
+<div class="warning-text-block">
+<p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
+<hr>
+<p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
+<hr>
+<p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
+</div>
+</div>
+
 <div id="initialLoader" class="initial-loader">
-    <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
-    <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
-    <div id="percentText" class="percent-text">0%</div>
+<div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
+<div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
+<div id="percentText" class="percent-text">0%</div>
 </div>
 
-<div id="consentGateway" class="consent-gateway">
-    <div class="consent-card">
-        <div class="captcha-top-section">
-            <div class="verification-text">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</div>
-            <div id="hcaptchaContainer"></div>
-        </div>
-        <h2>Evaluation & demonstration environment</h2>
-        <div class="legal-text">
-            This is a non-production test site for evaluation and demonstration purposes only.<br><br>
-            By proceeding, you acknowledge and agree that:<br>
-            * This website is not intended for real-world or clinical use.<br>
-            * All content, models, and outputs are for demonstration and testing only.<br>
-            * No health, safety, or operational decisions should be based on this test environment.<br>
-            * iubanova and Nanjing University accept no liability for any use or misuse of this test system.<br>
-            * You will not share, distribute, or replicate any test data or outputs without explicit permission.
-        </div>
-        <div class="checkbox-row">
-            <input type="checkbox" id="agreeCheckbox"> <label for="agreeCheckbox">I have read, understood, and agree to the terms above.</label>
-        </div>
-        <button id="continueBtn" class="btn-continue">Continue →</button>
-    </div>
+<div id="visualWrapper" style="filter: saturate(100%) grayscale(0%) contrast(100%);">
+<div id="gatekeeper">
+<div class="gate-box">
+<h2>This is a non-production test site for evaluation and demonstration purposes only.</h2>
+<p>By proceeding, you acknowledge and agree that:</p>
+<ul>
+<li>This website is not intended for real-world or clinical use.</li>
+<li>All content, models, and outputs are for demonstration and testing only.</li>
+<li>No health, safety, or operational decisions should be based on this test environment.</li>
+<li>iubanova and Nanjing University accept no liability for any use or misuse of this test system.</li>
+<li>You will not share, distribute, or replicate any test data or outputs without explicit permission.</li>
+</ul>
+<label class="gate-check">
+<input type="checkbox" id="agreeCheck">
+☐ I have read, understood, and agree to the terms above.
+</label>
+<p style="margin-bottom: 1rem; font-weight: bold;">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</p>
+<div class="h-captcha" data-sitekey="b1b8c6e6-6586-4d9e-8eee-745a861c8974" data-callback="onCaptchaSuccess"></div>
+</div>
+<button id="continueBtn" class="btn" disabled>Continue</button>
 </div>
 
-<div id="skipCaptchaTrigger" class="skip-captcha-trigger"></div>
+<div id="mainApp">
+<nav>
+<div class="nav-left">
+<div class="nav-logo-container" id="navLogoBtn">
+<img class="nav-logo" alt="Logo">
+</div>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="nav-link">Solutions</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html" class="nav-link">Pricing</a>
+<div class="dropdown">
+<span class="nav-link">Resources</span>
+<div class="dropdown-menu">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html" class="dropdown-item">Archive</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html" class="dropdown-item">Knowledge Base</a>
+</div>
+</div>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html" class="nav-link">Support Centre</a>
+</div>
+<div class="nav-right">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png" class="settings-icon" id="openSettingsBtn" alt="Settings">
+<a href="https://uplgov.github.io/iubanova-TestOnly/myaccount.htm" class="btn" style="margin:0;">Login</a>
+</div>
+</nav>
 
-<div id="mainApp" class="main-content">
-    <div class="navbar">
-        <div class="nav-left">
-            <img id="mainLogo" class="nav-logo" src="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png" alt="logo" style="height:48px;">
-            <div class="nav-links">
-                <a href="#" id="solutionsLink" class="nav-link">Solutions</a>
-                <a href="#" id="pricingLink" class="nav-link">Pricing</a>
-                <div class="dropdown">
-                    <span class="nav-link">Resources ▼</span>
-                    <div class="dropdown-menu">
-                        <a href="#" id="archiveLink">Archive</a>
-                        <a href="#" id="kbLink">Knowledge Base</a>
-                    </div>
-                </div>
-                <a href="#" id="supportLink" class="nav-link">Support Centre</a>
-            </div>
-        </div>
-        <div class="nav-right">
-            <button class="icon-btn" id="settingsToggleBtn"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png" class="settings-icon" alt="settings"></button>
-            <a href="#" id="loginBtn" class="nav-link">Login</a>
-        </div>
-    </div>
+<main>
+<section class="hero">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
+<h1>Our most advanced Healing system. Amazing. Surprising.</h1>
+<div class="hero-btns">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="btn">Dive into…</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/demo.html" class="btn">Request a demo</a>
+</div>
+</section>
 
-    <div id="settingsMenu" class="settings-panel">
-        <div class="setting-row"><span>Theme</span> <button id="themeToggleBtn">Dark</button></div>
-        <div class="setting-row"><span>Saturation</span> <input type="range" id="saturationSlider" min="0" max="200" value="100" step="1"></div>
-        <div class="setting-row"><span>Monochrome</span> <input type="range" id="monoSlider" min="0" max="100" value="0" step="1"></div>
-        <div class="setting-row"><span>Contrast</span> <input type="range" id="contrastSlider" min="50" max="200" value="100" step="1"></div>
-        <div class="setting-row"><span><input type="checkbox" id="crosshairCheckbox"> Enable Crosshair Assist</span></div>
-        <div class="setting-row"><span>Crosshair Color</span> <select id="crosshairColorSelect"><option value="Red">Red</option><option value="Blue">Blue</option><option value="Lime">Lime</option><option value="Yellow">Yellow</option><option value="Lilac">Lilac</option><option value="Transparent">Transparent</option></select></div>
-        <button id="resetSettingsBtn" style="background:#3a2a2a;">Reset All</button>
-    </div>
+<section class="grid-container">
+<div class="grid-item">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/_13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team">
+<h3>Built by researchers, for real-world impact.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html" class="btn">Meet the team</a>
+</div>
+<div class="grid-item">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/_ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security">
+<h3>Your data is never a product.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
+</div>
+<div class="grid-item">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/_e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg" alt="Experience">
+<h3>See it for yourself. No commitment.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack.</a>
+</div>
+<div class="grid-item">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/_f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg" alt="Stories">
+<h3>From pilot to production. Proven in the field.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
+</div>
+</section>
+</main>
 
-    <div class="hero">
-        <img class="hero-img" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
-        <div class="hero-text">Our most advanced Healing system. Amazing. Surprising.</div>
-        <div class="button-group">
-            <a href="#" id="diveBtn" class="btn-primary">Dive into…</a>
-            <a href="#" id="demoBtn" class="btn-primary">Request a demo</a>
-        </div>
-    </div>
-
-    <div class="grid-4">
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_13bc28a4-e883-4f4a-ad02-00482996039c.jpg"><div class="card-content">Built by researchers, for real-world impact.<br><a href="#" id="teamBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Meet the team</a></div></div>
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg"><div class="card-content">Your data is never a product.<br><a href="#" id="privacyPolicyBtnCard" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Security & privacy</a></div></div>
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg"><div class="card-content">See it for yourself. No commitment.<br><a href="#" id="expPackBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Get the experience pack.</a></div></div>
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg"><div class="card-content">From pilot to production. Proven in the field.<br><a href="#" id="storiesBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Customer stories</a></div></div>
-    </div>
-
-    <div class="footer">
-        <div class="footer-col"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" style="height:56px;" alt="logo"></div>
-        <div class="footer-col"><div class="footer-title">Website</div>
-            <a class="footer-link" id="privacyModalBtn">Privacy</a>
-            <a class="footer-link" id="trademarkModalBtn">Trademarks & disclaimer</a>
-            <a class="footer-link" id="licenceModalBtn">Licence</a>
-            <a class="footer-link" id="sitemapFooterBtn">Sitemap</a>
-        </div>
-        <div class="footer-col"><div class="footer-title">Follow Us:</div>
-            <a class="footer-link" id="youtubeLink" href="#">YouTube</a>
-            <a class="footer-link" id="xLink" href="#">X</a>
-            <a class="footer-link" id="fbLink" href="#">Facebook</a>
-            <a class="footer-link" id="linkedinLink" href="#">LinkedIn</a>
-        </div>
-    </div>
+<footer>
+<div class="footer-logo">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="3d logo">
+</div>
+<div class="footer-section">
+<h4>Website</h4>
+<span class="footer-link" id="btnPrivacy">Privacy</span>
+<span class="footer-link" id="btnTrade">Trademarks & disclaimer</span>
+<span class="footer-link" id="btnLicence">Licence</span>
+<a href="https://uplgov.github.io/iubanova-TestOnly/sitemap.xml" class="footer-link">Sitemap</a>
+</div>
+<div class="footer-section">
+<h4>Follow Us</h4>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">YouTube</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">X</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">FaceBook</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">LinkedIn</a>
+</div>
+</footer>
+</div>
 </div>
 
-<div id="genericModal" class="modal"><div class="modal-content" id="modalContentInner"></div></div>
+<div id="crosshairContainer">
+<div class="crosshair-line-x" id="chX"></div>
+<div class="crosshair-line-y" id="chY"></div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+<h2 style="margin-bottom:1.5rem; font-family:'GDS Transport', system-ui;">Settings</h2>
+<div class="settings-group">
+<label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px; margin:0; font-size:0.9rem;">Dark</button></label>
+</div>
+<div class="settings-group">
+<label>Saturation <span id="valSat">100%</span></label>
+<input type="range" id="slSat" min="0" max="200" value="100">
+</div>
+<div class="settings-group">
+<label>Monochrome <span id="valMono">0%</span></label>
+<input type="range" id="slMono" min="0" max="100" value="0">
+</div>
+<div class="settings-group">
+<label>Contrast <span id="valCont">100%</span></label>
+<input type="range" id="slCont" min="0" max="200" value="100">
+</div>
+<div class="settings-group" style="flex-direction:row; align-items:center; justify-content:space-between;">
+<label style="flex:1;">Enable Crosshair Assist</label>
+<input type="checkbox" id="chkCrosshair" style="width:20px; height:20px;">
+</div>
+<div class="settings-group">
+<label>Crosshair Color</label>
+<select id="selCrosshairColor" style="padding:8px; background:var(--panel-bg); color:var(--text-color); border:1px solid var(--border-color); border-radius:8px;">
+<option value="red">Red</option>
+<option value="blue">Blue</option>
+<option value="lime">Lime</option>
+<option value="yellow">Yellow</option>
+<option value="purple">Lilac</option>
+<option value="transparent">Transparent</option>
+</select>
+</div>
+<button class="btn" id="btnResetAll" style="width:100%; margin-top:1rem;">Reset All</button>
+</div>
+</div>
+
+<div class="modal-overlay" id="privacyModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:'GDS Transport', system-ui;">Data & Privacy Notice – Test Environment</h2>
+<p style="margin-bottom:1rem; font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including:</p>
+<ul style="margin: 0 0 1rem 2rem; line-height:1.5;">
+<li>IP address</li>
+<li>Browser fingerprint / user agent</li>
+<li>Mouse movements and interaction patterns</li>
+<li>Device characteristics</li>
+</ul>
+<p style="margin-bottom:1rem; line-height:1.5;">This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p>
+<p style="margin-bottom:0.5rem;"><a href="https://www.hcaptcha.com/privacy" target="_blank" style="color:#88f;">hCaptcha Privacy Policy</a></p>
+<p><a href="https://www.hcaptcha.com/terms" target="_blank" style="color:#88f;">hCaptcha Terms of Service</a></p>
+</div>
+</div>
+
+<div class="modal-overlay" id="tradeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:'GDS Transport', system-ui;">Trademarks & disclaimer</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p>
+<p style="margin-bottom:1rem;">Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p>
+<p style="margin-bottom:1rem;">All trademarks, logos, and product names belong to their respective owners, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>Dodge / Hemi (Stellantis NV)</li>
+<li>Apple Inc. / iPhone (Apple Inc.)</li>
+<li>The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation)</li>
+</ul>
+<p style="margin-bottom:1rem;">iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners.</p>
+<p style="margin-bottom:1rem;">These placeholder images will be removed or replaced prior to any commercial or production release of this website.</p>
+<p>No copyright or trademark infringement is intended. If you are a rights holder and have concerns, please contact us.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="licenceModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('licenceModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:'GDS Transport', system-ui;">Licence</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website and its entire contents, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>All source code, HTML, CSS, JavaScript</li>
+<li>Visual design, layout, and user interface</li>
+<li>Text, documentation, and explanatory materials</li>
+<li>Images, icons, and graphical assets (unless otherwise attributed)</li>
+</ul>
+<p style="margin-bottom:1rem;">are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p>
+<p style="margin-bottom:1rem;">Unless explicitly stated otherwise:</p>
+<ol style="margin: 0 0 1rem 2rem;">
+<li>You may view, navigate, and interact with this website for its intended demonstration purposes.</li>
+<li>You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission.</li>
+<li>You may not create derivative works based on this website's design, logic, or structure.</li>
+<li>Temporary viewing in a browser cache does not grant any license for reuse.</li>
+</ol>
+<p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p>
+</div>
+</div>
+</div>
 
 <script>
-    (function(){
-        console.log("Page loaded");
-        
-        // Preload assets
-        const assets = [
-            "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
-            "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png",
-            "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png",
-            "https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png",
-            "https://uplgov.github.io/iubanova-TestOnly/images/_13bc28a4-e883-4f4a-ad02-00482996039c.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/_ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/_e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/_f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png"
-        ];
-        let loaded = 0;
-        const progressFill = document.getElementById('progressFill');
-        const percentSpan = document.getElementById('percentText');
-        const loaderDiv = document.getElementById('initialLoader');
-        const mainApp = document.getElementById('mainApp');
-        let done = false;
-        
-        function updateProgress() {
-            if(done) return;
-            let pct = Math.floor((loaded / assets.length) * 100);
-            progressFill.style.width = pct + '%';
-            percentSpan.innerText = pct + '%';
-            if(loaded >= assets.length && !done) {
-                done = true;
-                setTimeout(() => {
-                    loaderDiv.style.opacity = '0';
-                    setTimeout(() => {
-                        loaderDiv.style.display = 'none';
-                        mainApp.style.visibility = 'visible';
-                        mainApp.style.opacity = '1';
-                    }, 350);
-                }, 180);
-            }
-        }
-        assets.forEach(url => {
-            let img = new Image();
-            img.onload = () => { loaded++; updateProgress(); };
-            img.onerror = () => { loaded++; updateProgress(); };
-            img.src = url;
-        });
-        setTimeout(() => { if(!done && loaded < assets.length) { loaded = assets.length; updateProgress(); } }, 6000);
-        
-        // Maintenance & emergency shutdown
-        async function checkEmergency() {
-            try {
-                const ctrl = new AbortController();
-                setTimeout(() => ctrl.abort(), 3500);
-                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/EmergencyShutDown.txt', { signal: ctrl.signal, cache: 'no-store' });
-                if(res.ok) {
-                    const txt = await res.text();
-                    if(txt.trim().toLowerCase() === 'yes') {
-                        window.open('https://www.bing.com', '_blank');
-                        window.close();
-                        return true;
-                    }
-                }
-            } catch(e) {}
-            return false;
-        }
-        async function checkMaintenance() {
-            try {
-                const ctrl = new AbortController();
-                setTimeout(() => ctrl.abort(), 4000);
-                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/MaintenanceStatus.txt', { cache: 'no-store', signal: ctrl.signal });
-                if(res.ok) {
-                    const text = await res.text();
-                    if(text.includes('<positive>')) return true;
-                }
-            } catch(e) {}
-            return false;
-        }
-        async function loadMaintenancePage() {
-            try {
-                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/maintenance.htm');
-                if(res.ok) {
-                    const html = await res.text();
-                    document.body.innerHTML = '<iframe style="width:100%;height:100%;border:none;" srcdoc="' + html.replace(/[&<>]/g, function(m) {
-                        if(m === '&') return '&amp;';
-                        if(m === '<') return '&lt;';
-                        if(m === '>') return '&gt;';
-                        return m;
-                    }) + '"></iframe>';
-                    return true;
-                }
-            } catch(e) {}
-            return false;
-        }
-        (async function() {
-            if(await checkEmergency()) return;
-            if(await checkMaintenance()) {
-                await loadMaintenancePage();
-                return;
-            }
-        })();
-        
-        // ========== hCaptcha with robust rendering ==========
-        let hcaptchaDone = false;
-        let widget = null;
-        const agreeBox = document.getElementById('agreeCheckbox');
-        const continueBtn = document.getElementById('continueBtn');
-        const gateway = document.getElementById('consentGateway');
-        
-        function enableContinue() {
-            if(agreeBox.checked && hcaptchaDone) {
-                continueBtn.classList.add('active');
-            } else {
-                continueBtn.classList.remove('active');
-            }
-        }
-        agreeBox.addEventListener('change', enableContinue);
-        
-        // Try to render hCaptcha
-        function renderHCaptcha() {
-            const container = document.getElementById('hcaptchaContainer');
-            if(!container) {
-                console.error("hcaptchaContainer not found");
-                return false;
-            }
-            if(typeof hcaptcha === 'undefined') {
-                console.log("hcaptcha not ready yet, waiting...");
-                return false;
-            }
-            try {
-                if(widget) {
-                    try { hcaptcha.reset(widget); } catch(e) {}
-                }
-                widget = hcaptcha.render('hcaptchaContainer', {
-                    sitekey: 'b1b8c6e6-6586-4d9e-8eee-745a861c8974',
-                    callback: function(token) {
-                        console.log("hCaptcha succeeded, token:", token.substring(0, 20) + "...");
-                        hcaptchaDone = true;
-                        enableContinue();
-                    },
-                    'expired-callback': function() {
-                        console.log("hCaptcha expired");
-                        hcaptchaDone = false;
-                        enableContinue();
-                    },
-                    'error-callback': function(e) {
-                        console.error("hCaptcha error:", e);
-                    }
-                });
-                console.log("hCaptcha rendered, widget id:", widget);
-                return true;
-            } catch(e) {
-                console.error("hCaptcha render exception:", e);
-                return false;
-            }
-        }
-        
-        // Wait for hCaptcha API to be ready
-        window.hcaptchaOnLoad = function() {
-            console.log("hCaptcha API onLoad triggered");
-            renderHCaptcha();
-        };
-        
-        // If script already loaded before this callback
-        if(typeof hcaptcha !== 'undefined' && hcaptcha.render) {
-            console.log("hCaptcha already loaded");
-            renderHCaptcha();
-        }
-        
-        // Fallback: retry every 500ms for 10 seconds
-        let retryCount = 0;
-        const retryInterval = setInterval(function() {
-            if(hcaptchaDone || widget !== null) {
-                clearInterval(retryInterval);
-                return;
-            }
-            retryCount++;
-            if(retryCount > 20) {
-                console.warn("hCaptcha failed to load after 10 seconds");
-                clearInterval(retryInterval);
-                // Show fallback message in container
-                const container = document.getElementById('hcaptchaContainer');
-                if(container) {
-                    container.innerHTML = '<div style="color:#ffaa66; background:#1a1a2a; padding:12px 20px; border-radius:20px;">hCaptcha service unavailable. Use the invisible button at top-right corner to bypass.</div>';
-                }
-                return;
-            }
-            if(typeof hcaptcha !== 'undefined' && hcaptcha.render && widget === null) {
-                renderHCaptcha();
-            }
-        }, 500);
-        
-        // Invisible skip button (top-right corner)
-        const skipBtn = document.getElementById('skipCaptchaTrigger');
-        skipBtn.addEventListener('click', function() {
-            console.log("Skip button clicked - bypassing verification");
-            agreeBox.checked = true;
-            hcaptchaDone = true;
-            enableContinue();
-            if(agreeBox.checked && hcaptchaDone) {
-                gateway.style.display = 'none';
-                mainApp.style.visibility = 'visible';
-                mainApp.style.opacity = '1';
-            }
-        });
-        
-        continueBtn.addEventListener('click', function() {
-            if(!agreeBox.checked || !hcaptchaDone) return;
-            gateway.style.display = 'none';
-            mainApp.style.visibility = 'visible';
-            mainApp.style.opacity = '1';
-        });
-        
-        // Logo hover & click
-        const logo = document.getElementById('mainLogo');
-        logo.addEventListener('mouseenter', () => { logo.src = 'https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png'; });
-        logo.addEventListener('mouseleave', () => { logo.src = 'https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png'; });
-        logo.addEventListener('click', () => {
-            if(!window.location.href.includes('en-GB.html')) {
-                window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';
-            }
-        });
-        
-        // Navigation helpers
-        function go(url) { window.location.href = url; }
-        document.getElementById('solutionsLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html'); };
-        document.getElementById('pricingLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html'); };
-        document.getElementById('archiveLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html'); };
-        document.getElementById('kbLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html'); };
-        document.getElementById('supportLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html'); };
-        document.getElementById('loginBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/myaccount.htm'); };
-        document.getElementById('diveBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html'); };
-        document.getElementById('demoBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/demo.html'); };
-        document.getElementById('teamBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html'); };
-        document.getElementById('privacyPolicyBtnCard').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html'); };
-        document.getElementById('expPackBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html'); };
-        document.getElementById('storiesBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html'); };
-        
-        // Modal for footer links
-        function showModal(title, html) {
-            const modal = document.getElementById('genericModal');
-            const inner = document.getElementById('modalContentInner');
-            inner.innerHTML = '<h3 style="font-size:1.7rem;">' + title + '</h3><hr>' + html + '<br><button id="closeModalBtn" style="margin-top:20px;background:#2c2c3a;border:none;padding:10px 26px;border-radius:40px;color:white;font-size:1rem;">Close</button>';
-            modal.classList.add('active');
-            document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('active');
-        }
-        document.getElementById('privacyModalBtn').onclick = () => showModal('Data & Privacy Notice', '<p>This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data. No cookies for tracking.</p><p>This site uses hCaptcha which may collect IP address, browser fingerprint, etc. iubanova does not receive this data.</p><p><a href="https://www.hcaptcha.com/privacy" target="_blank">hCaptcha Privacy</a> | <a href="https://www.hcaptcha.com/terms" target="_blank">Terms</a></p>');
-        document.getElementById('trademarkModalBtn').onclick = () => showModal('Trademarks & disclaimer', '<p>Non-commercial demo only. All trademarks belong to respective owners. No affiliation or infringement intended.</p>');
-        document.getElementById('licenceModalBtn').onclick = () => showModal('Licence', '<p>All code and content are property of IUBANOVA / Nanjing University. No copying or redistribution without permission.</p>');
-        document.getElementById('sitemapFooterBtn').onclick = () => go('https://uplgov.github.io/iubanova-TestOnly/sitemap.xml');
-        ['youtubeLink', 'xLink', 'fbLink', 'linkedinLink'].forEach(id => {
-            document.getElementById(id).onclick = (e) => { e.preventDefault(); window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank'); };
-        });
-        
-        // Settings panel
-        const settingsPanel = document.getElementById('settingsMenu');
-        document.getElementById('settingsToggleBtn').onclick = () => settingsPanel.classList.toggle('show');
-        document.getElementById('themeToggleBtn').onclick = () => {
-            document.body.classList.toggle('light-mode');
-            document.getElementById('themeToggleBtn').innerText = document.body.classList.contains('light-mode') ? 'Light' : 'Dark';
-        };
-        function applyFilters() {
-            let sat = document.getElementById('saturationSlider').value;
-            let mono = document.getElementById('monoSlider').value;
-            let contrast = document.getElementById('contrastSlider').value;
-            document.body.style.filter = `saturate(${sat}%) grayscale(${mono}%) contrast(${contrast}%)`;
-        }
-        document.getElementById('saturationSlider').oninput = applyFilters;
-        document.getElementById('monoSlider').oninput = applyFilters;
-        document.getElementById('contrastSlider').oninput = applyFilters;
-        document.getElementById('resetSettingsBtn').onclick = () => {
-            document.getElementById('saturationSlider').value = 100;
-            document.getElementById('monoSlider').value = 0;
-            document.getElementById('contrastSlider').value = 100;
-            document.getElementById('crosshairCheckbox').checked = false;
-            document.getElementById('crosshairColorSelect').value = 'Red';
-            document.body.classList.remove('light-mode');
-            document.getElementById('themeToggleBtn').innerText = 'Dark';
-            applyFilters();
-            if(window.crossClean) window.crossClean();
-            updateCrosshair();
-        };
-        let crossDiv = null;
-        function updateCrosshair() {
-            if(crossDiv) crossDiv.remove();
-            if(!document.getElementById('crosshairCheckbox').checked) return;
-            let color = document.getElementById('crosshairColorSelect').value;
-            crossDiv = document.createElement('div');
-            crossDiv.style.cssText = `position:fixed;top:50%;left:50%;width:30px;height:30px;transform:translate(-50%,-50%);border:3px solid ${color === 'Transparent' ? 'rgba(255,255,255,0.4)' : color};border-radius:50%;z-index:9999;pointer-events:none;`;
-            document.body.appendChild(crossDiv);
-        }
-        document.getElementById('crosshairCheckbox').onchange = updateCrosshair;
-        document.getElementById('crosshairColorSelect').onchange = updateCrosshair;
-        window.crossClean = () => { if(crossDiv) crossDiv.remove(); };
-        applyFilters();
-    })();
+let hCaptchaPassed = false;
+let checkAgreed = false;
+
+function onCaptchaSuccess() {
+hCaptchaPassed = true;
+updateGate();
+}
+
+function updateGate() {
+const btn = document.getElementById('continueBtn');
+if (hCaptchaPassed && checkAgreed) {
+btn.removeAttribute('disabled');
+} else {
+btn.setAttribute('disabled', 'true');
+}
+}
+
+document.getElementById('agreeCheck').addEventListener('change', function(e) {
+checkAgreed = e.target.checked;
+updateGate();
+});
+
+document.getElementById('continueBtn').addEventListener('click', function() {
+document.getElementById('gatekeeper').style.display = 'none';
+document.getElementById('mainApp').style.display = 'flex';
+});
+
+function openModal(id) {
+document.getElementById(id).style.display = 'flex';
+}
+function closeModal(id) {
+document.getElementById(id).style.display = 'none';
+}
+document.getElementById('openSettingsBtn').addEventListener('click', () => openModal('settingsModal'));
+document.getElementById('btnPrivacy').addEventListener('click', () => openModal('privacyModal'));
+document.getElementById('btnTrade').addEventListener('click', () => openModal('tradeModal'));
+document.getElementById('btnLicence').addEventListener('click', () => openModal('licenceModal'));
+
+const chkCrosshair = document.getElementById('chkCrosshair');
+const selCrosshairColor = document.getElementById('selCrosshairColor');
+const crosshairContainer = document.getElementById('crosshairContainer');
+const chX = document.getElementById('chX');
+const chY = document.getElementById('chY');
+
+function updateCrosshair() {
+if (chkCrosshair.checked) {
+crosshairContainer.style.display = 'block';
+let c = selCrosshairColor.value;
+chX.style.backgroundColor = c;
+chY.style.backgroundColor = c;
+} else {
+crosshairContainer.style.display = 'none';
+}
+}
+chkCrosshair.addEventListener('change', updateCrosshair);
+selCrosshairColor.addEventListener('change', updateCrosshair);
+
+const visualWrapper = document.getElementById('visualWrapper');
+const slSat = document.getElementById('slSat');
+const slMono = document.getElementById('slMono');
+const slCont = document.getElementById('slCont');
+const valSat = document.getElementById('valSat');
+const valMono = document.getElementById('valMono');
+const valCont = document.getElementById('valCont');
+
+function updateFilters() {
+valSat.innerText = slSat.value + '%';
+valMono.innerText = slMono.value + '%';
+valCont.innerText = slCont.value + '%';
+visualWrapper.style.filter = `saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;
+}
+slSat.addEventListener('input', updateFilters);
+slMono.addEventListener('input', updateFilters);
+slCont.addEventListener('input', updateFilters);
+
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+let isLight = false;
+themeToggleBtn.addEventListener('click', function() {
+isLight = !isLight;
+if (isLight) {
+document.body.classList.add('light-theme');
+themeToggleBtn.innerText = 'Light';
+} else {
+document.body.classList.remove('light-theme');
+themeToggleBtn.innerText = 'Dark';
+}
+});
+
+document.getElementById('btnResetAll').addEventListener('click', function() {
+slSat.value = 100;
+slMono.value = 0;
+slCont.value = 100;
+updateFilters();
+chkCrosshair.checked = false;
+selCrosshairColor.value = 'red';
+updateCrosshair();
+if (isLight) {
+isLight = false;
+document.body.classList.remove('light-theme');
+themeToggleBtn.innerText = 'Dark';
+}
+});
+
+document.getElementById('navLogoBtn').addEventListener('click', function(e) {
+if (window.location.href.indexOf('en-GB.html') > -1) {
+e.preventDefault();
+} else {
+window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';
+}
+});
+
+(function(){
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
+if(isMobile){
+document.getElementById('mobileWarning').style.display = 'flex';
+document.getElementById('initialLoader').style.display = 'none';
+document.body.style.overflow = 'hidden';
+return;
+}
+
+const imagesToPreload = [
+"https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
+"https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png",
+"https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png",
+"https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png",
+"https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png",
+"https://uplgov.github.io/iubanova-TestOnly/images/_13bc28a4-e883-4f4a-ad02-00482996039c.jpg",
+"https://uplgov.github.io/iubanova-TestOnly/images/_ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg",
+"https://uplgov.github.io/iubanova-TestOnly/images/_e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg",
+"https://uplgov.github.io/iubanova-TestOnly/images/_f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg"
+];
+
+let loadedCount = 0;
+const totalImages = imagesToPreload.length;
+const progressFill = document.getElementById('progressFill');
+const percentText = document.getElementById('percentText');
+const initialLoader = document.getElementById('initialLoader');
+let finishTriggered = false;
+
+async function checkEmergencyShutdown() {
+try {
+const controller = new AbortController();
+const timeoutId = setTimeout(() => controller.abort(), 4000);
+const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/EmergencyShutDown.txt', { cache: 'no-store', signal: controller.signal });
+clearTimeout(timeoutId);
+if(response.ok) {
+const text = await response.text();
+if(text.trim().toLowerCase() === 'yes') {
+window.location.href = 'https://www.bing.com';
+return true;
+}
+}
+} catch(e) {}
+return false;
+}
+
+async function checkMaintenanceStatus() {
+try {
+const controller = new AbortController();
+const timeoutId = setTimeout(() => controller.abort(), 5000);
+const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/MaintenanceStatus.txt', { cache: 'no-store', signal: controller.signal });
+clearTimeout(timeoutId);
+if(response.ok) {
+const text = await response.text();
+const lines = text.split(/\r?\n/);
+for(let line of lines) {
+const match = line.match(/<([^>]+)>/);
+if(match) {
+const status = match[1].trim().toLowerCase();
+if(status === 'positive') return true;
+if(status === 'negative') return false;
+}
+}
+}
+} catch(e) {}
+return false;
+}
+
+async function loadMaintenancePage() {
+try {
+const controller = new AbortController();
+const timeoutId = setTimeout(() => controller.abort(), 8000);
+const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/maintenance.htm', { cache: 'no-store', signal: controller.signal });
+clearTimeout(timeoutId);
+if(response.ok) {
+const html = await response.text();
+const iframe = document.createElement('iframe');
+iframe.className = 'maintenance-frame';
+iframe.srcdoc = html;
+document.body.innerHTML = '';
+document.body.appendChild(iframe);
+document.body.style.overflow = 'auto';
+return true;
+}
+} catch(e) {}
+return false;
+}
+
+function updateProgress(){
+if(finishTriggered) return;
+const percent = Math.floor((loadedCount / totalImages) * 100);
+progressFill.style.width = percent+'%';
+percentText.innerText = percent+'%';
+if(loadedCount >= totalImages && !finishTriggered){
+finishTriggered = true;
+setTimeout(async () => {
+const emergencyActive = await checkEmergencyShutdown();
+if(emergencyActive) return;
+const isMaintenance = await checkMaintenanceStatus();
+if(isMaintenance) {
+const maintenanceSuccess = await loadMaintenancePage();
+if(maintenanceSuccess) return;
+}
+initialLoader.style.opacity = '0';
+setTimeout(() => {
+initialLoader.style.display = 'none';
+document.getElementById('gatekeeper').style.display = 'flex';
+}, 400);
+}, 200);
+}
+}
+
+setTimeout(() => {
+if(!finishTriggered && loadedCount < totalImages){
+loadedCount = totalImages;
+updateProgress();
+}
+}, 8000);
+
+imagesToPreload.forEach(url => {
+const img = new Image();
+let done = false;
+img.onload = () => { if(!done){ done=true; loadedCount++; updateProgress(); } };
+img.onerror = () => { if(!done){ done=true; loadedCount++; updateProgress(); } };
+img.src = url;
+});
+})();
 </script>
 </body>
 </html>
