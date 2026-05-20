@@ -19,10 +19,26 @@ margin: 0;
 padding: 0;
 box-sizing: border-box;
 -webkit-tap-highlight-color: transparent;
-user-select: none; /* 全局不可选中 */
+user-select: none;
 -webkit-user-select: none;
 -moz-user-select: none;
 -ms-user-select: none;
+}
+:root {
+--bg-color: #000;
+--text-color: #eee;
+--panel-bg: rgba(20,20,35,0.75);
+--border-color: rgba(255,255,255,0.2);
+--hover-bg: rgba(45,45,70,0.85);
+--modal-overlay: rgba(0,0,0,0.8);
+}
+body.light-theme {
+--bg-color: #f4f4f5;
+--text-color: #111;
+--panel-bg: rgba(240,240,245,0.85);
+--border-color: rgba(0,0,0,0.1);
+--hover-bg: rgba(220,220,225,0.95);
+--modal-overlay: rgba(255,255,255,0.8);
 }
 body {
 background: var(--bg-color);
@@ -33,19 +49,17 @@ width: 100vw;
 min-height: 100vh;
 overflow-x: hidden;
 transition: background 0.3s, color 0.3s;
-cursor: none; /* 隐藏默认鼠标指针 */
-}
-/* 所有可点击元素也隐藏默认指针，但我们的自定义光标会处理 */
-a, button, .btn, .nav-link, .dropdown-item, .footer-link, .lang-mode-btn, .settings-icon, .modal-close {
 cursor: none;
 }
-/* 防止拖拽图片 */
-img {
+img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .dropdown-item {
 -webkit-user-drag: none;
 user-drag: none;
-pointer-events: auto;
+user-select: none;
+-webkit-user-select: none;
 }
-/* 禁用右键的提示层（可选）但我们用JS全屏禁用右键，保留自定义菜单 */
+a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close {
+cursor: none;
+}
 .mobile-warning {
 position: fixed;
 top: 0;
@@ -191,7 +205,7 @@ border-color: rgba(150,150,150,0.4);
 }
 .btn:disabled {
 opacity: 0.5;
-cursor: none;
+cursor: not-allowed;
 transform: none;
 }
 #gatekeeper {
@@ -258,7 +272,6 @@ border-bottom: 1px solid var(--border-color);
 position: sticky;
 top: 0;
 z-index: 100;
-user-select: none;
 }
 .nav-left, .nav-right, .nav-center {
 display: flex;
@@ -382,26 +395,24 @@ text-align: center;
 max-width: 1000px;
 width: 100%;
 }
-/* Hero图片样式 - 超大初始 + Q弹双向滚动动画 */
 .hero-image {
 width: 100%;
-max-width: 2200px;
+max-width: 2000px;
 border-radius: 16px;
 margin-bottom: 2rem;
 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-transition: all 0.65s cubic-bezier(0.34, 1.2, 0.64, 1);
+transition: all 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
 cursor: none;
 }
 .hero-image.scrolled {
 max-width: 800px;
-transition: all 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+transition: all 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
 }
 .hero h1 {
 margin-bottom: 2rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 font-weight: normal;
 line-height: 1.2;
-user-select: none;
 }
 .title-line1 {
 font-size: 2.4rem;
@@ -506,7 +517,6 @@ align-items: center;
 justify-content: center;
 line-height: 1.3;
 text-align: center;
-user-select: none;
 }
 footer {
 background: var(--panel-bg);
@@ -648,107 +658,67 @@ z-index: 10001 !important;
 body {
 top: 0 !important;
 }
-/* ========== 自定义高亮光标 ========== */
-#custom-cursor {
+#customCursor {
 position: fixed;
-width: 42px;
-height: 42px;
+width: 40px;
+height: 40px;
 border-radius: 50%;
-background: rgba(255, 215, 0, 0.35);
-backdrop-filter: blur(2px);
-box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.6), 0 0 0 4px rgba(0,0,0,0.2);
+border: 2px solid rgba(255,255,255,0.8);
+box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.2);
 pointer-events: none;
-z-index: 10001;
+z-index: 99999;
 transform: translate(-50%, -50%);
-transition: width 0.2s, height 0.2s, background 0.2s, transform 0.2s;
-display: flex;
-align-items: center;
-justify-content: center;
+transition: width 0.2s, height 0.2s, border-color 0.2s;
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(2px);
 }
-#crosshair-inner {
+#customCursor::before {
+content: "✛";
 position: absolute;
-width: 18px;
-height: 18px;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%) rotate(0deg);
+font-size: 18px;
+color: rgba(255,255,255,0.9);
 transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
-.cross-line {
-position: absolute;
-background: rgba(255, 240, 150, 0.9);
-box-shadow: 0 0 2px rgba(0,0,0,0.5);
+#customCursor.crosshair-rotate::before {
+transform: translate(-50%, -50%) rotate(45deg);
 }
-.cross-h {
-width: 100%;
-height: 2px;
-top: 50%;
-left: 0;
-transform: translateY(-50%);
-}
-.cross-v {
-width: 2px;
-height: 100%;
-top: 0;
-left: 50%;
-transform: translateX(-50%);
-}
-/* 按钮悬停时的X样式（旋转动画） */
-#custom-cursor.hover-x #crosshair-inner {
-transform: rotate(45deg);
-transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-}
-/* 自定义右键菜单 */
-#context-menu {
+.custom-context-menu {
 position: fixed;
 background: var(--panel-bg);
-backdrop-filter: blur(12px);
+backdrop-filter: blur(16px);
 border: 1px solid var(--border-color);
 border-radius: 12px;
 padding: 8px 0;
 min-width: 200px;
-z-index: 10002;
-display: none;
+z-index: 50000;
 box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
-.context-menu-item {
-padding: 10px 20px;
-color: var(--text-color);
-cursor: none;
-transition: background 0.2s;
 font-family: Georgia, serif;
+}
+.custom-context-menu-item {
+padding: 10px 20px;
+cursor: none;
+color: var(--text-color);
+transition: background 0.2s;
 font-size: 0.9rem;
 }
-.context-menu-item:hover {
+.custom-context-menu-item:hover {
 background: var(--hover-bg);
 }
-.context-menu-item.disabled {
+.custom-context-menu-item.disabled {
 opacity: 0.4;
-cursor: default;
+cursor: not-allowed;
 pointer-events: none;
 }
-.context-menu-divider {
-height: 1px;
-background: var(--border-color);
-margin: 6px 0;
+hr {
+margin: 4px 0;
+border-color: var(--border-color);
 }
 </style>
 </head>
 <body>
-
-<!-- 自定义光标元素 -->
-<div id="custom-cursor">
-    <div id="crosshair-inner">
-        <div class="cross-line cross-h"></div>
-        <div class="cross-line cross-v"></div>
-    </div>
-</div>
-
-<!-- 自定义右键菜单 -->
-<div id="context-menu">
-    <div id="context-last-page" class="context-menu-item">Last Page you are on</div>
-    <div class="context-menu-divider"></div>
-    <div id="context-copy-url" class="context-menu-item">Copy the URL</div>
-    <div class="context-menu-divider"></div>
-    <div id="context-settings" class="context-menu-item">Settings</div>
-</div>
 
 <div id="mobileWarning" class="mobile-warning" style="display: none;">
 <div class="warning-text-block">
@@ -775,6 +745,7 @@ margin: 6px 0;
 <div id="gatekeeper">
     <div id="bypassTopRight" class="hidden-bypass" style="top: 0; right: 0;"></div>
     <div id="bypassBottomLeft" class="hidden-bypass" style="bottom: 0; left: 0;"></div>
+
 <div class="gate-box">
 <h2>This is a non-production test site for evaluation and demonstration purposes only.</h2>
 <p style="font-weight: bold;">By proceeding, you acknowledge and agree that:</p>
@@ -853,12 +824,12 @@ I have read, understood, and agree to the terms above.
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
 </div>
 <div class="grid-item">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dcdui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience" onerror="this.src='https://uplgov.github.io/iubanova-TestOnly/images/e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg'">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dcdui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
 <h3>See it for yourself,<br>No commitment.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
 </div>
 <div class="grid-item">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories" onerror="this.src='https://uplgov.github.io/iubanova-TestOnly/images/f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg'">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*beb24de4322.jpg" alt="Stories">
 <h3>From pilot to production.<br>Proven in the field.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
 </div>
@@ -894,157 +865,139 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<!-- 各种模态框（为节省篇幅省略内容，保留完整结构）... 此处需保留之前的完整模态框，但为简洁，用占位 -->
-<div class="modal-overlay" id="langModeModal">...</div>
-<div class="modal-overlay" id="privacyModal">...</div>
-<div class="modal-overlay" id="tradeModal">...</div>
-<div class="modal-overlay" id="licenceModal">...</div>
-<div class="modal-overlay" id="settingsModal">...</div>
+<div id="customCursor"></div>
+<div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
+
+<div class="modal-overlay" id="langModeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('langModeModal')">×</button><h3>Language & Mode Selection</h3><p>Returning to the portal allows you to switch loading modes and languages. Do you need to view this website in a language other than British English, Traditional Chinese, Simplified Chinese, or Classical Chinese? Clicking "Yes" will activate the Google Translate component. Please note that the translation may be inaccurate.</p><div class="modal-buttons"><button id="langModalYes" class="btn">Yes</button><button id="langModalPortal" class="btn">Return to the Portal</button></div></div></div>
+<div class="modal-overlay" id="privacyModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('privacyModal')">×</button><h2>Data & Privacy Notice – Test Environment</h2><p style="font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p><p>However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including: IP address, Browser fingerprint / user agent, Mouse movements and interaction patterns, Device characteristics.</p><p>This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p><p><a href="https://www.hcaptcha.com/privacy" target="_blank">hCaptcha Privacy Policy</a> | <a href="https://www.hcaptcha.com/terms" target="_blank">Terms of Service</a></p></div></div>
+<div class="modal-overlay" id="tradeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('tradeModal')">×</button><h2>Trademarks & disclaimer</h2><div><p>This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p><p>Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p><p>All trademarks, logos, and product names belong to their respective owners, including but not limited to: Dodge / Hemi (Stellantis NV), Apple Inc. / iPhone (Apple Inc.), The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation).</p><p>iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners. These placeholder images will be removed or replaced prior to any commercial or production release of this website. No copyright or trademark infringement is intended.</p></div></div></div>
+<div class="modal-overlay" id="licenceModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('licenceModal')">×</button><h2>Licence</h2><div><p>This website and its entire contents, including but not limited to: All source code, HTML, CSS, JavaScript, Visual design, layout, and user interface, Text, documentation, and explanatory materials, Images, icons, and graphical assets (unless otherwise attributed) are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p><p>Unless explicitly stated otherwise: You may view, navigate, and interact with this website for its intended demonstration purposes. You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission. You may not create derivative works based on this website's design, logic, or structure. Temporary viewing in a browser cache does not grant any license for reuse.</p><p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p></div></div></div>
+<div class="modal-overlay" id="settingsModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('settingsModal')">×</button><h2>Settings</h2><div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn">Dark</button></label></div><div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div><div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div><div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div><div class="settings-group"><label>Enable Crosshair Assist</label><input type="checkbox" id="chkCrosshair"></div><button class="btn" id="btnResetAll">Reset All</button></div></div>
 
 <script>
-// 进度条逻辑、门禁逻辑沿用之前（为确保完整，此处包含必要函数）
-// 由于篇幅限制，只展示核心光标和右键菜单逻辑，其他功能保留原样
-function initCustomCursor() {
-    const cursor = document.getElementById('custom-cursor');
-    const crossInner = document.getElementById('crosshair-inner');
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-    });
-    // 检测所有可点击元素（按钮，链接，.btn等）
-    const clickables = document.querySelectorAll('a, button, .btn, .nav-link, .dropdown-item, .footer-link, .lang-mode-btn, .settings-icon, .modal-close, .gate-check input, .context-menu-item');
-    clickables.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.classList.add('hover-x');
-        });
-        el.addEventListener('mouseleave', () => {
-            cursor.classList.remove('hover-x');
-        });
-    });
-    // 动态监听新生成元素
-    const observer = new MutationObserver(() => {
-        document.querySelectorAll('a, button, .btn, .nav-link, .dropdown-item, .footer-link, .lang-mode-btn, .settings-icon, .modal-close, .gate-check input, .context-menu-item').forEach(el => {
-            if (!el.hasListener) {
-                el.addEventListener('mouseenter', () => cursor.classList.add('hover-x'));
-                el.addEventListener('mouseleave', () => cursor.classList.remove('hover-x'));
-                el.hasListener = true;
-            }
-        });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-
-// 右键菜单逻辑
-let lastPageUrl = document.referrer || null;
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    const menu = document.getElementById('context-menu');
-    menu.style.display = 'block';
-    menu.style.left = e.clientX + 'px';
-    menu.style.top = e.clientY + 'px';
-    // 更新上一页状态
-    const lastPageItem = document.getElementById('context-last-page');
-    if (lastPageUrl && lastPageUrl !== '') {
-        lastPageItem.classList.remove('disabled');
-        lastPageItem.style.opacity = '1';
-        lastPageItem.style.pointerEvents = 'auto';
-    } else {
-        lastPageItem.classList.add('disabled');
+// 进度条预加载
+(function(){
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(window.innerWidth<=1024&&window.innerHeight<=800)){
+        document.getElementById('mobileWarning').style.display='flex';
+        document.getElementById('initialLoader').style.display='none';
+        document.body.style.overflow='hidden';
+        return;
     }
-});
-document.addEventListener('click', () => {
-    document.getElementById('context-menu').style.display = 'none';
-});
-document.getElementById('context-last-page').addEventListener('click', () => {
-    if (lastPageUrl && lastPageUrl !== '') window.location.href = lastPageUrl;
-});
-document.getElementById('context-copy-url').addEventListener('click', () => {
-    navigator.clipboard.writeText(window.location.href);
-    document.getElementById('context-menu').style.display = 'none';
-});
-document.getElementById('context-settings').addEventListener('click', () => {
-    openModal('settingsModal');
-    document.getElementById('context-menu').style.display = 'none';
-});
-
-// 双向Q弹滚动
-function initHeroImageScroll() {
-    const heroImage = document.getElementById('heroImage');
-    if (!heroImage) return;
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                const scrollY = window.scrollY;
-                if (scrollY > 80) heroImage.classList.add('scrolled');
-                else heroImage.classList.remove('scrolled');
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
-}
-
-// 防选中、防拖拽
-document.querySelectorAll('h1, h2, h3, p, span, a, button, .btn, nav *').forEach(el => {
-    el.style.userSelect = 'none';
-    el.style.webkitUserSelect = 'none';
-    el.ondragstart = (e) => e.preventDefault();
-});
-
-// 模拟其他函数 (openModal, closeModal 等)
-function openModal(id) { const m = document.getElementById(id); if(m) m.classList.add('active'); }
-function closeModal(id) { const m = document.getElementById(id); if(m) m.classList.remove('active'); }
-
-// 继续门禁逻辑等
-let hCaptchaPassed = false, checkAgreed = false;
-function onCaptchaSuccess() { hCaptchaPassed = true; updateGate(); }
-function updateGate() {
-    const btn = document.getElementById('continueBtn');
-    if (hCaptchaPassed && checkAgreed) btn.removeAttribute('disabled');
-    else btn.setAttribute('disabled', 'true');
-}
-document.getElementById('agreeCheck')?.addEventListener('change', (e) => { checkAgreed = e.target.checked; updateGate(); });
-document.getElementById('continueBtn')?.addEventListener('click', () => startSecondStageLoading());
-function bypassGatekeeperAndContinue() { startSecondStageLoading(); }
-document.getElementById('bypassTopRight')?.addEventListener('dblclick', bypassGatekeeperAndContinue);
-document.getElementById('bypassBottomLeft')?.addEventListener('dblclick', bypassGatekeeperAndContinue);
-
-function startSecondStageLoading() {
-    document.getElementById('gatekeeper').style.display = 'none';
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    loadingOverlay.style.visibility = 'visible';
-    loadingOverlay.style.opacity = '1';
-    setTimeout(() => {
-        loadingOverlay.style.opacity = '0';
-        setTimeout(() => {
-            loadingOverlay.style.visibility = 'hidden';
-            document.getElementById('mainApp').style.display = 'flex';
-            initHeroImageScroll();
-            initCustomCursor();
-        }, 300);
-    }, 2200);
-}
-
-// 进度条逻辑（简化，保留原有）
-(function() {
-    const imgs = ["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png"];
-    let loaded = 0;
-    const total = imgs.length;
-    const fill = document.getElementById('progressFill');
-    const text = document.getElementById('percentText');
-    imgs.forEach(url => {
-        const img = new Image();
-        img.onload = () => { loaded++; fill.style.width = (loaded/total*100)+'%'; text.innerText = Math.floor(loaded/total*100)+'%'; if(loaded===total){ setTimeout(()=>{ document.getElementById('initialLoader').style.opacity='0'; setTimeout(()=>{ document.getElementById('initialLoader').style.display='none'; document.getElementById('gatekeeper').style.display='flex'; },400); },200); } };
-        img.src = url;
-    });
+    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dcdui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*beb24de4322.jpg"];
+    let loaded=0,total=imgs.length,finish=false;
+    const fill=document.getElementById('progressFill'),pt=document.getElementById('percentText'),loader=document.getElementById('initialLoader');
+    function upd(){if(finish)return;let p=Math.floor(loaded/total*100);fill.style.width=p+'%';pt.innerText=p+'%';if(loaded>=total&&!finish){finish=true;setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>{loader.style.display='none';document.getElementById('gatekeeper').style.display='flex';},400);},200);}}
+    setTimeout(()=>{if(!finish&&loaded<total){loaded=total;upd();}},8000);
+    imgs.forEach(u=>{let img=new Image();img.onload=()=>{loaded++;upd();};img.onerror=()=>{loaded++;upd();};img.src=u;});
 })();
 
-document.getElementById('openSettingsBtn')?.addEventListener('click', () => openModal('settingsModal'));
-document.getElementById('btnPrivacy')?.addEventListener('click', () => openModal('privacyModal'));
-document.getElementById('btnTrade')?.addEventListener('click', () => openModal('tradeModal'));
-document.getElementById('btnLicence')?.addEventListener('click', () => openModal('licenceModal'));
-document.getElementById('langModeBtn')?.addEventListener('click', () => openModal('langModeModal'));
+let hCaptchaPassed=false,checkAgreed=false;
+function onCaptchaSuccess(){hCaptchaPassed=true;updateGate();}
+function updateGate(){let btn=document.getElementById('continueBtn');if(hCaptchaPassed&&checkAgreed)btn.removeAttribute('disabled');else btn.setAttribute('disabled','true');}
+document.getElementById('agreeCheck').addEventListener('change',e=>{checkAgreed=e.target.checked;updateGate();});
+document.getElementById('continueBtn').addEventListener('click',()=>startSecondStageLoading());
+function bypass(){startSecondStageLoading();}
+document.getElementById('bypassTopRight').addEventListener('dblclick',bypass);
+document.getElementById('bypassBottomLeft').addEventListener('dblclick',bypass);
+
+let subInt=null,warning=false;
+const subs=["Use ⌘ + D to add our website to your Favourites in Safari.","A restless melody is playing.","Fancy brewing a cup of tea while you wait?","We're preparing some fine content for you.","Press ⌘ + H to hide the current window and do something else while you wait.","Please bear with us for a moment.","Warming up the Hemi™ V8.","Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™","Almost there.","A good internet connection reduces loading time.","The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.","We will present it to you shortly."];
+function startSub(){if(subInt)clearInterval(subInt);if(warning)return;let idx=Math.floor(Math.random()*subs.length),el=document.getElementById('loadingSubtitle');el.innerText=subs[idx];el.style.opacity='1';subInt=setInterval(()=>{if(warning)return;el.style.opacity='0';setTimeout(()=>{if(warning)return;let nidx=Math.floor(Math.random()*subs.length);if(nidx===idx)nidx=(nidx+1)%subs.length;idx=nidx;el.innerText=subs[idx];el.style.opacity='1';},200);},1300);}
+async function testConn(){let fail=0;for(let ep of ['youtube.com','google.co.uk','translate.google.co.uk']){try{await fetch(`https://${ep}/favicon.ico?t=${Date.now()}`,{mode:'no-cors'});}catch(e){fail++;}if(fail>=2)break;}return fail>=2;}
+async function startSecondStageLoading(){
+    document.getElementById('gatekeeper').style.display='none';
+    let ov=document.getElementById('loadingOverlay'),mw=document.getElementById('visualWrapper');
+    mw.style.transition="filter 0.7s cubic-bezier(0.23,1,0.32,1)";mw.style.filter="brightness(0.35) blur(4px)";
+    await new Promise(r=>setTimeout(r,700));
+    ov.style.visibility='visible';ov.style.opacity='1';startSub();
+    let poor=await testConn();
+    await new Promise(r=>setTimeout(r,poor?2800:2200));
+    if(subInt)clearInterval(subInt);ov.style.opacity='0';
+    setTimeout(()=>{ov.style.visibility='hidden';mw.style.filter='none';document.getElementById('mainApp').style.display='flex';initHeroScroll();},300);
+}
+
+function initHeroScroll(){
+    let img=document.getElementById('heroImage');
+    if(!img)return;
+    let ticking=false;
+    window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
+}
+
+// 自定义光标 + 十字瞄准镜
+let crosshairEnabled=false;
+let currentHoverElement=null;
+const cursorDiv=document.getElementById('customCursor');
+const chkCrosshair=document.getElementById('chkCrosshair');
+function updateCrosshairMode(){
+    crosshairEnabled=chkCrosshair.checked;
+    if(!crosshairEnabled){
+        cursorDiv.style.display='none';
+        document.body.style.cursor='auto';
+    }else{
+        cursorDiv.style.display='block';
+        document.body.style.cursor='none';
+    }
+}
+chkCrosshair.addEventListener('change',updateCrosshairMode);
+document.addEventListener('mousemove',(e)=>{
+    if(crosshairEnabled){
+        cursorDiv.style.left=e.clientX+'px';
+        cursorDiv.style.top=e.clientY+'px';
+    }
+});
+document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{
+        if(!crosshairEnabled)return;
+        if(currentHoverElement===el)return;
+        currentHoverElement=el;
+        cursorDiv.classList.add('crosshair-rotate');
+    });
+    el.addEventListener('mouseleave',()=>{
+        if(!crosshairEnabled)return;
+        if(currentHoverElement===el){
+            cursorDiv.classList.remove('crosshair-rotate');
+            currentHoverElement=null;
+        }
+    });
+});
+updateCrosshairMode();
+
+// 自定义右键菜单
+const contextMenu=document.getElementById('customContextMenu');
+document.addEventListener('contextmenu',(e)=>{
+    e.preventDefault();
+    contextMenu.style.display='block';
+    contextMenu.style.left=e.clientX+'px';
+    contextMenu.style.top=e.clientY+'px';
+    let prevUrl=document.referrer||'';
+    contextMenu.innerHTML=`
+        <div class="custom-context-menu-item ${!prevUrl?'disabled':''}" id="ctxLastPage">Last Page you are on</div>
+        <div class="custom-context-menu-item" id="ctxCopyURL">Copy the URL</div>
+        <hr>
+        <div class="custom-context-menu-item" id="ctxSettings">Settings</div>
+    `;
+    document.getElementById('ctxLastPage').onclick=()=>{if(prevUrl)window.location.href=prevUrl;contextMenu.style.display='none';};
+    document.getElementById('ctxCopyURL').onclick=()=>{navigator.clipboard.writeText(window.location.href);contextMenu.style.display='none';};
+    document.getElementById('ctxSettings').onclick=()=>{openModal('settingsModal');contextMenu.style.display='none';};
+});
+document.addEventListener('click',()=>{contextMenu.style.display='none';});
+
+function openModal(id){let m=document.getElementById(id);if(m)m.classList.add('active');}
+function closeModal(id){let m=document.getElementById(id);if(m)m.classList.remove('active');}
+document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
+document.getElementById('btnPrivacy').onclick=()=>openModal('privacyModal');
+document.getElementById('btnTrade').onclick=()=>openModal('tradeModal');
+document.getElementById('btnLicence').onclick=()=>openModal('licenceModal');
+document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
+document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};};
+document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
+
+const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper'),valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
+function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
+slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
+let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!light;if(light){document.body.classList.add('light-theme');document.getElementById('themeToggleBtn').innerText='Light';}else{document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshair.checked=false;updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
 </script>
 </body>
 </html>
