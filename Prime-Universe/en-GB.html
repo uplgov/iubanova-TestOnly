@@ -16,15 +16,11 @@
             background: #000;
             font-family: 'Georgia', 'Times New Roman', Times, serif;
             overflow-x: hidden;
-            transition: background 0.2s, color 0.2s;
             font-size: 20px;
         }
         body.light-mode {
             background: #f5f7fb;
             color: #111;
-        }
-        body.light-mode .navbar, body.light-mode .footer {
-            background: rgba(240, 242, 245, 0.96);
         }
         .initial-loader {
             position: fixed;
@@ -40,15 +36,8 @@
             z-index: 10000;
             transition: opacity 0.5s ease;
         }
-        .loader-logo {
-            width: 280px;
-            max-width: 40%;
-            margin-bottom: 2.5rem;
-        }
-        .loader-logo img {
-            width: 100%;
-            display: block;
-        }
+        .loader-logo { width: 280px; max-width: 40%; margin-bottom: 2.5rem; }
+        .loader-logo img { width: 100%; display: block; }
         .progress-bar-container {
             width: 480px;
             max-width: 70%;
@@ -64,16 +53,10 @@
             background: #f0f0f0;
             transition: width 0.2s linear;
         }
-        .percent-text {
-            color: #ccc;
-            font-size: 1.2rem;
-            font-family: monospace;
-        }
-        .main-content {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.6s ease;
-        }
+        .percent-text { color: #ccc; font-size: 1.2rem; font-family: monospace; }
+        .main-content { opacity: 0; visibility: hidden; transition: opacity 0.6s ease; }
+        
+        /* consent gateway - stable version */
         .consent-gateway {
             position: fixed;
             top: 0;
@@ -84,16 +67,14 @@
             backdrop-filter: blur(12px);
             z-index: 11000;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
-            flex-direction: column;
             padding: 2rem;
             overflow-y: auto;
         }
         .consent-card {
             max-width: 900px;
             width: 100%;
-            margin: 0 auto;
             background: rgba(20, 22, 32, 0.95);
             border-radius: 40px;
             padding: 2rem;
@@ -113,7 +94,7 @@
             margin-bottom: 1rem;
             font-weight: 500;
         }
-        .hcaptcha-wrapper {
+        #hcaptchaContainer {
             display: flex;
             justify-content: center;
             min-height: 85px;
@@ -140,16 +121,8 @@
             gap: 14px;
             margin: 24px 0 20px;
         }
-        .checkbox-row input {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
-        .checkbox-row label {
-            font-size: 1.05rem;
-            color: white;
-            cursor: pointer;
-        }
+        .checkbox-row input { width: 24px; height: 24px; cursor: pointer; }
+        .checkbox-row label { font-size: 1.05rem; color: white; cursor: pointer; }
         .btn-continue {
             background: #2c6e9e;
             border: none;
@@ -166,23 +139,23 @@
             width: 100%;
             margin-top: 0.5rem;
         }
-        .btn-continue.active {
-            opacity: 1;
-            pointer-events: auto;
-            background: #1e88e5;
-        }
+        .btn-continue.active { opacity: 1; pointer-events: auto; background: #1e88e5; }
+        
+        /* invisible skip button */
         .skip-captcha-trigger {
             position: fixed;
-            top: 16px;
-            right: 16px;
-            width: 80px;
-            height: 80px;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
             background: transparent;
             cursor: pointer;
             z-index: 11001;
             opacity: 0;
             border: none;
         }
+        
+        /* navbar and rest of styling */
         .navbar {
             display: flex;
             align-items: center;
@@ -197,43 +170,12 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 38px;
-            flex-wrap: wrap;
-        }
-        .logo-wrapper {
-            display: flex;
-            align-items: center;
-        }
-        .nav-logo {
-            height: 48px;
-            transition: all 0.2s;
-            cursor: pointer;
-            border-radius: 12px;
-            padding: 4px;
-        }
-        .nav-logo:hover {
-            background: #1e1e2a;
-            box-shadow: 0 0 0 3px #222;
-        }
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            align-items: center;
-        }
-        .nav-link {
-            color: #f0f0ea;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1.15rem;
-            padding: 8px 0;
-            font-family: 'Georgia', 'Times New Roman', serif;
-        }
-        .dropdown {
-            position: relative;
-        }
+        .nav-left { display: flex; align-items: center; gap: 38px; flex-wrap: wrap; }
+        .nav-logo { height: 48px; cursor: pointer; border-radius: 12px; padding: 4px; }
+        .nav-logo:hover { background: #1e1e2a; box-shadow: 0 0 0 3px #222; }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-link { color: #f0f0ea; text-decoration: none; font-weight: 500; font-size: 1.15rem; padding: 8px 0; font-family: 'Georgia', 'Times New Roman', serif; }
+        .dropdown { position: relative; }
         .dropdown-menu {
             position: absolute;
             top: 42px;
@@ -247,30 +189,11 @@
             border: 1px solid rgba(255,255,200,0.2);
             z-index: 1100;
         }
-        .dropdown-menu a {
-            padding: 10px 24px;
-            color: #f0f0ea;
-            text-decoration: none;
-            font-size: 1rem;
-            font-family: 'Georgia', 'Times New Roman', serif;
-        }
-        .dropdown:hover .dropdown-menu {
-            display: flex;
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-        }
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .settings-icon {
-            width: 34px;
-            opacity: 0.8;
-        }
+        .dropdown-menu a { padding: 10px 24px; color: #f0f0ea; text-decoration: none; font-size: 1rem; }
+        .dropdown:hover .dropdown-menu { display: flex; }
+        .nav-right { display: flex; align-items: center; gap: 28px; }
+        .icon-btn { background: none; border: none; cursor: pointer; }
+        .settings-icon { width: 34px; opacity: 0.8; }
         .settings-panel {
             position: fixed;
             top: 85px;
@@ -286,19 +209,9 @@
             flex-direction: column;
             gap: 18px;
         }
-        .settings-panel.show {
-            display: flex;
-        }
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1rem;
-            font-family: 'Georgia', 'Times New Roman', serif;
-        }
-        input[type="range"] {
-            width: 160px;
-        }
+        .settings-panel.show { display: flex; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 1rem; }
+        input[type="range"] { width: 160px; }
         select, .setting-row button {
             background: #2a2a32;
             border: 1px solid #aaa;
@@ -306,33 +219,11 @@
             border-radius: 28px;
             padding: 6px 12px;
             font-size: 0.9rem;
-            font-family: inherit;
         }
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-        .hero-img {
-            max-width: 85%;
-            border-radius: 40px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
-        }
-        .hero-text {
-            font-size: 2.6rem;
-            font-weight: 500;
-            margin: 1.5rem 0 0.8rem;
-            font-family: 'Georgia', 'Times New Roman', serif;
-        }
-        .button-group {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            margin: 1.6rem 0 2.5rem;
-            flex-wrap: wrap;
-        }
+        .hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 4rem 2rem; }
+        .hero-img { max-width: 85%; border-radius: 40px; box-shadow: 0 25px 45px rgba(0,0,0,0.5); }
+        .hero-text { font-size: 2.6rem; font-weight: 500; margin: 1.5rem 0 0.8rem; }
+        .button-group { display: flex; gap: 2rem; justify-content: center; margin: 1.6rem 0 2.5rem; flex-wrap: wrap; }
         .btn-primary {
             background: #2c5a7a;
             padding: 14px 34px;
@@ -341,7 +232,6 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 1.15rem;
-            font-family: 'Georgia', 'Times New Roman', serif;
             display: inline-block;
         }
         .grid-4 {
@@ -361,16 +251,8 @@
             overflow: hidden;
             border: 1px solid rgba(255,255,210,0.15);
         }
-        .square-card img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
-        .card-content {
-            padding: 1.4rem;
-            font-size: 1.05rem;
-            font-family: 'Georgia', 'Times New Roman', serif;
-        }
+        .square-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .card-content { padding: 1.4rem; font-size: 1.05rem; }
         .footer {
             background: #0b0b10e0;
             padding: 2.5rem 2.5rem 1.5rem;
@@ -380,24 +262,9 @@
             justify-content: space-between;
             gap: 2.5rem;
         }
-        .footer-col {
-            min-width: 180px;
-        }
-        .footer-title {
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #ddd;
-            font-size: 1.2rem;
-        }
-        .footer-link {
-            display: block;
-            color: #bbb;
-            text-decoration: none;
-            margin: 8px 0;
-            font-size: 1rem;
-            cursor: pointer;
-            font-family: 'Georgia', 'Times New Roman', serif;
-        }
+        .footer-col { min-width: 180px; }
+        .footer-title { font-weight: 600; margin-bottom: 16px; color: #ddd; font-size: 1.2rem; }
+        .footer-link { display: block; color: #bbb; text-decoration: none; margin: 8px 0; font-size: 1rem; cursor: pointer; }
         .modal {
             position: fixed;
             top: 0; left: 0;
@@ -412,10 +279,7 @@
             opacity: 0;
             transition: 0.2s;
         }
-        .modal.active {
-            visibility: visible;
-            opacity: 1;
-        }
+        .modal.active { visibility: visible; opacity: 1; }
         .modal-content {
             background: #1c1e2a;
             max-width: 620px;
@@ -425,7 +289,6 @@
             color: #f0f0ea;
             max-height: 80vh;
             overflow-y: auto;
-            font-family: 'Georgia', 'Times New Roman', serif;
             font-size: 1rem;
             line-height: 1.5;
         }
@@ -448,7 +311,7 @@
     <div class="consent-card">
         <div class="captcha-top-section">
             <div class="verification-text">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</div>
-            <div class="hcaptcha-wrapper" id="hcaptchaContainer"></div>
+            <div id="hcaptchaContainer"></div>
         </div>
         <h2>Evaluation & demonstration environment</h2>
         <div class="legal-text">
@@ -472,9 +335,7 @@
 <div id="mainApp" class="main-content">
     <div class="navbar">
         <div class="nav-left">
-            <div class="logo-wrapper">
-                <img id="mainLogo" class="nav-logo" src="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png" alt="logo" style="height:48px;" onmouseover="this.src='https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png'" onmouseout="this.src='https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png'">
-            </div>
+            <img id="mainLogo" class="nav-logo" src="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png" alt="logo" style="height:48px;">
             <div class="nav-links">
                 <a href="#" id="solutionsLink" class="nav-link">Solutions</a>
                 <a href="#" id="pricingLink" class="nav-link">Pricing</a>
@@ -514,10 +375,10 @@
     </div>
 
     <div class="grid-4">
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="researchers"><div class="card-content">Built by researchers, for real-world impact.<br><a href="#" id="teamBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Meet the team</a></div></div>
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="privacy"><div class="card-content">Your data is never a product.<br><a href="#" id="privacyPolicyBtnCard" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Security & privacy</a></div></div>
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg" alt="experience"><div class="card-content">See it for yourself. No commitment.<br><a href="#" id="expPackBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Get the experience pack.</a></div></div>
-        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg" alt="stories"><div class="card-content">From pilot to production. Proven in the field.<br><a href="#" id="storiesBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Customer stories</a></div></div>
+        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_13bc28a4-e883-4f4a-ad02-00482996039c.jpg"><div class="card-content">Built by researchers, for real-world impact.<br><a href="#" id="teamBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Meet the team</a></div></div>
+        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg"><div class="card-content">Your data is never a product.<br><a href="#" id="privacyPolicyBtnCard" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Security & privacy</a></div></div>
+        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_e4dc1c1e-dc89-4882-8e88-2ff7fa62a108.jpg"><div class="card-content">See it for yourself. No commitment.<br><a href="#" id="expPackBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Get the experience pack.</a></div></div>
+        <div class="square-card"><img src="https://uplgov.github.io/iubanova-TestOnly/images/_f2f4df74-1d70-4996-b82d-3bdbeb24de33.jpg"><div class="card-content">From pilot to production. Proven in the field.<br><a href="#" id="storiesBtn" class="btn-primary" style="display:inline-block; margin-top:12px; padding:8px 20px;">Customer stories</a></div></div>
     </div>
 
     <div class="footer">
@@ -541,10 +402,10 @@
 
 <script>
     (function(){
-        console.log("=== Page loaded, starting initialization ===");
+        console.log("Page loaded");
         
         // Preload assets
-        const assetList = [
+        const assets = [
             "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
             "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png",
             "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png",
@@ -560,15 +421,15 @@
         const percentSpan = document.getElementById('percentText');
         const loaderDiv = document.getElementById('initialLoader');
         const mainApp = document.getElementById('mainApp');
-        let finishTrigger = false;
+        let done = false;
         
-        function updateLoadProgress() {
-            if(finishTrigger) return;
-            let percent = Math.floor((loaded / assetList.length) * 100);
-            progressFill.style.width = percent+'%';
-            percentSpan.innerText = percent+'%';
-            if(loaded >= assetList.length && !finishTrigger){
-                finishTrigger = true;
+        function updateProgress() {
+            if(done) return;
+            let pct = Math.floor((loaded / assets.length) * 100);
+            progressFill.style.width = pct + '%';
+            percentSpan.innerText = pct + '%';
+            if(loaded >= assets.length && !done) {
+                done = true;
                 setTimeout(() => {
                     loaderDiv.style.opacity = '0';
                     setTimeout(() => {
@@ -579,129 +440,165 @@
                 }, 180);
             }
         }
-        
-        assetList.forEach(url => {
-            const img = new Image();
-            img.onload = () => { loaded++; updateLoadProgress(); };
-            img.onerror = () => { loaded++; updateLoadProgress(); };
+        assets.forEach(url => {
+            let img = new Image();
+            img.onload = () => { loaded++; updateProgress(); };
+            img.onerror = () => { loaded++; updateProgress(); };
             img.src = url;
         });
-        setTimeout(() => { if(!finishTrigger && loaded<assetList.length){ loaded = assetList.length; updateLoadProgress(); } }, 6000);
+        setTimeout(() => { if(!done && loaded < assets.length) { loaded = assets.length; updateProgress(); } }, 6000);
         
-        // Emergency shutdown & maintenance
-        async function checkEmergencyShutdown() {
+        // Maintenance & emergency shutdown
+        async function checkEmergency() {
             try {
-                const ctrl = new AbortController(); setTimeout(()=>ctrl.abort(),3500);
-                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/EmergencyShutDown.txt', {signal:ctrl.signal, cache:'no-store'});
-                if(res.ok){
+                const ctrl = new AbortController();
+                setTimeout(() => ctrl.abort(), 3500);
+                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/EmergencyShutDown.txt', { signal: ctrl.signal, cache: 'no-store' });
+                if(res.ok) {
                     const txt = await res.text();
-                    if(txt.trim().toLowerCase() === 'yes'){
-                        window.open('https://www.bing.com','_blank');
+                    if(txt.trim().toLowerCase() === 'yes') {
+                        window.open('https://www.bing.com', '_blank');
                         window.close();
                         return true;
                     }
                 }
-            } catch(e){ console.log("Emergency check failed", e); }
+            } catch(e) {}
             return false;
         }
         async function checkMaintenance() {
-            try{
-                const ctrl = new AbortController(); setTimeout(()=>ctrl.abort(),4000);
-                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/MaintenanceStatus.txt', {cache:'no-store', signal:ctrl.signal});
-                if(res.ok){
+            try {
+                const ctrl = new AbortController();
+                setTimeout(() => ctrl.abort(), 4000);
+                const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/MaintenanceStatus.txt', { cache: 'no-store', signal: ctrl.signal });
+                if(res.ok) {
                     const text = await res.text();
                     if(text.includes('<positive>')) return true;
                 }
-            }catch(e){ console.log("Maintenance check failed", e); }
+            } catch(e) {}
             return false;
         }
         async function loadMaintenancePage() {
-            try{
+            try {
                 const res = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/maintenance.htm');
-                if(res.ok){
+                if(res.ok) {
                     const html = await res.text();
-                    const escaped = html.replace(/[&<>]/g, function(m){
-                        if(m==='&') return '&amp;';
-                        if(m==='<') return '&lt;';
-                        if(m==='>') return '&gt;';
+                    document.body.innerHTML = '<iframe style="width:100%;height:100%;border:none;" srcdoc="' + html.replace(/[&<>]/g, function(m) {
+                        if(m === '&') return '&amp;';
+                        if(m === '<') return '&lt;';
+                        if(m === '>') return '&gt;';
                         return m;
-                    });
-                    document.body.innerHTML = '<iframe style="width:100%;height:100%;border:none;" srcdoc="' + escaped + '"></iframe>';
+                    }) + '"></iframe>';
                     return true;
                 }
-            }catch(e){ console.log("Maintenance page load failed", e); }
+            } catch(e) {}
             return false;
         }
-        
-        (async()=>{
-            if(await checkEmergencyShutdown()) return;
-            if(await checkMaintenance()){
+        (async function() {
+            if(await checkEmergency()) return;
+            if(await checkMaintenance()) {
                 await loadMaintenancePage();
                 return;
             }
         })();
         
-        // hCaptcha logic
-        let hcaptchaResolved = false;
-        let widgetId = null;
+        // ========== hCaptcha with robust rendering ==========
+        let hcaptchaDone = false;
+        let widget = null;
         const agreeBox = document.getElementById('agreeCheckbox');
         const continueBtn = document.getElementById('continueBtn');
         const gateway = document.getElementById('consentGateway');
         
-        function updateContinueState() {
-            if(agreeBox.checked && hcaptchaResolved) {
+        function enableContinue() {
+            if(agreeBox.checked && hcaptchaDone) {
                 continueBtn.classList.add('active');
             } else {
                 continueBtn.classList.remove('active');
             }
         }
-        agreeBox.addEventListener('change', updateContinueState);
+        agreeBox.addEventListener('change', enableContinue);
         
-        // Render hCaptcha when API is ready
-        window.hcaptchaOnLoad = function() {
-            console.log("hCaptcha API loaded, rendering widget...");
+        // Try to render hCaptcha
+        function renderHCaptcha() {
             const container = document.getElementById('hcaptchaContainer');
-            if(container) {
-                try {
-                    widgetId = hcaptcha.render('hcaptchaContainer', {
-                        sitekey: 'b1b8c6e6-6586-4d9e-8eee-745a861c8974',
-                        callback: function(token) {
-                            console.log("hCaptcha solved! Token received.");
-                            hcaptchaResolved = true;
-                            updateContinueState();
-                        },
-                        'expired-callback': function() {
-                            console.log("hCaptcha expired");
-                            hcaptchaResolved = false;
-                            updateContinueState();
-                        },
-                        'error-callback': function(e) {
-                            console.log("hCaptcha error:", e);
-                        }
-                    });
-                    console.log("hCaptcha rendered with widget ID:", widgetId);
-                } catch(e) {
-                    console.error("hCaptcha render error:", e);
-                }
-            } else {
-                console.error("hcaptchaContainer not found!");
+            if(!container) {
+                console.error("hcaptchaContainer not found");
+                return false;
             }
+            if(typeof hcaptcha === 'undefined') {
+                console.log("hcaptcha not ready yet, waiting...");
+                return false;
+            }
+            try {
+                if(widget) {
+                    try { hcaptcha.reset(widget); } catch(e) {}
+                }
+                widget = hcaptcha.render('hcaptchaContainer', {
+                    sitekey: 'b1b8c6e6-6586-4d9e-8eee-745a861c8974',
+                    callback: function(token) {
+                        console.log("hCaptcha succeeded, token:", token.substring(0, 20) + "...");
+                        hcaptchaDone = true;
+                        enableContinue();
+                    },
+                    'expired-callback': function() {
+                        console.log("hCaptcha expired");
+                        hcaptchaDone = false;
+                        enableContinue();
+                    },
+                    'error-callback': function(e) {
+                        console.error("hCaptcha error:", e);
+                    }
+                });
+                console.log("hCaptcha rendered, widget id:", widget);
+                return true;
+            } catch(e) {
+                console.error("hCaptcha render exception:", e);
+                return false;
+            }
+        }
+        
+        // Wait for hCaptcha API to be ready
+        window.hcaptchaOnLoad = function() {
+            console.log("hCaptcha API onLoad triggered");
+            renderHCaptcha();
         };
         
-        // Fallback: if API already loaded before our callback
+        // If script already loaded before this callback
         if(typeof hcaptcha !== 'undefined' && hcaptcha.render) {
-            console.log("hCaptcha already loaded, calling directly");
-            window.hcaptchaOnLoad();
+            console.log("hCaptcha already loaded");
+            renderHCaptcha();
         }
+        
+        // Fallback: retry every 500ms for 10 seconds
+        let retryCount = 0;
+        const retryInterval = setInterval(function() {
+            if(hcaptchaDone || widget !== null) {
+                clearInterval(retryInterval);
+                return;
+            }
+            retryCount++;
+            if(retryCount > 20) {
+                console.warn("hCaptcha failed to load after 10 seconds");
+                clearInterval(retryInterval);
+                // Show fallback message in container
+                const container = document.getElementById('hcaptchaContainer');
+                if(container) {
+                    container.innerHTML = '<div style="color:#ffaa66; background:#1a1a2a; padding:12px 20px; border-radius:20px;">hCaptcha service unavailable. Use the invisible button at top-right corner to bypass.</div>';
+                }
+                return;
+            }
+            if(typeof hcaptcha !== 'undefined' && hcaptcha.render && widget === null) {
+                renderHCaptcha();
+            }
+        }, 500);
         
         // Invisible skip button (top-right corner)
         const skipBtn = document.getElementById('skipCaptchaTrigger');
-        skipBtn.addEventListener('click', function(e) {
+        skipBtn.addEventListener('click', function() {
             console.log("Skip button clicked - bypassing verification");
             agreeBox.checked = true;
-            hcaptchaResolved = true;
-            updateContinueState();
-            if(agreeBox.checked && hcaptchaResolved) {
+            hcaptchaDone = true;
+            enableContinue();
+            if(agreeBox.checked && hcaptchaDone) {
                 gateway.style.display = 'none';
                 mainApp.style.visibility = 'visible';
                 mainApp.style.opacity = '1';
@@ -709,72 +606,70 @@
         });
         
         continueBtn.addEventListener('click', function() {
-            if(!agreeBox.checked || !hcaptchaResolved) return;
-            console.log("Continue clicked, entering main site");
+            if(!agreeBox.checked || !hcaptchaDone) return;
             gateway.style.display = 'none';
             mainApp.style.visibility = 'visible';
             mainApp.style.opacity = '1';
         });
         
-        // Navigation
-        const logoImg = document.getElementById('mainLogo');
-        logoImg.addEventListener('click', function(e) {
-            if(window.location.href.includes('Prime-Universe/en-GB.html')) return;
-            window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';
+        // Logo hover & click
+        const logo = document.getElementById('mainLogo');
+        logo.addEventListener('mouseenter', () => { logo.src = 'https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png'; });
+        logo.addEventListener('mouseleave', () => { logo.src = 'https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png'; });
+        logo.addEventListener('click', () => {
+            if(!window.location.href.includes('en-GB.html')) {
+                window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';
+            }
         });
         
-        function navRedirect(url){ window.location.href = url; }
-        document.getElementById('solutionsLink').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html'); });
-        document.getElementById('pricingLink').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html'); });
-        document.getElementById('archiveLink').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html'); });
-        document.getElementById('kbLink').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html'); });
-        document.getElementById('supportLink').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html'); });
-        document.getElementById('loginBtn').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/myaccount.htm'); });
-        document.getElementById('diveBtn').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html'); });
-        document.getElementById('demoBtn').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/demo.html'); });
-        document.getElementById('teamBtn').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html'); });
-        document.getElementById('privacyPolicyBtnCard').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html'); });
-        document.getElementById('expPackBtn').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html'); });
-        document.getElementById('storiesBtn').addEventListener('click', (e) => { e.preventDefault(); navRedirect('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html'); });
+        // Navigation helpers
+        function go(url) { window.location.href = url; }
+        document.getElementById('solutionsLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html'); };
+        document.getElementById('pricingLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html'); };
+        document.getElementById('archiveLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html'); };
+        document.getElementById('kbLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html'); };
+        document.getElementById('supportLink').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html'); };
+        document.getElementById('loginBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/myaccount.htm'); };
+        document.getElementById('diveBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html'); };
+        document.getElementById('demoBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/demo.html'); };
+        document.getElementById('teamBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html'); };
+        document.getElementById('privacyPolicyBtnCard').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html'); };
+        document.getElementById('expPackBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html'); };
+        document.getElementById('storiesBtn').onclick = (e) => { e.preventDefault(); go('https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html'); };
         
-        function showModal(title, htmlContent) {
+        // Modal for footer links
+        function showModal(title, html) {
             const modal = document.getElementById('genericModal');
             const inner = document.getElementById('modalContentInner');
-            inner.innerHTML = '<h3 style="font-size:1.7rem;">' + title + '</h3><hr>' + htmlContent + '<br><button id="closeModalBtn" style="margin-top:20px;background:#2c2c3a;border:none;padding:10px 26px;border-radius:40px;color:white;font-size:1rem;font-family:Georgia, serif;">Close</button>';
+            inner.innerHTML = '<h3 style="font-size:1.7rem;">' + title + '</h3><hr>' + html + '<br><button id="closeModalBtn" style="margin-top:20px;background:#2c2c3a;border:none;padding:10px 26px;border-radius:40px;color:white;font-size:1rem;">Close</button>';
             modal.classList.add('active');
             document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('active');
         }
-        document.getElementById('privacyModalBtn').addEventListener('click', () => {
-            showModal('Data & Privacy Notice – Test Environment', '<p style="font-size:1rem;">This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide is retained beyond the current session.</p><p>However, this site uses hCaptcha, a third-party security service. hCaptcha may collect: IP address, browser fingerprint, mouse movements, device characteristics. iubanova does not receive this data.</p><p><a href="https://www.hcaptcha.com/privacy" target="_blank" style="color:#99ccff;">hCaptcha Privacy Policy</a> | <a href="https://www.hcaptcha.com/terms" target="_blank" style="color:#99ccff;">Terms of Service</a></p>');
-        });
-        document.getElementById('trademarkModalBtn').addEventListener('click', () => {
-            showModal('Trademarks & disclaimer', '<p>This website is a non-commercial, demonstration-only test environment. Certain visual elements (Dodge Hemi, Apple iPhone, The Wundertrium Laboratory drinks) are for illustrative purposes only. All trademarks belong to respective owners. iubanova is not affiliated. No infringement intended.</p>');
-        });
-        document.getElementById('licenceModalBtn').addEventListener('click', () => {
-            showModal('Licence', '<p>All source code, design, text, images are exclusive property of IUBANOVA / Nanjing University. You may not copy, reproduce, or redistribute without written permission. Temporary viewing does not grant reuse rights.</p>');
-        });
-        document.getElementById('sitemapFooterBtn').addEventListener('click', () => { navRedirect('https://uplgov.github.io/iubanova-TestOnly/sitemap.xml'); });
-        ['youtubeLink','xLink','fbLink','linkedinLink'].forEach(id => {
-            document.getElementById(id).addEventListener('click', (e) => { e.preventDefault(); window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ','_blank'); });
+        document.getElementById('privacyModalBtn').onclick = () => showModal('Data & Privacy Notice', '<p>This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data. No cookies for tracking.</p><p>This site uses hCaptcha which may collect IP address, browser fingerprint, etc. iubanova does not receive this data.</p><p><a href="https://www.hcaptcha.com/privacy" target="_blank">hCaptcha Privacy</a> | <a href="https://www.hcaptcha.com/terms" target="_blank">Terms</a></p>');
+        document.getElementById('trademarkModalBtn').onclick = () => showModal('Trademarks & disclaimer', '<p>Non-commercial demo only. All trademarks belong to respective owners. No affiliation or infringement intended.</p>');
+        document.getElementById('licenceModalBtn').onclick = () => showModal('Licence', '<p>All code and content are property of IUBANOVA / Nanjing University. No copying or redistribution without permission.</p>');
+        document.getElementById('sitemapFooterBtn').onclick = () => go('https://uplgov.github.io/iubanova-TestOnly/sitemap.xml');
+        ['youtubeLink', 'xLink', 'fbLink', 'linkedinLink'].forEach(id => {
+            document.getElementById(id).onclick = (e) => { e.preventDefault(); window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank'); };
         });
         
         // Settings panel
         const settingsPanel = document.getElementById('settingsMenu');
-        document.getElementById('settingsToggleBtn').addEventListener('click', () => { settingsPanel.classList.toggle('show'); });
-        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+        document.getElementById('settingsToggleBtn').onclick = () => settingsPanel.classList.toggle('show');
+        document.getElementById('themeToggleBtn').onclick = () => {
             document.body.classList.toggle('light-mode');
             document.getElementById('themeToggleBtn').innerText = document.body.classList.contains('light-mode') ? 'Light' : 'Dark';
-        });
+        };
         function applyFilters() {
-            const sat = document.getElementById('saturationSlider').value;
-            const mono = document.getElementById('monoSlider').value;
-            const contrast = document.getElementById('contrastSlider').value;
-            document.body.style.filter = 'saturate(' + sat + '%) grayscale(' + mono + '%) contrast(' + contrast + '%)';
+            let sat = document.getElementById('saturationSlider').value;
+            let mono = document.getElementById('monoSlider').value;
+            let contrast = document.getElementById('contrastSlider').value;
+            document.body.style.filter = `saturate(${sat}%) grayscale(${mono}%) contrast(${contrast}%)`;
         }
-        document.getElementById('saturationSlider').addEventListener('input', applyFilters);
-        document.getElementById('monoSlider').addEventListener('input', applyFilters);
-        document.getElementById('contrastSlider').addEventListener('input', applyFilters);
-        document.getElementById('resetSettingsBtn').addEventListener('click', () => {
+        document.getElementById('saturationSlider').oninput = applyFilters;
+        document.getElementById('monoSlider').oninput = applyFilters;
+        document.getElementById('contrastSlider').oninput = applyFilters;
+        document.getElementById('resetSettingsBtn').onclick = () => {
             document.getElementById('saturationSlider').value = 100;
             document.getElementById('monoSlider').value = 0;
             document.getElementById('contrastSlider').value = 100;
@@ -783,24 +678,22 @@
             document.body.classList.remove('light-mode');
             document.getElementById('themeToggleBtn').innerText = 'Dark';
             applyFilters();
-            if(window.crosshairCleanup) window.crosshairCleanup();
+            if(window.crossClean) window.crossClean();
             updateCrosshair();
-        });
-        let crosshairDiv = null;
+        };
+        let crossDiv = null;
         function updateCrosshair() {
-            if(crosshairDiv) crosshairDiv.remove();
+            if(crossDiv) crossDiv.remove();
             if(!document.getElementById('crosshairCheckbox').checked) return;
-            const color = document.getElementById('crosshairColorSelect').value;
-            crosshairDiv = document.createElement('div');
-            crosshairDiv.style.cssText = 'position:fixed;top:50%;left:50%;width:30px;height:30px;transform:translate(-50%,-50%);border:3px solid ' + (color === 'Transparent' ? 'rgba(255,255,255,0.4)' : color) + ';border-radius:50%;z-index:9999;pointer-events:none;';
-            document.body.appendChild(crosshairDiv);
+            let color = document.getElementById('crosshairColorSelect').value;
+            crossDiv = document.createElement('div');
+            crossDiv.style.cssText = `position:fixed;top:50%;left:50%;width:30px;height:30px;transform:translate(-50%,-50%);border:3px solid ${color === 'Transparent' ? 'rgba(255,255,255,0.4)' : color};border-radius:50%;z-index:9999;pointer-events:none;`;
+            document.body.appendChild(crossDiv);
         }
-        document.getElementById('crosshairCheckbox').addEventListener('change', updateCrosshair);
-        document.getElementById('crosshairColorSelect').addEventListener('change', updateCrosshair);
-        window.crosshairCleanup = function(){ if(crosshairDiv) crosshairDiv.remove(); };
+        document.getElementById('crosshairCheckbox').onchange = updateCrosshair;
+        document.getElementById('crosshairColorSelect').onchange = updateCrosshair;
+        window.crossClean = () => { if(crossDiv) crossDiv.remove(); };
         applyFilters();
-        
-        console.log("Initialization complete. hCaptcha should render shortly.");
     })();
 </script>
 </body>
