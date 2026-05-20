@@ -49,7 +49,6 @@ width: 100vw;
 min-height: 100vh;
 overflow-x: hidden;
 transition: background 0.3s, color 0.3s;
-cursor: none;
 }
 img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .dropdown-item {
 -webkit-user-drag: none;
@@ -57,7 +56,12 @@ user-drag: none;
 user-select: none;
 -webkit-user-select: none;
 }
-a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close {
+/* 默认所有可点击元素显示手指光标 */
+a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass {
+cursor: pointer;
+}
+/* 开启瞄准镜模式时隐藏默认光标 */
+body.crosshair-mode, body.crosshair-mode a, body.crosshair-mode button, body.crosshair-mode .btn, body.crosshair-mode .nav-link, body.crosshair-mode .lang-mode-btn, body.crosshair-mode .footer-link, body.crosshair-mode .dropdown-item, body.crosshair-mode .settings-icon, body.crosshair-mode .modal-close, body.crosshair-mode .gate-check input, body.crosshair-mode .hidden-bypass {
 cursor: none;
 }
 .mobile-warning {
@@ -185,7 +189,6 @@ color: var(--text-color);
 font-weight: 500;
 font-size: 1.1rem;
 border-radius: 60px;
-cursor: none;
 text-align: center;
 backdrop-filter: blur(4px);
 overflow: hidden;
@@ -242,12 +245,10 @@ display: flex;
 align-items: center;
 gap: 10px;
 font-size: 1.1rem;
-cursor: none;
 }
 .gate-check input {
 width: 20px;
 height: 20px;
-cursor: none;
 }
 #mainApp {
 display: none;
@@ -281,7 +282,6 @@ gap: 1.5rem;
 .nav-logo-container {
 width: 40px;
 height: 40px;
-cursor: none;
 display: flex;
 align-items: center;
 justify-content: center;
@@ -305,7 +305,6 @@ content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.pn
 color: var(--text-color);
 text-decoration: none;
 font-weight: 500;
-cursor: none;
 font-family: Georgia, 'Times New Roman', Times, serif;
 position: relative;
 padding: 6px 12px;
@@ -345,7 +344,6 @@ padding: 0.75rem 1.5rem;
 color: var(--text-color);
 text-decoration: none;
 font-family: Georgia, 'Times New Roman', Times, serif;
-cursor: none;
 }
 .dropdown-item:hover {
 background: var(--hover-bg);
@@ -353,7 +351,6 @@ background: var(--hover-bg);
 .settings-icon {
 width: 32px;
 height: 32px;
-cursor: none;
 filter: invert(1);
 transition: transform 0.2s;
 }
@@ -371,7 +368,6 @@ padding: 6px 14px;
 border-radius: 30px;
 font-family: Georgia, 'Times New Roman', Times, serif;
 font-size: 0.9rem;
-cursor: none;
 transition: all 0.2s;
 backdrop-filter: blur(4px);
 }
@@ -402,7 +398,6 @@ border-radius: 16px;
 margin-bottom: 2rem;
 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 transition: all 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
-cursor: none;
 }
 .hero-image.scrolled {
 max-width: 800px;
@@ -553,7 +548,6 @@ color: var(--text-color);
 .footer-link {
 color: #888;
 text-decoration: none;
-cursor: none;
 transition: color 0.2s;
 font-family: Georgia, 'Times New Roman', Times, serif;
 }
@@ -600,7 +594,6 @@ position: absolute;
 top: 1rem;
 right: 1rem;
 font-size: 1.5rem;
-cursor: none;
 background: none;
 border: none;
 color: var(--text-color);
@@ -622,6 +615,14 @@ justify-content: space-between;
 input[type="range"] {
 width: 100%;
 }
+select {
+padding: 8px;
+background: var(--panel-bg);
+color: var(--text-color);
+border: 1px solid var(--border-color);
+border-radius: 8px;
+font-family: Georgia, serif;
+}
 .modal-buttons {
 display: flex;
 justify-content: flex-end;
@@ -634,10 +635,6 @@ width: 160px;
 height: 160px;
 z-index: 5000;
 background: transparent;
-cursor: none;
-}
-.hidden-bypass:hover {
-cursor: none;
 }
 .maintenance-frame {
 position: fixed;
@@ -658,12 +655,13 @@ z-index: 10001 !important;
 body {
 top: 0 !important;
 }
+/* 自定义瞄准镜圆圈 */
 #customCursor {
 position: fixed;
 width: 40px;
 height: 40px;
 border-radius: 50%;
-border: 2px solid rgba(255,255,255,0.8);
+border: 2px solid rgba(255,255,255,0.9);
 box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.2);
 pointer-events: none;
 z-index: 99999;
@@ -671,6 +669,7 @@ transform: translate(-50%, -50%);
 transition: width 0.2s, height 0.2s, border-color 0.2s;
 background: rgba(255,255,255,0.05);
 backdrop-filter: blur(2px);
+display: none;
 }
 #customCursor::before {
 content: "✛";
@@ -685,6 +684,7 @@ transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
 #customCursor.crosshair-rotate::before {
 transform: translate(-50%, -50%) rotate(45deg);
 }
+/* 自定义右键菜单 */
 .custom-context-menu {
 position: fixed;
 background: var(--panel-bg);
@@ -699,7 +699,6 @@ font-family: Georgia, serif;
 }
 .custom-context-menu-item {
 padding: 10px 20px;
-cursor: none;
 color: var(--text-color);
 transition: background 0.2s;
 font-size: 0.9rem;
@@ -712,7 +711,7 @@ opacity: 0.4;
 cursor: not-allowed;
 pointer-events: none;
 }
-hr {
+.custom-context-menu hr {
 margin: 4px 0;
 border-color: var(--border-color);
 }
@@ -868,11 +867,120 @@ I have read, understood, and agree to the terms above.
 <div id="customCursor"></div>
 <div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
 
-<div class="modal-overlay" id="langModeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('langModeModal')">×</button><h3>Language & Mode Selection</h3><p>Returning to the portal allows you to switch loading modes and languages. Do you need to view this website in a language other than British English, Traditional Chinese, Simplified Chinese, or Classical Chinese? Clicking "Yes" will activate the Google Translate component. Please note that the translation may be inaccurate.</p><div class="modal-buttons"><button id="langModalYes" class="btn">Yes</button><button id="langModalPortal" class="btn">Return to the Portal</button></div></div></div>
-<div class="modal-overlay" id="privacyModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('privacyModal')">×</button><h2>Data & Privacy Notice – Test Environment</h2><p style="font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p><p>However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including: IP address, Browser fingerprint / user agent, Mouse movements and interaction patterns, Device characteristics.</p><p>This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p><p><a href="https://www.hcaptcha.com/privacy" target="_blank">hCaptcha Privacy Policy</a> | <a href="https://www.hcaptcha.com/terms" target="_blank">Terms of Service</a></p></div></div>
-<div class="modal-overlay" id="tradeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('tradeModal')">×</button><h2>Trademarks & disclaimer</h2><div><p>This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p><p>Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p><p>All trademarks, logos, and product names belong to their respective owners, including but not limited to: Dodge / Hemi (Stellantis NV), Apple Inc. / iPhone (Apple Inc.), The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation).</p><p>iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners. These placeholder images will be removed or replaced prior to any commercial or production release of this website. No copyright or trademark infringement is intended.</p></div></div></div>
-<div class="modal-overlay" id="licenceModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('licenceModal')">×</button><h2>Licence</h2><div><p>This website and its entire contents, including but not limited to: All source code, HTML, CSS, JavaScript, Visual design, layout, and user interface, Text, documentation, and explanatory materials, Images, icons, and graphical assets (unless otherwise attributed) are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p><p>Unless explicitly stated otherwise: You may view, navigate, and interact with this website for its intended demonstration purposes. You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission. You may not create derivative works based on this website's design, logic, or structure. Temporary viewing in a browser cache does not grant any license for reuse.</p><p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p></div></div></div>
-<div class="modal-overlay" id="settingsModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('settingsModal')">×</button><h2>Settings</h2><div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn">Dark</button></label></div><div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div><div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div><div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div><div class="settings-group"><label>Enable Crosshair Assist</label><input type="checkbox" id="chkCrosshair"></div><button class="btn" id="btnResetAll">Reset All</button></div></div>
+<!-- 模态框 -->
+<div class="modal-overlay" id="langModeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('langModeModal')">×</button>
+<h3 style="margin-bottom: 1rem;">Language & Mode Selection</h3>
+<p>Returning to the portal allows you to switch loading modes and languages. Do you need to view this website in a language other than British English, Traditional Chinese, Simplified Chinese, or Classical Chinese? Clicking "Yes" will activate the Google Translate component. Please note that the translation may be inaccurate.</p>
+<div class="modal-buttons">
+<button id="langModalYes" class="btn">Yes</button>
+<button id="langModalPortal" class="btn">Return to the Portal</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="privacyModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Data & Privacy Notice – Test Environment</h2>
+<p style="margin-bottom:1rem; font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including:</p>
+<ul style="margin: 0 0 1rem 2rem; line-height:1.5;">
+<li>IP address</li>
+<li>Browser fingerprint / user agent</li>
+<li>Mouse movements and interaction patterns</li>
+<li>Device characteristics</li>
+</ul>
+<p style="margin-bottom:1rem; line-height:1.5;">This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p>
+<p style="margin-bottom:0.5rem;"><a href="https://www.hcaptcha.com/privacy" target="_blank" style="color:#88f;">hCaptcha Privacy Policy</a></p>
+<p><a href="https://www.hcaptcha.com/terms" target="_blank" style="color:#88f;">hCaptcha Terms of Service</a></p>
+</div>
+</div>
+
+<div class="modal-overlay" id="tradeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Trademarks & disclaimer</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p>
+<p style="margin-bottom:1rem;">Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p>
+<p style="margin-bottom:1rem;">All trademarks, logos, and product names belong to their respective owners, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>Dodge / Hemi (Stellantis NV)</li>
+<li>Apple Inc. / iPhone (Apple Inc.)</li>
+<li>The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation)</li>
+</ul>
+<p style="margin-bottom:1rem;">iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners.</p>
+<p style="margin-bottom:1rem;">These placeholder images will be removed or replaced prior to any commercial or production release of this website.</p>
+<p>No copyright or trademark infringement is intended. If you are a rights holder and have concerns, please contact us.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="licenceModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('licenceModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Licence</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website and its entire contents, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>All source code, HTML, CSS, JavaScript</li>
+<li>Visual design, layout, and user interface</li>
+<li>Text, documentation, and explanatory materials</li>
+<li>Images, icons, and graphical assets (unless otherwise attributed)</li>
+</ul>
+<p style="margin-bottom:1rem;">are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p>
+<p style="margin-bottom:1rem;">Unless explicitly stated otherwise:</p>
+<ol style="margin: 0 0 1rem 2rem;">
+<li>You may view, navigate, and interact with this website for its intended demonstration purposes.</li>
+<li>You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission.</li>
+<li>You may not create derivative works based on this website's design, logic, or structure.</li>
+<li>Temporary viewing in a browser cache does not grant any license for reuse.</li>
+</ol>
+<p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+<h2 style="margin-bottom:1.5rem; font-family:Georgia, serif;">Settings</h2>
+<div class="settings-group">
+<label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label>
+</div>
+<div class="settings-group">
+<label>Saturation <span id="valSat">100%</span></label>
+<input type="range" id="slSat" min="0" max="200" value="100">
+</div>
+<div class="settings-group">
+<label>Monochrome <span id="valMono">0%</span></label>
+<input type="range" id="slMono" min="0" max="100" value="0">
+</div>
+<div class="settings-group">
+<label>Contrast <span id="valCont">100%</span></label>
+<input type="range" id="slCont" min="0" max="200" value="100">
+</div>
+<div class="settings-group" style="flex-direction:row; align-items:center; justify-content:space-between;">
+<label style="flex:1;">Enable Crosshair Assist</label>
+<input type="checkbox" id="chkCrosshair" style="width:20px; height:20px;">
+</div>
+<div class="settings-group">
+<label>Crosshair Color</label>
+<select id="selCrosshairColor">
+<option value="red">Red</option>
+<option value="blue">Blue</option>
+<option value="lime">Lime</option>
+<option value="yellow">Yellow</option>
+<option value="purple">Lilac</option>
+<option value="transparent">Transparent</option>
+</select>
+</div>
+<button class="btn" id="btnResetAll" style="width:100%; margin-top:1rem;">Reset All</button>
+</div>
+</div>
 
 <script>
 // 进度条预加载
@@ -923,29 +1031,46 @@ function initHeroScroll(){
     window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
 }
 
-// 自定义光标 + 十字瞄准镜
+// ========== 瞄准镜系统 ==========
 let crosshairEnabled=false;
 let currentHoverElement=null;
 const cursorDiv=document.getElementById('customCursor');
-const chkCrosshair=document.getElementById('chkCrosshair');
+const chkCrosshairSetting=document.getElementById('chkCrosshair');
+const selCrosshairColor=document.getElementById('selCrosshairColor');
+
 function updateCrosshairMode(){
-    crosshairEnabled=chkCrosshair.checked;
-    if(!crosshairEnabled){
-        cursorDiv.style.display='none';
-        document.body.style.cursor='auto';
-    }else{
+    crosshairEnabled=chkCrosshairSetting.checked;
+    const color=selCrosshairColor.value;
+    if(crosshairEnabled){
         cursorDiv.style.display='block';
-        document.body.style.cursor='none';
+        document.body.classList.add('crosshair-mode');
+        cursorDiv.style.borderColor=color;
+        cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
+        const pseudoColor=color==='transparent'?'rgba(255,255,255,0.5)':color;
+        cursorDiv.style.setProperty('--crosshair-color',pseudoColor);
+    }else{
+        cursorDiv.style.display='none';
+        document.body.classList.remove('crosshair-mode');
     }
 }
-chkCrosshair.addEventListener('change',updateCrosshairMode);
+function updateCrosshairColor(){
+    if(!crosshairEnabled)return;
+    const color=selCrosshairColor.value;
+    cursorDiv.style.borderColor=color;
+    cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
+}
+chkCrosshairSetting.addEventListener('change',updateCrosshairMode);
+selCrosshairColor.addEventListener('change',updateCrosshairColor);
+
 document.addEventListener('mousemove',(e)=>{
     if(crosshairEnabled){
         cursorDiv.style.left=e.clientX+'px';
         cursorDiv.style.top=e.clientY+'px';
     }
 });
-document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass').forEach(el=>{
+// 监听所有可点击元素，鼠标进入时十字旋转45度
+const clickables=document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass');
+clickables.forEach(el=>{
     el.addEventListener('mouseenter',()=>{
         if(!crosshairEnabled)return;
         if(currentHoverElement===el)return;
@@ -962,7 +1087,7 @@ document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-l
 });
 updateCrosshairMode();
 
-// 自定义右键菜单
+// ========== 自定义右键菜单 ==========
 const contextMenu=document.getElementById('customContextMenu');
 document.addEventListener('contextmenu',(e)=>{
     e.preventDefault();
@@ -982,6 +1107,7 @@ document.addEventListener('contextmenu',(e)=>{
 });
 document.addEventListener('click',()=>{contextMenu.style.display='none';});
 
+// ========== 模态框控制 ==========
 function openModal(id){let m=document.getElementById(id);if(m)m.classList.add('active');}
 function closeModal(id){let m=document.getElementById(id);if(m)m.classList.remove('active');}
 document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
@@ -992,11 +1118,12 @@ document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
 document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};};
 document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
 
+// ========== 滤镜和主题 ==========
 const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper'),valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
 function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
 slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
 let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!light;if(light){document.body.classList.add('light-theme');document.getElementById('themeToggleBtn').innerText='Light';}else{document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
-document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshair.checked=false;updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshairSetting.checked=false;selCrosshairColor.value='red';updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
 document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
 </script>
 </body>
