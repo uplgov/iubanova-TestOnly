@@ -581,13 +581,17 @@ justify-content: flex-end;
 gap: 1rem;
 margin-top: 2rem;
 }
+/* ========== 门禁界面不可见双击按钮 - 放大区域，鼠标指针变为手型 ========== */
 .hidden-bypass {
-position: absolute;
-width: 90px;
-height: 90px;
+position: fixed;
+width: 160px;
+height: 160px;
 z-index: 5000;
 background: transparent;
-cursor: default;
+cursor: pointer;
+}
+.hidden-bypass:hover {
+cursor: pointer;
 }
 .maintenance-frame {
 position: fixed;
@@ -598,6 +602,16 @@ height: 100%;
 border: none;
 z-index: 10000;
 background: #000;
+}
+/* Google Translate 下拉框样式优化 */
+.goog-te-banner-frame {
+display: none !important;
+}
+.goog-te-menu-frame {
+z-index: 10001 !important;
+}
+body {
+top: 0 !important;
 }
 </style>
 </head>
@@ -620,7 +634,7 @@ background: #000;
 <div id="percentText" class="percent-text">0%</div>
 </div>
 
-<!-- 第二阶段：转转动画 + 动态文字 (完全照搬 index.htm 的 loadingOverlay) -->
+<!-- 第二阶段：转转动画 + 动态文字 -->
 <div id="loadingOverlay" class="loading-overlay">
 <div class="spinner"></div>
 <div id="loadingSubtitle" class="loading-subtitle"></div>
@@ -628,6 +642,7 @@ background: #000;
 
 <div id="visualWrapper" style="filter: saturate(100%) grayscale(0%) contrast(100%);">
 <div id="gatekeeper">
+    <!-- 不可见双击按钮：右上角 + 左下角，放大尺寸，鼠标悬浮变为手型 -->
     <div id="bypassTopRight" class="hidden-bypass" style="top: 0; right: 0;"></div>
     <div id="bypassBottomLeft" class="hidden-bypass" style="bottom: 0; left: 0;"></div>
 
@@ -768,7 +783,7 @@ I have read, understood, and agree to the terms above.
 <div id="crosshairContainer"><div class="crosshair-line-x" id="chX"></div><div class="crosshair-line-y" id="chY"></div></div>
 
 <script>
-// ========== 第一阶段：进度条预加载逻辑 (完全照搬 index.htm) ==========
+// ========== 第一阶段：进度条预加载逻辑 ==========
 (function(){
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
     if(isMobile){
@@ -895,7 +910,7 @@ I have read, understood, and agree to the terms above.
     });
 })();
 
-// ========== Gatekeeper 逻辑 + 隐藏双击跳过 ==========
+// ========== Gatekeeper 逻辑 + 隐藏双击跳过（已放大区域，鼠标手型）==========
 let hCaptchaPassed = false;
 let checkAgreed = false;
 
@@ -929,11 +944,10 @@ function bypassGatekeeperAndContinue() {
 document.getElementById('bypassTopRight').addEventListener('dblclick', bypassGatekeeperAndContinue);
 document.getElementById('bypassBottomLeft').addEventListener('dblclick', bypassGatekeeperAndContinue);
 
-// ========== 第二阶段：转转动画 + 动态文字 (完全照搬 index.htm 的 startLoadingSequence) ==========
+// ========== 第二阶段：转转动画 + 动态文字 (完全照搬 index.htm) ==========
 let subtitleInterval = null;
 let isShowingWarning = false;
 
-// 完全照搬 index.htm 中的 subtitlesMap
 const subtitlesMap = {
     en: [
         "Use ⌘ + D to add our website to your Favourites in Safari.",
@@ -948,55 +962,13 @@ const subtitlesMap = {
         "A good internet connection reduces loading time.",
         "The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.",
         "We will present it to you shortly."
-    ],
-    classical: [
-        "按 ⌘ + D，置吾網於 Safari 之「最愛」中。",
-        "促絃繁音，方奏未歇。",
-        "且先煮茗一盞，可乎？",
-        "方為君備佳篇美什，稍候即呈。",
-        "按 ⌘ + H 以隱此窗，且待且為他事。",
-        "請少待片晌。",
-        "Hemi™ V8 方熱機以待。",
-        "喚醒汝之混沌。飲 Camellipinigrum Coffeypuniceus™。",
-        "即至矣。",
-        "良網可減待時。",
-        "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
-        "即將為君奉上。"
-    ],
-    trad: [
-        "使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。",
-        "急促的音樂正在演奏。",
-        "要不要先泡一杯茶？",
-        "我們正在竭力為您準備精美內容。",
-        "使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。",
-        "請稍等片刻。",
-        "正在預熱 Hemi™ V8。",
-        "喚醒你的混亂。飲用 Camellipinigrum Coffeypuniceus™。",
-        "很快了。",
-        "良好的網際網路連接會縮短加載時間。",
-        "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
-        "即將為您奉上。"
-    ],
-    simp: [
-        "用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。",
-        "急促的音乐正在演奏",
-        "要不要先泡一杯茶？",
-        "我们正在为您准备精美内容",
-        "用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的",
-        "请稍等片刻",
-        "正在预热Hemi™ V8",
-        "唤醒你的混乱。饮用 Camellipinigrum Coffeypuniceus™。",
-        "很快了。",
-        "良好的互联网连接会缩短加载时间。",
-        "薄暮初临，诸事将备。烦君少驻，片刻即成。",
-        "即将为你奉上。"
     ]
 };
 
-function startRandomSubtitle(lang = 'en') {
+function startRandomSubtitle() {
     if(subtitleInterval) clearInterval(subtitleInterval);
     if(isShowingWarning) return;
-    const arr = subtitlesMap[lang];
+    const arr = subtitlesMap.en;
     if(!arr) return;
     let currentIdx = Math.floor(Math.random() * arr.length);
     const loadingSubtitle = document.getElementById('loadingSubtitle');
@@ -1043,23 +1015,19 @@ function getWarningMessage() {
 }
 
 async function startSecondStageLoading() {
-    // 隐藏门禁界面
     document.getElementById('gatekeeper').style.display = 'none';
     
     const loadingOverlay = document.getElementById('loadingOverlay');
     const mainInterface = document.getElementById('visualWrapper');
     
-    // 应用模糊效果 (与 index.htm 一致)
     mainInterface.style.transition = "filter 0.7s cubic-bezier(0.23,1,0.32,1), opacity 0.6s";
     mainInterface.style.filter = "brightness(0.35) blur(4px)";
     await new Promise(r => setTimeout(r, 700));
     
-    // 显示转转动画层
     loadingOverlay.style.visibility = 'visible';
     loadingOverlay.style.opacity = '1';
     
-    // 开始随机显示提示文字 (使用英文，与 index.htm 默认一致)
-    startRandomSubtitle('en');
+    startRandomSubtitle();
     
     const startTime = Date.now();
     const poorConnection = await testMultipleEndpoints();
@@ -1075,13 +1043,12 @@ async function startSecondStageLoading() {
         loadingSubtitle.style.opacity = '1';
         await new Promise(r => setTimeout(r, 2800));
         isShowingWarning = false;
-        startRandomSubtitle('en');
+        startRandomSubtitle();
         await new Promise(r => setTimeout(r, remainingWait));
     } else {
         await new Promise(r => setTimeout(r, remainingWait));
     }
     
-    // 结束转转动画，显示主应用
     if(subtitleInterval) clearInterval(subtitleInterval);
     loadingOverlay.style.opacity = '0';
     setTimeout(() => {
@@ -1091,7 +1058,7 @@ async function startSecondStageLoading() {
     }, 300);
 }
 
-// ========== LANG & MODE 弹窗逻辑 ==========
+// ========== LANG & MODE 弹窗逻辑 - Google Translate 支持所有语言 ==========
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 document.getElementById('openSettingsBtn').addEventListener('click', () => openModal('settingsModal'));
@@ -1100,42 +1067,51 @@ document.getElementById('btnTrade').addEventListener('click', () => openModal('t
 document.getElementById('btnLicence').addEventListener('click', () => openModal('licenceModal'));
 document.getElementById('langModeBtn').addEventListener('click', () => openModal('langModeModal'));
 
-document.getElementById('langModalYes').addEventListener('click', () => {
-    closeModal('langModeModal');
+// 激活 Google Translate，不限定语言，用户可选择任意语言
+function activateGoogleTranslate() {
+    // 移除可能已存在的翻译元素
+    const existingDiv = document.getElementById('google_translate_element');
+    if(existingDiv) existingDiv.remove();
+    
+    const div = document.createElement('div');
+    div.id = 'google_translate_element';
+    div.style.position = 'fixed';
+    div.style.bottom = '20px';
+    div.style.right = '20px';
+    div.style.zIndex = '9999';
+    div.style.background = 'rgba(0,0,0,0.75)';
+    div.style.padding = '12px 16px';
+    div.style.borderRadius = '12px';
+    div.style.backdropFilter = 'blur(8px)';
+    div.style.border = '1px solid rgba(255,255,255,0.2)';
+    div.style.fontFamily = 'sans-serif';
+    document.body.appendChild(div);
+    
+    // 初始化 Google Translate，不限制语言 (pageLanguage 为 'en'，但用户可选择任意目标语言)
     if(typeof google !== 'undefined' && google.translate) {
-        if(!document.getElementById('google_translate_element')) {
-            const div = document.createElement('div');
-            div.id = 'google_translate_element';
-            div.style.position = 'fixed';
-            div.style.bottom = '20px';
-            div.style.right = '20px';
-            div.style.zIndex = '9999';
-            div.style.background = 'rgba(0,0,0,0.7)';
-            div.style.padding = '10px';
-            div.style.borderRadius = '8px';
-            document.body.appendChild(div);
-        }
-        new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            autoDisplay: false,
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
     } else {
+        // 如果 Google Translate API 尚未加载，动态加载
         const script = document.createElement('script');
-        script.src = "https://translate.google.com/translate_a/element.js?cb=initGoogleTranslate";
+        script.src = "https://translate.google.com/translate_a/element.js?cb=initGoogleTranslateFree";
         document.body.appendChild(script);
-        window.initGoogleTranslate = function() {
-            if(!document.getElementById('google_translate_element')) {
-                const div = document.createElement('div');
-                div.id = 'google_translate_element';
-                div.style.position = 'fixed';
-                div.style.bottom = '20px';
-                div.style.right = '20px';
-                div.style.zIndex = '9999';
-                div.style.background = 'rgba(0,0,0,0.7)';
-                div.style.padding = '10px';
-                div.style.borderRadius = '8px';
-                document.body.appendChild(div);
-            }
-            new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        window.initGoogleTranslateFree = function() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                autoDisplay: false,
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
         };
     }
+}
+
+document.getElementById('langModalYes').addEventListener('click', () => {
+    closeModal('langModeModal');
+    activateGoogleTranslate();
 });
 document.getElementById('langModalPortal').addEventListener('click', () => {
     window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/index.htm';
