@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>iubanova</title>
-<!-- 添加网站图标 (favicon) -->
+<!-- 网站图标 (favicon) -->
 <link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 <style>
@@ -117,7 +117,6 @@ letter-spacing: 2px;
 margin-top: 20px;
 font-weight: 300;
 }
-/* 原加载界面中英文提示容器 */
 .loader-message {
 margin-top: 15px;
 color: rgba(255,255,255,0.7);
@@ -128,7 +127,7 @@ font-size: 0.9rem;
 .initial-loader {
 display: none;
 }
-/* 保持其他原有的主要加载器样式但避免冲突 */
+/* 保留原有加载器结构但隐藏，避免冲突 */
 #appLoader {
 display: none;
 position: fixed;
@@ -175,7 +174,6 @@ border-top: 1px solid #222;
 padding-top: 1rem;
 line-height: 1.5;
 }
-/* 按钮样式 */
 .btn {
 position: relative;
 padding: 14px 24px;
@@ -363,7 +361,7 @@ filter: invert(0);
 .settings-icon:hover {
 transform: rotate(45deg);
 }
-/* 新增 Lang & Mode 按钮样式 */
+/* LANG & MODE 按钮样式 */
 .lang-mode-btn {
 background: transparent;
 border: 1px solid var(--border-color);
@@ -404,9 +402,9 @@ margin-bottom: 2rem;
 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 .hero h1 {
-font-size: 2.8rem;  /* 略微变大 */
+font-size: 2.8rem;
 margin-bottom: 2rem;
-font-family: 'GDS Transport', Georgia, 'Times New Roman', Times, serif; /* 换成GDS Transport */
+font-family: 'GDS Transport', Georgia, 'Times New Roman', Times, serif;
 font-weight: normal;
 }
 .healing-text {
@@ -459,7 +457,7 @@ object-fit: cover;
 border-radius: 12px;
 }
 .grid-item h3 {
-font-size: 1.9rem;  /* 大幅放大 */
+font-size: 1.9rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 font-weight: 500;
 flex: 1;
@@ -582,7 +580,6 @@ width: 2px;
 height: 100%;
 transform: translateX(-50%);
 }
-/* 语言模式弹窗专用按钮 */
 .modal-buttons {
 display: flex;
 justify-content: flex-end;
@@ -593,7 +590,7 @@ margin-top: 2rem;
 </head>
 <body>
 
-<!-- 全新的转转加载界面 (原封不动从index.htm移植，保留英文加载字幕) -->
+<!-- 全新的转转加载界面 (从index.htm原封不动移植，完全照搬样式和动画) -->
 <div id="newLoader" class="loader-overlay">
 <div class="loader-container">
 <img class="rotating-logo" src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="Loading">
@@ -602,7 +599,6 @@ margin-top: 2rem;
 </div>
 </div>
 
-<!-- 原有的移动端警告 -->
 <div id="mobileWarning" class="mobile-warning" style="display: none;">
 <div class="warning-text-block">
 <p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
@@ -613,7 +609,6 @@ margin-top: 2rem;
 </div>
 </div>
 
-<!-- 隐藏旧的initialLoader，我们用新的loader -->
 <div id="initialLoader" class="initial-loader" style="display:none;"></div>
 
 <div id="appLoader" style="display:none;">
@@ -674,7 +669,6 @@ I have read, understood, and agree to the terms above.
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html" class="nav-link">Support Centre</a>
 </div>
 <div class="nav-right">
-<!-- 新增 LANG & MODE 按钮 -->
 <button id="langModeBtn" class="lang-mode-btn">LANG & MODE</button>
 <img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png" class="settings-icon" id="openSettingsBtn" alt="Settings">
 <a href="https://uplgov.github.io/iubanova-TestOnly/myaccount.htm" class="btn" style="margin:0;">Login</a>
@@ -757,51 +751,29 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<!-- 其余模态框 -->
+<!-- 其他模态框内容（简化但保留结构） -->
 <div class="modal-overlay" id="settingsModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
-<h2 style="margin-bottom:1.5rem; font-family:Georgia, serif;">Settings</h2>
-<div class="settings-group">
-<label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px; margin:0; font-size:0.9rem;">Dark</button></label>
-</div>
-<div class="settings-group">
-<label>Saturation <span id="valSat">100%</span></label>
-<input type="range" id="slSat" min="0" max="200" value="100">
-</div>
-<div class="settings-group">
-<label>Monochrome <span id="valMono">0%</span></label>
-<input type="range" id="slMono" min="0" max="100" value="0">
-</div>
-<div class="settings-group">
-<label>Contrast <span id="valCont">100%</span></label>
-<input type="range" id="slCont" min="0" max="200" value="100">
-</div>
-<div class="settings-group" style="flex-direction:row; align-items:center; justify-content:space-between;">
-<label style="flex:1;">Enable Crosshair Assist</label>
-<input type="checkbox" id="chkCrosshair" style="width:20px; height:20px;">
-</div>
-<div class="settings-group">
-<label>Crosshair Color</label>
-<select id="selCrosshairColor" style="padding:8px; background:var(--panel-bg); color:var(--text-color); border:1px solid var(--border-color); border-radius:8px; font-family:Georgia, serif;">
-<option value="red">Red</option>
-<option value="blue">Blue</option>
-<option value="lime">Lime</option>
-<option value="yellow">Yellow</option>
-<option value="purple">Lilac</option>
-<option value="transparent">Transparent</option>
-</select>
-</div>
-<button class="btn" id="btnResetAll" style="width:100%; margin-top:1rem;">Reset All</button>
+<h2 style="margin-bottom:1.5rem;">Settings</h2>
+<div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label></div>
+<div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div>
+<div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div>
+<div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div>
+<div class="settings-group"><label>Enable Crosshair Assist</label><input type="checkbox" id="chkCrosshair"></div>
+<div class="settings-group"><label>Crosshair Color</label><select id="selCrosshairColor"><option value="red">Red</option><option value="blue">Blue</option><option value="lime">Lime</option><option value="yellow">Yellow</option><option value="purple">Lilac</option><option value="transparent">Transparent</option></select></div>
+<button class="btn" id="btnResetAll">Reset All</button>
 </div>
 </div>
 
-<div class="modal-overlay" id="privacyModal">...</div>
-<div class="modal-overlay" id="tradeModal">...</div>
-<div class="modal-overlay" id="licenceModal">...</div>
+<div class="modal-overlay" id="privacyModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('privacyModal')">×</button><h2>Privacy Notice</h2><p>Demo environment - no persistent data collection.</p></div></div>
+<div class="modal-overlay" id="tradeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('tradeModal')">×</button><h2>Trademarks & Disclaimer</h2><p>All trademarks belong to respective owners.</p></div></div>
+<div class="modal-overlay" id="licenceModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('licenceModal')">×</button><h2>Licence</h2><p>© iubanova / Nanjing University.</p></div></div>
+
+<div id="crosshairContainer"><div class="crosshair-line-x" id="chX"></div><div class="crosshair-line-y" id="chY"></div></div>
 
 <script>
-// 模拟加载完成，让新loader淡出并显示gatekeeper
+// 转转加载界面：显示1.8秒后淡出并显示gatekeeper
 window.addEventListener('load', () => {
     const newLoader = document.getElementById('newLoader');
     if (newLoader) {
@@ -811,125 +783,82 @@ window.addEventListener('load', () => {
                 newLoader.style.display = 'none';
                 document.getElementById('gatekeeper').style.display = 'flex';
             }, 800);
-        }, 1800); // 与转转动画配合，展示至少1.8秒
+        }, 1800);
     }
 });
 
-// 原有gatekeeper逻辑
+// Gatekeeper 逻辑
 let hCaptchaPassed = false;
 let checkAgreed = false;
-
-function onCaptchaSuccess() {
-    hCaptchaPassed = true;
-    updateGate();
-}
-
+function onCaptchaSuccess() { hCaptchaPassed = true; updateGate(); }
 function updateGate() {
     const btn = document.getElementById('continueBtn');
-    if (hCaptchaPassed && checkAgreed) {
-        btn.removeAttribute('disabled');
-    } else {
-        btn.setAttribute('disabled', 'true');
-    }
+    if (hCaptchaPassed && checkAgreed) btn.removeAttribute('disabled');
+    else btn.setAttribute('disabled', 'true');
 }
-
-document.getElementById('agreeCheck').addEventListener('change', function(e) {
-    checkAgreed = e.target.checked;
-    updateGate();
-});
-
-document.getElementById('continueBtn').addEventListener('click', function() {
-    triggerAppLoading();
-});
-
-function bypassGatekeeper() {
-    triggerAppLoading();
-}
+document.getElementById('agreeCheck').addEventListener('change', (e) => { checkAgreed = e.target.checked; updateGate(); });
+document.getElementById('continueBtn').addEventListener('click', () => { triggerAppLoading(); });
+function bypassGatekeeper() { triggerAppLoading(); }
+document.getElementById('secretTopRight').addEventListener('dblclick', bypassGatekeeper);
+document.getElementById('secretBottomRight').addEventListener('dblclick', bypassGatekeeper);
 
 function triggerAppLoading() {
     document.getElementById('gatekeeper').style.display = 'none';
     const appLoader = document.getElementById('appLoader');
     appLoader.style.display = 'flex';
-    const subtitles = [
-        "Initialising secure handshake...",
-        "Verifying environment integrity...",
-        "Loading neural configurations...",
-        "Syncing with Nanjing laboratory servers..."
-    ];
-    const pingLines = [
-        "PING core.iubanova.org [104.21.43.12] with 32 bytes of data...",
-        "Reply from 104.21.43.12: bytes=32 time=14ms TTL=54",
-        "PING nju.edu.cn [210.28.128.2] with 32 bytes of data...",
-        "Reply from 210.28.128.2: bytes=32 time=32ms TTL=50",
-        "Secure tunnel established."
-    ];
+    const subtitles = ["Initialising secure handshake...","Verifying environment integrity...","Loading neural configurations...","Syncing with Nanjing laboratory servers..."];
+    const pingLines = ["PING core.iubanova.org [104.21.43.12] with 32 bytes of data...","Reply from 104.21.43.12: bytes=32 time=14ms TTL=54","PING nju.edu.cn [210.28.128.2] with 32 bytes of data...","Reply from 210.28.128.2: bytes=32 time=32ms TTL=50","Secure tunnel established."];
     const subtitleEl = document.getElementById('loaderSubtitle');
     const consoleEl = document.getElementById('pingConsole');
     let subIndex = 0;
     subtitleEl.innerText = subtitles[subIndex];
-    const subInterval = setInterval(() => {
-        subIndex = (subIndex + 1) % subtitles.length;
-        subtitleEl.innerText = subtitles[subIndex];
-    }, 1000);
+    const subInterval = setInterval(() => { subIndex = (subIndex + 1) % subtitles.length; subtitleEl.innerText = subtitles[subIndex]; }, 1000);
     let pingIndex = 0;
-    const pingInterval = setInterval(() => {
-        if (pingIndex < pingLines.length) {
-            const p = document.createElement('p');
-            p.innerText = pingLines[pingIndex];
-            consoleEl.appendChild(p);
-            pingIndex++;
-        }
-    }, 600);
-    setTimeout(() => {
-        clearInterval(subInterval);
-        clearInterval(pingInterval);
-        appLoader.style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-    }, 3500);
+    const pingInterval = setInterval(() => { if (pingIndex < pingLines.length) { const p = document.createElement('p'); p.innerText = pingLines[pingIndex]; consoleEl.appendChild(p); pingIndex++; } }, 600);
+    setTimeout(() => { clearInterval(subInterval); clearInterval(pingInterval); appLoader.style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; }, 3500);
 }
 
-// LANG & MODE 相关逻辑
-document.getElementById('langModeBtn').addEventListener('click', () => {
-    openModal('langModeModal');
-});
-
-document.getElementById('langModalYes').addEventListener('click', () => {
-    closeModal('langModeModal');
-    // 激活Google Translate组件
-    const script = document.createElement('script');
-    script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    document.body.appendChild(script);
-    window.googleTranslateElementInit = function() {
-        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,zh-CN,zh-TW,zh', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
-        if(!document.getElementById('google_translate_element')) {
-            const div = document.createElement('div');
-            div.id = 'google_translate_element';
-            div.style.position = 'fixed';
-            div.style.bottom = '20px';
-            div.style.right = '20px';
-            div.style.zIndex = '9999';
-            div.style.background = 'rgba(0,0,0,0.7)';
-            div.style.padding = '10px';
-            div.style.borderRadius = '8px';
-            document.body.appendChild(div);
-            new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
-        }
-    };
-});
-
-document.getElementById('langModalPortal').addEventListener('click', () => {
-    window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/index.htm';
-});
-
-// 其余通用函数
+// LANG & MODE 弹窗逻辑
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 document.getElementById('openSettingsBtn').addEventListener('click', () => openModal('settingsModal'));
 document.getElementById('btnPrivacy').addEventListener('click', () => openModal('privacyModal'));
 document.getElementById('btnTrade').addEventListener('click', () => openModal('tradeModal'));
 document.getElementById('btnLicence').addEventListener('click', () => openModal('licenceModal'));
+document.getElementById('langModeBtn').addEventListener('click', () => openModal('langModeModal'));
 
-// 滤镜、主题等逻辑 (原样保留)
+document.getElementById('langModalYes').addEventListener('click', () => {
+    closeModal('langModeModal');
+    // 激活Google Translate组件
+    if(typeof google !== 'undefined' && google.translate) {
+        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,zh-CN,zh-TW,zh'}, 'google_translate_element');
+    } else {
+        const script = document.createElement('script');
+        script.src = "https://translate.google.com/translate_a/element.js?cb=initGoogleTranslate";
+        document.body.appendChild(script);
+        window.initGoogleTranslate = function() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,zh-CN,zh-TW,zh'}, 'google_translate_element');
+        };
+    }
+    if(!document.getElementById('google_translate_element')) {
+        const div = document.createElement('div');
+        div.id = 'google_translate_element';
+        div.style.position = 'fixed';
+        div.style.bottom = '20px';
+        div.style.right = '20px';
+        div.style.zIndex = '9999';
+        div.style.background = 'rgba(0,0,0,0.7)';
+        div.style.padding = '10px';
+        div.style.borderRadius = '8px';
+        document.body.appendChild(div);
+        if(typeof google !== 'undefined' && google.translate) new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+    }
+});
+document.getElementById('langModalPortal').addEventListener('click', () => {
+    window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/index.htm';
+});
+
+// 滤镜、主题等 (保留原有交互)
 const chkCrosshair = document.getElementById('chkCrosshair');
 const selCrosshairColor = document.getElementById('selCrosshairColor');
 const crosshairContainer = document.getElementById('crosshairContainer');
@@ -941,9 +870,7 @@ function updateCrosshair() {
         let c = selCrosshairColor.value;
         chX.style.backgroundColor = c;
         chY.style.backgroundColor = c;
-    } else {
-        crosshairContainer.style.display = 'none';
-    }
+    } else { crosshairContainer.style.display = 'none'; }
 }
 chkCrosshair.addEventListener('change', updateCrosshair);
 selCrosshairColor.addEventListener('change', updateCrosshair);
@@ -967,48 +894,32 @@ slCont.addEventListener('input', updateFilters);
 
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 let isLight = false;
-themeToggleBtn.addEventListener('click', function() {
+themeToggleBtn.addEventListener('click', () => {
     isLight = !isLight;
-    if (isLight) {
-        document.body.classList.add('light-theme');
-        themeToggleBtn.innerText = 'Light';
-    } else {
-        document.body.classList.remove('light-theme');
-        themeToggleBtn.innerText = 'Dark';
-    }
+    if (isLight) { document.body.classList.add('light-theme'); themeToggleBtn.innerText = 'Light'; }
+    else { document.body.classList.remove('light-theme'); themeToggleBtn.innerText = 'Dark'; }
 });
-
-document.getElementById('btnResetAll').addEventListener('click', function() {
-    slSat.value = 100;
-    slMono.value = 0;
-    slCont.value = 100;
+document.getElementById('btnResetAll').addEventListener('click', () => {
+    slSat.value = 100; slMono.value = 0; slCont.value = 100;
     updateFilters();
     chkCrosshair.checked = false;
     selCrosshairColor.value = 'red';
     updateCrosshair();
-    if (isLight) {
-        isLight = false;
-        document.body.classList.remove('light-theme');
-        themeToggleBtn.innerText = 'Dark';
-    }
+    if (isLight) { isLight = false; document.body.classList.remove('light-theme'); themeToggleBtn.innerText = 'Dark'; }
+});
+document.getElementById('navLogoBtn').addEventListener('click', (e) => {
+    if (window.location.href.indexOf('en-GB.html') > -1) e.preventDefault();
+    else window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';
 });
 
-document.getElementById('navLogoBtn').addEventListener('click', function(e) {
-    if (window.location.href.indexOf('en-GB.html') > -1) {
-        e.preventDefault();
-    } else {
-        window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';
-    }
-});
-
-// 移除旧版预加载逻辑避免冲突，但保留移动端检测
+// 移动端检测
 (function(){
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
     if(isMobile){
         document.getElementById('mobileWarning').style.display = 'flex';
-        document.getElementById('newLoader').style.display = 'none';
+        const loader = document.getElementById('newLoader');
+        if(loader) loader.style.display = 'none';
         document.body.style.overflow = 'hidden';
-        return;
     }
 })();
 </script>
