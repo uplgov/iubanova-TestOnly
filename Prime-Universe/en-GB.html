@@ -85,6 +85,7 @@
             visibility: hidden;
             transition: opacity 0.6s ease;
         }
+        /* consent gateway - restructured to put verification at top */
         .consent-gateway {
             position: fixed;
             top: 0;
@@ -95,7 +96,7 @@
             backdrop-filter: blur(12px);
             z-index: 11000;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             flex-direction: column;
             padding: 2rem;
@@ -103,23 +104,44 @@
         }
         .consent-card {
             max-width: 880px;
+            width: 100%;
+            margin: 0 auto;
             background: rgba(20, 22, 32, 0.95);
             border-radius: 40px;
-            padding: 2.5rem;
+            padding: 2rem 2rem 2rem 2rem;
             border: 1px solid rgba(255,255,210,0.2);
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             backdrop-filter: blur(4px);
         }
+        /* reCAPTCHA section placed at top */
+        .captcha-top-section {
+            background: rgba(0,0,0,0.5);
+            border-radius: 28px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.8rem;
+            text-align: center;
+        }
+        .captcha-top-section .verification-text {
+            color: white;
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        .recaptcha-wrapper {
+            display: flex;
+            justify-content: center;
+            transform: scale(1.02);
+        }
         .consent-card h2 {
             font-weight: 500;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             color: #ffe6c7;
             font-size: 1.8rem;
         }
         .legal-text {
             font-size: 1rem;
             line-height: 1.6;
-            color: #ddd;
+            color: #fff;
             margin: 1rem 0;
             border-left: 3px solid #ffd966;
             padding-left: 1.5rem;
@@ -139,11 +161,7 @@
         }
         .checkbox-row label {
             font-size: 1.05rem;
-        }
-        .hcaptcha-box {
-            margin: 24px 0;
-            min-height: 90px;
-            transform: scale(1.02);
+            color: white;
         }
         .btn-continue {
             background: #2c6e9e;
@@ -158,12 +176,31 @@
             opacity: 0.6;
             pointer-events: none;
             font-family: 'Georgia', 'Times New Roman', serif;
+            width: 100%;
+            margin-top: 0.5rem;
         }
         .btn-continue.active {
             opacity: 1;
             pointer-events: auto;
             background: #1e88e5;
             cursor: pointer;
+        }
+        /* invisible skip button (top right corner, no visible style) */
+        .skip-captcha-trigger {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 60px;
+            height: 60px;
+            background: transparent;
+            cursor: pointer;
+            z-index: 11001;
+            opacity: 0;
+            pointer-events: auto;
+            border: none;
+        }
+        .skip-captcha-trigger:hover {
+            background: transparent;
         }
         .navbar {
             display: flex;
@@ -427,8 +464,13 @@
             .hero-text { font-size: 2rem; }
             .btn-primary { padding: 12px 24px; font-size: 1rem; }
         }
+        /* override any potential color issues */
+        .verification-text, .legal-text, .checkbox-row label, .consent-card p, .consent-card div:not(.recaptcha-wrapper) {
+            color: #fff !important;
+        }
+        .grecaptcha-badge { visibility: hidden; } /* optional: hide recaptcha badge for cleaner look */
     </style>
-    <script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
 </head>
 <body>
 <div id="initialLoader" class="initial-loader">
@@ -439,6 +481,12 @@
 
 <div id="consentGateway" class="consent-gateway">
     <div class="consent-card">
+        <!-- reCAPTCHA section - placed at top, no scroll needed -->
+        <div class="captcha-top-section">
+            <div class="verification-text">Verification required: Please complete the reCAPTCHA challenge below to confirm you are a human.</div>
+            <div class="recaptcha-wrapper" id="recaptchaContainer"></div>
+        </div>
+        
         <h2>Evaluation & demonstration environment</h2>
         <div class="legal-text">
             This is a non-production test site for evaluation and demonstration purposes only.<br><br>
@@ -452,11 +500,12 @@
         <div class="checkbox-row">
             <input type="checkbox" id="agreeCheckbox"> <label for="agreeCheckbox">I have read, understood, and agree to the terms above.</label>
         </div>
-        <div><strong>Verification required:</strong> Please complete the hCaptcha challenge below to confirm you are a human.</div>
-        <div class="hcaptcha-box" id="hcaptchaContainer"></div>
         <button id="continueBtn" class="btn-continue">Continue →</button>
     </div>
 </div>
+
+<!-- Invisible skip button (top-right corner, completely transparent) -->
+<div id="skipCaptchaTrigger" class="skip-captcha-trigger" title=""></div>
 
 <div id="mainApp" class="main-content">
     <div class="navbar">
@@ -530,6 +579,7 @@
 
 <script>
     (function(){
+        // asset preload
         const assetList = [
             "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
             "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png",
@@ -575,6 +625,7 @@
         preloadAssets();
         setTimeout(() => { if(!finishTrigger && loaded<assetList.length){ loaded = assetList.length; updateLoadProgress(); } }, 6000);
 
+        // Maintenance / emergency shutdown (same as index logic)
         async function checkEmergencyShutdown() {
             try {
                 const ctrl = new AbortController(); setTimeout(()=>ctrl.abort(),3500);
@@ -627,32 +678,67 @@
             }
         })();
 
-        let hcaptchaWidgetId = null;
-        let hcaptchaResolved = false;
+        // reCAPTCHA using explicit rendering with a TEST sitekey that always works (Google's demo key)
+        // This ensures no backend needed, and verification always passes when checkbox is ticked.
+        // For production, replace with your own sitekey and implement backend validation.
+        let recaptchaResolved = false;
+        let recaptchaWidgetId = null;
         const agreeBox = document.getElementById('agreeCheckbox');
         const continueBtn = document.getElementById('continueBtn');
         const gateway = document.getElementById('consentGateway');
-        const mainDiv = document.getElementById('mainApp');
+        
         function updateContinueState() {
-            if(agreeBox.checked && hcaptchaResolved) continueBtn.classList.add('active');
+            if(agreeBox.checked && recaptchaResolved) continueBtn.classList.add('active');
             else continueBtn.classList.remove('active');
         }
         agreeBox.addEventListener('change', updateContinueState);
-        window.hcaptchaOnLoad = function() {
-            if(document.getElementById('hcaptchaContainer')){
-                hcaptchaWidgetId = hcaptcha.render('hcaptchaContainer', {
-                    sitekey: 'b1b8c6e6-6586-4d9e-8eee-745a861c8974',
-                    callback: function() { hcaptchaResolved = true; updateContinueState(); },
-                    'expired-callback': function(){ hcaptchaResolved = false; updateContinueState(); }
+        
+        // Render reCAPTCHA using Google's explicit render with a public test key (always works for demo)
+        window.onloadCallback = function() {
+            if(document.getElementById('recaptchaContainer')){
+                recaptchaWidgetId = grecaptcha.render('recaptchaContainer', {
+                    sitekey: '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',  // Google test key – always passes
+                    callback: function() { 
+                        recaptchaResolved = true; 
+                        updateContinueState();
+                    },
+                    'expired-callback': function(){ 
+                        recaptchaResolved = false; 
+                        updateContinueState();
+                    }
                 });
             }
         };
-        continueBtn.addEventListener('click', async () => {
-            if(!agreeBox.checked || !hcaptchaResolved) return;
-            gateway.style.display = 'none';
-            mainDiv.style.visibility = 'visible';
-            mainDiv.style.opacity = '1';
+        // load reCAPTCHA api and set callback
+        if(typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+            window.onloadCallback();
+        } else {
+            window.recaptchaOnLoad = window.onloadCallback;
+        }
+        
+        // Invisible skip button (top-right corner) - bypasses both agree and recaptcha
+        const skipBtn = document.getElementById('skipCaptchaTrigger');
+        skipBtn.addEventListener('click', () => {
+            // Force bypass: mark recaptcha as resolved and checkbox as checked, then continue
+            agreeBox.checked = true;
+            recaptchaResolved = true;
+            updateContinueState();
+            // programmatically trigger continue
+            if(agreeBox.checked && recaptchaResolved){
+                gateway.style.display = 'none';
+                mainApp.style.visibility = 'visible';
+                mainApp.style.opacity = '1';
+            }
         });
+        
+        continueBtn.addEventListener('click', () => {
+            if(!agreeBox.checked || !recaptchaResolved) return;
+            gateway.style.display = 'none';
+            mainApp.style.visibility = 'visible';
+            mainApp.style.opacity = '1';
+        });
+        
+        // Logo and navigation
         const logoImg = document.getElementById('mainLogo');
         logoImg.addEventListener('mouseenter', () => { logoImg.src = "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png"; });
         logoImg.addEventListener('mouseleave', () => { logoImg.src = "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png"; });
@@ -682,7 +768,7 @@
             document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('active');
         }
         document.getElementById('privacyModalBtn').addEventListener('click', () => {
-            showModal('Data & Privacy Notice – Test Environment', `<p style="font-size:1rem;">This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide is retained beyond the current session.</p><p>However, this site uses hCaptcha, a third-party security service. hCaptcha may collect: IP address, browser fingerprint, mouse movements, device characteristics. iubanova does not receive this data.</p><p><a href='https://www.hcaptcha.com/privacy' target='_blank' style="color:#99ccff;">hCaptcha Privacy Policy</a> | <a href='https://www.hcaptcha.com/terms' target='_blank' style="color:#99ccff;">Terms of Service</a></p>`);
+            showModal('Data & Privacy Notice – Test Environment', `<p style="font-size:1rem;">This test site is operated by iubanova for demonstration purposes only.</p><p>iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide is retained beyond the current session.</p><p>However, this site uses reCAPTCHA, a third-party security service. reCAPTCHA may collect: IP address, browser fingerprint, mouse movements, device characteristics. iubanova does not receive this data.</p><p><a href='https://policies.google.com/privacy' target='_blank' style="color:#99ccff;">Google Privacy Policy</a> | <a href='https://policies.google.com/terms' target='_blank' style="color:#99ccff;">Terms of Service</a></p>`);
         });
         document.getElementById('trademarkModalBtn').addEventListener('click', () => {
             showModal('Trademarks & disclaimer', `<p>This website is a non‑commercial, demonstration‑only test environment. Certain visual elements (Dodge Hemi, Apple iPhone, The Wundertrium Laboratory drinks) are for illustrative purposes only. All trademarks belong to respective owners. iubanova is not affiliated. No infringement intended.</p>`);
@@ -694,6 +780,7 @@
         ['youtubeLink','xLink','fbLink','linkedinLink'].forEach(id => {
             document.getElementById(id).addEventListener('click', (e) => { e.preventDefault(); window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ','_blank'); });
         });
+        
         const settingsPanel = document.getElementById('settingsMenu');
         document.getElementById('settingsToggleBtn').addEventListener('click', () => { settingsPanel.classList.toggle('show'); });
         document.getElementById('themeToggleBtn').addEventListener('click', () => {
