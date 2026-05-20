@@ -908,23 +908,80 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const loadingSubtitle = document.getElementById('loadingSubtitle');
         let subtitleInterval = null;
+        let isShowingWarning = false;
+        
         const subtitlesMap = {
-            en: ["Use ⌘ + D to add our website to your Favourites in Safari.","A restless melody is playing.","Fancy brewing a cup of tea while you wait?","We're preparing some fine content for you.","Press ⌘ + H to hide the current window and do something else while you wait.","Please bear with us for a moment.","Warming up the Hemi™ V8."],
-            classical: ["按 ⌘ + D，置吾網於 Safari 之「最愛」中。","促絃繁音，方奏未歇。","且先煮茗一盞，可乎？","方為君備佳篇美什，稍候即呈。","按 ⌘ + H 以隱此窗，且待且為他事。","請少待片晌。","Hemi™ V8 方熱機以待。"],
-            trad: ["使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。","急促的音樂正在演奏。","要不要先泡一杯茶？","我們正在竭力為您準備精美內容。","使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。","請稍等片刻。","正在預熱 Hemi™ V8。"],
-            simp: ["用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。","急促的音乐正在演奏","要不要先泡一杯茶？","我们正在为您准备精美内容","用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的","请稍等片刻","正在预热Hemi™ V8"]
+            en: [
+                "Use ⌘ + D to add our website to your Favourites in Safari.",
+                "A restless melody is playing.",
+                "Fancy brewing a cup of tea while you wait?",
+                "We're preparing some fine content for you.",
+                "Press ⌘ + H to hide the current window and do something else while you wait.",
+                "Please bear with us for a moment.",
+                "Warming up the Hemi™ V8.",
+                "Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™",
+                "Almost there.",
+                "A good internet connection reduces loading time.",
+                "The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.",
+                "We will present it to you shortly."
+            ],
+            classical: [
+                "按 ⌘ + D，置吾網於 Safari 之「最愛」中。",
+                "促絃繁音，方奏未歇。",
+                "且先煮茗一盞，可乎？",
+                "方為君備佳篇美什，稍候即呈。",
+                "按 ⌘ + H 以隱此窗，且待且為他事。",
+                "請少待片晌。",
+                "Hemi™ V8 方熱機以待。",
+                "喚醒汝之混沌。飲 Camellipinigrum Coffeypuniceus™。",
+                "即至矣。",
+                "良網可減待時。",
+                "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
+                "即將為君奉上。"
+            ],
+            trad: [
+                "使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。",
+                "急促的音樂正在演奏。",
+                "要不要先泡一杯茶？",
+                "我們正在竭力為您準備精美內容。",
+                "使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。",
+                "請稍等片刻。",
+                "正在預熱 Hemi™ V8。",
+                "喚醒你的混亂。飲用 Camellipinigrum Coffeypuniceus™。",
+                "很快了。",
+                "良好的網際網路連接會縮短加載時間。",
+                "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
+                "即將為您奉上。"
+            ],
+            simp: [
+                "用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。",
+                "急促的音乐正在演奏",
+                "要不要先泡一杯茶？",
+                "我们正在为您准备精美内容",
+                "用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的",
+                "请稍等片刻",
+                "正在预热Hemi™ V8",
+                "唤醒你的混乱。饮用 Camellipinigrum Coffeypuniceus™。",
+                "很快了。",
+                "良好的互联网连接会缩短加载时间。",
+                "薄暮初临，诸事将备。烦君少驻，片刻即成。",
+                "即将为你奉上。"
+            ]
         };
         
         function startRandomSubtitle(lang){
             if(subtitleInterval) clearInterval(subtitleInterval);
+            if(isShowingWarning) return;
             const arr = subtitlesMap[lang];
             if(!arr) return;
             let currentIdx = Math.floor(Math.random() * arr.length);
             loadingSubtitle.innerText = arr[currentIdx];
             loadingSubtitle.style.opacity = '1';
             subtitleInterval = setInterval(() => {
+                if(isShowingWarning) return;
                 loadingSubtitle.style.opacity = '0';
                 setTimeout(() => {
+                    if(isShowingWarning) return;
                     let newIdx = Math.floor(Math.random() * arr.length);
                     if(newIdx === currentIdx) newIdx = (newIdx+1)%arr.length;
                     currentIdx = newIdx;
@@ -977,13 +1034,23 @@
             loadingOverlay.style.visibility = 'visible';
             loadingOverlay.style.opacity = '1';
             startRandomSubtitle(selectedLanguage);
+            const startTime = Date.now();
             const poorConnection = await testMultipleEndpoints();
+            const elapsed = Date.now() - startTime;
+            let remainingWait = 2200 - elapsed;
+            if(remainingWait < 0) remainingWait = 0;
             if(poorConnection){
+                isShowingWarning = true;
+                if(subtitleInterval) clearInterval(subtitleInterval);
                 const warnMsg = getWarningMessage(selectedLanguage);
-                const originalText = loadingSubtitle.innerText;
                 loadingSubtitle.innerText = warnMsg;
+                loadingSubtitle.style.opacity = '1';
                 await new Promise(r => setTimeout(r, 2800));
-                loadingSubtitle.innerText = originalText;
+                isShowingWarning = false;
+                startRandomSubtitle(selectedLanguage);
+                await new Promise(r => setTimeout(r, remainingWait));
+            } else {
+                await new Promise(r => setTimeout(r, remainingWait));
             }
             if(subtitleInterval) clearInterval(subtitleInterval);
             loadingOverlay.style.opacity = '0';
