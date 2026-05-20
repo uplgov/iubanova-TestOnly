@@ -81,6 +81,7 @@ width: 60px;
 margin: 0.5rem auto;
 border-color: #444;
 }
+/* ========== 第一阶段：进度条加载动画 (保留Logo图片) ========== */
 .initial-loader {
 position: fixed;
 top: 0;
@@ -125,6 +126,7 @@ font-size: 1rem;
 margin-top: 10px;
 font-family: monospace;
 }
+/* ========== 第二阶段：转转动画 + 动态文字 ========== */
 .loading-overlay {
 position: fixed;
 top: 0;
@@ -385,18 +387,19 @@ text-align: center;
 max-width: 1000px;
 width: 100%;
 }
-/* Hero图片样式 - 初始超大，滚动后恢复 */
+/* Hero图片样式 - 初始超大(Q弹动画)，滚动后恢复 */
 .hero-image {
 width: 100%;
-max-width: 1400px;
+max-width: 1800px;
 border-radius: 16px;
 margin-bottom: 2rem;
 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+transition: all 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
 cursor: pointer;
 }
 .hero-image.scrolled {
 max-width: 800px;
+transition: all 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 .hero h1 {
 margin-bottom: 2rem;
@@ -405,17 +408,13 @@ font-weight: normal;
 line-height: 1.2;
 }
 .title-line1 {
-font-size: 2.8rem;
+font-size: 2.4rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 color: var(--text-color);
 }
-.title-line1 strong {
-font-size: 3.2rem;
-font-weight: bold;
-}
-.healing-flash {
+.title-line1 .healing-flash {
 font-family: 'Arial', 'GDS Transport', sans-serif;
-font-size: 4rem;
+font-size: 3.2rem;
 font-weight: bold;
 background: linear-gradient(90deg, #00d2ff, #00ff75, #ffeb3b, #fff, #00d2ff);
 background-size: 400% 400%;
@@ -424,7 +423,7 @@ background-size: 400% 400%;
 animation: healingScroll 6s linear infinite;
 display: inline-block;
 }
-.trade-mark {
+.title-line1 .trade-mark {
 font-family: 'Arial', sans-serif;
 font-size: 1.6rem;
 font-weight: normal;
@@ -437,7 +436,7 @@ vertical-align: super;
 margin-left: 2px;
 }
 .title-line2 {
-font-size: 3rem;
+font-size: 2.8rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 color: var(--text-color);
 display: inline-block;
@@ -446,19 +445,19 @@ white-space: nowrap;
 @media (max-width: 700px) {
 .title-line2 {
 white-space: normal;
-font-size: 2rem;
-}
-.title-line1 {
 font-size: 1.8rem;
 }
-.title-line1 strong {
+.title-line1 {
+font-size: 1.6rem;
+}
+.title-line1 .healing-flash {
 font-size: 2rem;
 }
-.healing-flash {
-font-size: 2.4rem;
-}
-.trade-mark {
+.title-line1 .trade-mark {
 font-size: 1rem;
+}
+.hero-image.scrolled {
+max-width: 90%;
 }
 }
 @keyframes healingScroll {
@@ -692,12 +691,14 @@ top: 0 !important;
 </div>
 </div>
 
+<!-- 第一阶段：进度条加载动画 (Logo图片保留) -->
 <div id="initialLoader" class="initial-loader">
 <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
 <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
 <div id="percentText" class="percent-text">0%</div>
 </div>
 
+<!-- 第二阶段：转转动画 + 动态文字 -->
 <div id="loadingOverlay" class="loading-overlay">
 <div class="spinner"></div>
 <div id="loadingSubtitle" class="loading-subtitle"></div>
@@ -765,8 +766,7 @@ I have read, understood, and agree to the terms above.
 <section class="hero">
 <img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
 <h1>
-    <span class="title-line1">Our most advanced <strong>system.</strong></span><br>
-    <span class="healing-flash">Healing</span><span class="trade-mark">™</span><br>
+    <span class="title-line1">Our most advanced <span class="healing-flash">Healing</span><span class="trade-mark">™</span> system.</span><br>
     <span class="title-line2">Amazing. Surprising.</span>
 </h1>
 <div class="hero-btns">
@@ -926,7 +926,7 @@ I have read, understood, and agree to the terms above.
 <div id="crosshairContainer"><div class="crosshair-line-x" id="chX"></div><div class="crosshair-line-y" id="chY"></div></div>
 
 <script>
-// 进度条预加载逻辑
+// 进度条预加载逻辑 (保留Logo图片)
 (function(){
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
     if(isMobile){
@@ -983,22 +983,29 @@ I have read, understood, and agree to the terms above.
     });
 })();
 
-// 滚动控制Hero图片大小：初始超大，滚动后变小
+// 滚动控制Hero图片大小：初始超大(Q弹动画)，滚动后恢复
 function initHeroImageScroll() {
     const heroImage = document.getElementById('heroImage');
     if (!heroImage) return;
     
-    // 初始状态：超大图片
+    // 初始状态：超大图片 (max-width 1800px)
     heroImage.classList.remove('scrolled');
     
     // 监听滚动事件
+    let ticking = false;
     window.addEventListener('scroll', function() {
-        const scrollY = window.scrollY;
-        // 滚动超过100px时添加scrolled类，移除超大样式
-        if (scrollY > 50) {
-            heroImage.classList.add('scrolled');
-        } else {
-            heroImage.classList.remove('scrolled');
+        if (!ticking) {
+            requestAnimationFrame(function() {
+                const scrollY = window.scrollY;
+                // 滚动超过80px时添加scrolled类，移除超大样式 (Q弹过渡已在CSS中定义)
+                if (scrollY > 80) {
+                    heroImage.classList.add('scrolled');
+                } else {
+                    heroImage.classList.remove('scrolled');
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
     });
 }
