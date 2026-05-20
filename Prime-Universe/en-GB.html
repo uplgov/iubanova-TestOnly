@@ -82,7 +82,7 @@ width: 60px;
 margin: 0.5rem auto;
 border-color: #444;
 }
-/* ========== 全新的加载动画 (从index.htm原封不动搬来：进度条+百分比) ========== */
+/* ========== 第一阶段：进度条加载动画 (完全照搬 index.htm) ========== */
 .initial-loader {
 position: fixed;
 top: 0;
@@ -127,21 +127,49 @@ font-size: 1rem;
 margin-top: 10px;
 font-family: monospace;
 }
-/* 隐藏其他加载器 */
-#appLoader {
-display: none;
+/* ========== 第二阶段：转转动画 + 动态文字 (完全照搬 index.htm 的 loadingOverlay 样式) ========== */
+.loading-overlay {
 position: fixed;
 top: 0;
 left: 0;
 width: 100%;
 height: 100%;
-background: #000;
+background: rgba(0,0,0,0.92);
+backdrop-filter: blur(16px);
 z-index: 3000;
+display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-color: #eee;
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+color: white;
 }
+.spinner {
+width: 44px;
+height: 44px;
+border: 3px solid rgba(255,255,255,0.2);
+border-top: 3px solid white;
+border-radius: 50%;
+animation: spinVerySlow 2.8s linear infinite;
+margin-bottom: 1.5rem;
+}
+@keyframes spinVerySlow {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.loading-subtitle {
+font-size: 1.1rem;
+max-width: 85%;
+text-align: center;
+background: rgba(0,0,0,0.5);
+padding: 10px 18px;
+border-radius: 60px;
+transition: opacity 0.25s ease-in-out;
+font-family: 'Times New Roman', Georgia, serif;
+}
+/* 门禁及主界面样式 */
 .btn {
 position: relative;
 padding: 14px 24px;
@@ -329,7 +357,6 @@ filter: invert(0);
 .settings-icon:hover {
 transform: rotate(45deg);
 }
-/* LANG & MODE 按钮样式 */
 .lang-mode-btn {
 background: transparent;
 border: 1px solid var(--border-color);
@@ -554,7 +581,6 @@ justify-content: flex-end;
 gap: 1rem;
 margin-top: 2rem;
 }
-/* 门禁界面隐藏双击区域 */
 .hidden-bypass {
 position: absolute;
 width: 90px;
@@ -563,11 +589,20 @@ z-index: 5000;
 background: transparent;
 cursor: default;
 }
+.maintenance-frame {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+border: none;
+z-index: 10000;
+background: #000;
+}
 </style>
 </head>
 <body>
 
-<!-- 移动端警告 -->
 <div id="mobileWarning" class="mobile-warning" style="display: none;">
 <div class="warning-text-block">
 <p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
@@ -578,23 +613,21 @@ cursor: default;
 </div>
 </div>
 
-<!-- ========== 进度条加载动画 (完全照搬 index.htm) ========== -->
+<!-- 第一阶段：进度条加载动画 -->
 <div id="initialLoader" class="initial-loader">
 <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
 <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
 <div id="percentText" class="percent-text">0%</div>
 </div>
 
-<!-- 保留原有appLoader但不显示，避免冲突 -->
-<div id="appLoader" style="display:none;">
+<!-- 第二阶段：转转动画 + 动态文字 (完全照搬 index.htm 的 loadingOverlay) -->
+<div id="loadingOverlay" class="loading-overlay">
 <div class="spinner"></div>
-<div id="loaderSubtitle">Connecting to core services...</div>
-<div id="pingConsole"></div>
+<div id="loadingSubtitle" class="loading-subtitle"></div>
 </div>
 
 <div id="visualWrapper" style="filter: saturate(100%) grayscale(0%) contrast(100%);">
 <div id="gatekeeper">
-    <!-- 隐藏双击区域：右上角 + 左下角 -->
     <div id="bypassTopRight" class="hidden-bypass" style="top: 0; right: 0;"></div>
     <div id="bypassBottomLeft" class="hidden-bypass" style="bottom: 0; left: 0;"></div>
 
@@ -727,7 +760,6 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<!-- 其他模态框 -->
 <div class="modal-overlay" id="settingsModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('settingsModal')">×</button><h2>Settings</h2><div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label></div><div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div><div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div><div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div><div class="settings-group"><label>Enable Crosshair Assist</label><input type="checkbox" id="chkCrosshair"></div><div class="settings-group"><label>Crosshair Color</label><select id="selCrosshairColor"><option value="red">Red</option><option value="blue">Blue</option><option value="lime">Lime</option><option value="yellow">Yellow</option><option value="purple">Lilac</option><option value="transparent">Transparent</option></select></div><button class="btn" id="btnResetAll">Reset All</button></div></div>
 <div class="modal-overlay" id="privacyModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('privacyModal')">×</button><h2>Privacy Notice</h2><p>Demo environment - no persistent data collection.</p></div></div>
 <div class="modal-overlay" id="tradeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('tradeModal')">×</button><h2>Trademarks & Disclaimer</h2><p>All trademarks belong to respective owners.</p></div></div>
@@ -736,7 +768,7 @@ I have read, understood, and agree to the terms above.
 <div id="crosshairContainer"><div class="crosshair-line-x" id="chX"></div><div class="crosshair-line-y" id="chY"></div></div>
 
 <script>
-// ========== 进度条预加载逻辑 (完全照搬 index.htm) ==========
+// ========== 第一阶段：进度条预加载逻辑 (完全照搬 index.htm) ==========
 (function(){
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
     if(isMobile){
@@ -746,7 +778,6 @@ I have read, understood, and agree to the terms above.
         return;
     }
 
-    // 预加载图片列表 (包含所有网站必要图片)
     const imagesToPreload = [
         "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
         "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png",
@@ -848,7 +879,6 @@ I have read, understood, and agree to the terms above.
         }
     }
 
-    // 超时保护
     setTimeout(() => {
         if(!finishTriggered && loadedCount < totalImages){
             loadedCount = totalImages;
@@ -888,69 +918,177 @@ document.getElementById('agreeCheck').addEventListener('change', function(e) {
     updateGate();
 });
 
-// 正常点击继续按钮
 document.getElementById('continueBtn').addEventListener('click', function() {
-    triggerAppLoading();
+    startSecondStageLoading();
 });
 
-// 隐藏双击区域：右上角和左下角，双击后直接跳过门禁，进入主应用
 function bypassGatekeeperAndContinue() {
-    // 直接触发加载主应用，绕过验证
-    triggerAppLoading();
+    startSecondStageLoading();
 }
 
-const bypassTopRight = document.getElementById('bypassTopRight');
-const bypassBottomLeft = document.getElementById('bypassBottomLeft');
-bypassTopRight.addEventListener('dblclick', bypassGatekeeperAndContinue);
-bypassBottomLeft.addEventListener('dblclick', bypassGatekeeperAndContinue);
+document.getElementById('bypassTopRight').addEventListener('dblclick', bypassGatekeeperAndContinue);
+document.getElementById('bypassBottomLeft').addEventListener('dblclick', bypassGatekeeperAndContinue);
 
-function triggerAppLoading() {
-    document.getElementById('gatekeeper').style.display = 'none';
-    const appLoader = document.getElementById('appLoader');
-    // 显示原有的 appLoader 作为过渡（风格一致）
-    appLoader.style.display = 'flex';
-    
-    const subtitles = [
-        "Initialising secure handshake...",
-        "Verifying environment integrity...",
-        "Loading neural configurations...",
-        "Syncing with Nanjing laboratory servers..."
-    ];
-    const pingLines = [
-        "PING core.iubanova.org [104.21.43.12] with 32 bytes of data...",
-        "Reply from 104.21.43.12: bytes=32 time=14ms TTL=54",
-        "PING nju.edu.cn [210.28.128.2] with 32 bytes of data...",
-        "Reply from 210.28.128.2: bytes=32 time=32ms TTL=50",
-        "Secure tunnel established."
-    ];
-    const subtitleEl = document.getElementById('loaderSubtitle');
-    const consoleEl = document.getElementById('pingConsole');
-    // 清空之前的控制台内容
-    consoleEl.innerHTML = '';
-    
-    let subIndex = 0;
-    subtitleEl.innerText = subtitles[subIndex];
-    const subInterval = setInterval(() => {
-        subIndex = (subIndex + 1) % subtitles.length;
-        subtitleEl.innerText = subtitles[subIndex];
-    }, 1000);
-    
-    let pingIndex = 0;
-    const pingInterval = setInterval(() => {
-        if (pingIndex < pingLines.length) {
-            const p = document.createElement('p');
-            p.innerText = pingLines[pingIndex];
-            consoleEl.appendChild(p);
-            pingIndex++;
+// ========== 第二阶段：转转动画 + 动态文字 (完全照搬 index.htm 的 startLoadingSequence) ==========
+let subtitleInterval = null;
+let isShowingWarning = false;
+
+// 完全照搬 index.htm 中的 subtitlesMap
+const subtitlesMap = {
+    en: [
+        "Use ⌘ + D to add our website to your Favourites in Safari.",
+        "A restless melody is playing.",
+        "Fancy brewing a cup of tea while you wait?",
+        "We're preparing some fine content for you.",
+        "Press ⌘ + H to hide the current window and do something else while you wait.",
+        "Please bear with us for a moment.",
+        "Warming up the Hemi™ V8.",
+        "Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™",
+        "Almost there.",
+        "A good internet connection reduces loading time.",
+        "The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.",
+        "We will present it to you shortly."
+    ],
+    classical: [
+        "按 ⌘ + D，置吾網於 Safari 之「最愛」中。",
+        "促絃繁音，方奏未歇。",
+        "且先煮茗一盞，可乎？",
+        "方為君備佳篇美什，稍候即呈。",
+        "按 ⌘ + H 以隱此窗，且待且為他事。",
+        "請少待片晌。",
+        "Hemi™ V8 方熱機以待。",
+        "喚醒汝之混沌。飲 Camellipinigrum Coffeypuniceus™。",
+        "即至矣。",
+        "良網可減待時。",
+        "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
+        "即將為君奉上。"
+    ],
+    trad: [
+        "使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。",
+        "急促的音樂正在演奏。",
+        "要不要先泡一杯茶？",
+        "我們正在竭力為您準備精美內容。",
+        "使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。",
+        "請稍等片刻。",
+        "正在預熱 Hemi™ V8。",
+        "喚醒你的混亂。飲用 Camellipinigrum Coffeypuniceus™。",
+        "很快了。",
+        "良好的網際網路連接會縮短加載時間。",
+        "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
+        "即將為您奉上。"
+    ],
+    simp: [
+        "用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。",
+        "急促的音乐正在演奏",
+        "要不要先泡一杯茶？",
+        "我们正在为您准备精美内容",
+        "用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的",
+        "请稍等片刻",
+        "正在预热Hemi™ V8",
+        "唤醒你的混乱。饮用 Camellipinigrum Coffeypuniceus™。",
+        "很快了。",
+        "良好的互联网连接会缩短加载时间。",
+        "薄暮初临，诸事将备。烦君少驻，片刻即成。",
+        "即将为你奉上。"
+    ]
+};
+
+function startRandomSubtitle(lang = 'en') {
+    if(subtitleInterval) clearInterval(subtitleInterval);
+    if(isShowingWarning) return;
+    const arr = subtitlesMap[lang];
+    if(!arr) return;
+    let currentIdx = Math.floor(Math.random() * arr.length);
+    const loadingSubtitle = document.getElementById('loadingSubtitle');
+    loadingSubtitle.innerText = arr[currentIdx];
+    loadingSubtitle.style.opacity = '1';
+    subtitleInterval = setInterval(() => {
+        if(isShowingWarning) return;
+        loadingSubtitle.style.opacity = '0';
+        setTimeout(() => {
+            if(isShowingWarning) return;
+            let newIdx = Math.floor(Math.random() * arr.length);
+            if(newIdx === currentIdx) newIdx = (newIdx+1)%arr.length;
+            currentIdx = newIdx;
+            loadingSubtitle.innerText = arr[currentIdx];
+            loadingSubtitle.style.opacity = '1';
+        }, 200);
+    }, 1300);
+}
+
+async function testMultipleEndpoints() {
+    const endpoints = ['youtube.com','google.co.uk','translate.google.co.uk','openstreetmap.org','github.com'];
+    let failCount = 0;
+    for(let ep of endpoints){
+        let success = false;
+        for(let attempt=1; attempt<=2; attempt++){
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3200);
+                await fetch(`https://${ep}/favicon.ico?noCache=${Date.now()}`, { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
+                clearTimeout(timeoutId);
+                success = true;
+                break;
+            } catch(e){}
+            if(attempt===1) await new Promise(r=>setTimeout(r,600));
         }
-    }, 600);
+        if(!success) failCount++;
+        if(failCount>=3) break;
+    }
+    return failCount>=3;
+}
+
+function getWarningMessage() {
+    return "You may be experiencing a poor internet connection. The experience may be degraded.";
+}
+
+async function startSecondStageLoading() {
+    // 隐藏门禁界面
+    document.getElementById('gatekeeper').style.display = 'none';
     
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const mainInterface = document.getElementById('visualWrapper');
+    
+    // 应用模糊效果 (与 index.htm 一致)
+    mainInterface.style.transition = "filter 0.7s cubic-bezier(0.23,1,0.32,1), opacity 0.6s";
+    mainInterface.style.filter = "brightness(0.35) blur(4px)";
+    await new Promise(r => setTimeout(r, 700));
+    
+    // 显示转转动画层
+    loadingOverlay.style.visibility = 'visible';
+    loadingOverlay.style.opacity = '1';
+    
+    // 开始随机显示提示文字 (使用英文，与 index.htm 默认一致)
+    startRandomSubtitle('en');
+    
+    const startTime = Date.now();
+    const poorConnection = await testMultipleEndpoints();
+    const elapsed = Date.now() - startTime;
+    let remainingWait = 2200 - elapsed;
+    if(remainingWait < 0) remainingWait = 0;
+    
+    if(poorConnection){
+        isShowingWarning = true;
+        if(subtitleInterval) clearInterval(subtitleInterval);
+        const loadingSubtitle = document.getElementById('loadingSubtitle');
+        loadingSubtitle.innerText = getWarningMessage();
+        loadingSubtitle.style.opacity = '1';
+        await new Promise(r => setTimeout(r, 2800));
+        isShowingWarning = false;
+        startRandomSubtitle('en');
+        await new Promise(r => setTimeout(r, remainingWait));
+    } else {
+        await new Promise(r => setTimeout(r, remainingWait));
+    }
+    
+    // 结束转转动画，显示主应用
+    if(subtitleInterval) clearInterval(subtitleInterval);
+    loadingOverlay.style.opacity = '0';
     setTimeout(() => {
-        clearInterval(subInterval);
-        clearInterval(pingInterval);
-        appLoader.style.display = 'none';
+        loadingOverlay.style.visibility = 'hidden';
+        mainInterface.style.filter = 'none';
         document.getElementById('mainApp').style.display = 'flex';
-    }, 3500);
+    }, 300);
 }
 
 // ========== LANG & MODE 弹窗逻辑 ==========
@@ -964,7 +1102,6 @@ document.getElementById('langModeBtn').addEventListener('click', () => openModal
 
 document.getElementById('langModalYes').addEventListener('click', () => {
     closeModal('langModeModal');
-    // 激活Google Translate组件
     if(typeof google !== 'undefined' && google.translate) {
         if(!document.getElementById('google_translate_element')) {
             const div = document.createElement('div');
@@ -1004,7 +1141,7 @@ document.getElementById('langModalPortal').addEventListener('click', () => {
     window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/index.htm';
 });
 
-// ========== 设置与滤镜等原有功能 ==========
+// ========== 设置与滤镜功能 ==========
 const chkCrosshair = document.getElementById('chkCrosshair');
 const selCrosshairColor = document.getElementById('selCrosshairColor');
 const crosshairContainer = document.getElementById('crosshairContainer');
