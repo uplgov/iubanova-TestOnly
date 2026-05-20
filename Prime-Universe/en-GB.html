@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>iubanova</title>
-<!-- 网站图标 (favicon) -->
 <link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 <style>
@@ -82,7 +81,6 @@ width: 60px;
 margin: 0.5rem auto;
 border-color: #444;
 }
-/* ========== 第一阶段：进度条加载动画 ========== */
 .initial-loader {
 position: fixed;
 top: 0;
@@ -127,7 +125,6 @@ font-size: 1rem;
 margin-top: 10px;
 font-family: monospace;
 }
-/* ========== 第二阶段：转转动画 + 动态文字 ========== */
 .loading-overlay {
 position: fixed;
 top: 0;
@@ -395,7 +392,6 @@ border-radius: 16px;
 margin-bottom: 2rem;
 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-/* 新标题样式：Healing 放大+闪光+Arial，™ 缩小无闪光 */
 .hero h1 {
 margin-bottom: 2rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
@@ -440,10 +436,6 @@ white-space: nowrap;
 @media (max-width: 700px) {
 .title-line2 {
 white-space: normal;
-word-break: keep-all;
-}
-.title-line2 br {
-display: inline;
 }
 }
 @keyframes healingScroll {
@@ -486,7 +478,6 @@ aspect-ratio: 1/1;
 object-fit: cover;
 border-radius: 12px;
 }
-/* 副标题样式：粗体 + 强制换行 */
 .grid-item h3 {
 font-size: 1.9rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
@@ -540,6 +531,7 @@ font-family: Georgia, 'Times New Roman', Times, serif;
 .footer-link:hover {
 color: var(--text-color);
 }
+/* ========== 模态窗口动画 ========== */
 .modal-overlay {
 position: fixed;
 top: 0;
@@ -552,6 +544,12 @@ z-index: 4000;
 display: none;
 align-items: center;
 justify-content: center;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+display: flex;
+opacity: 1;
 }
 .modal-content {
 background: var(--bg-color);
@@ -563,6 +561,11 @@ width: 90%;
 max-height: 80vh;
 overflow-y: auto;
 position: relative;
+transform: scale(0.95);
+transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.modal-overlay.active .modal-content {
+transform: scale(1);
 }
 .modal-close {
 position: absolute;
@@ -573,6 +576,10 @@ cursor: pointer;
 background: none;
 border: none;
 color: var(--text-color);
+transition: transform 0.2s;
+}
+.modal-close:hover {
+transform: scale(1.1);
 }
 .settings-group {
 margin-bottom: 1.5rem;
@@ -663,14 +670,12 @@ top: 0 !important;
 </div>
 </div>
 
-<!-- 第一阶段：进度条加载动画 -->
 <div id="initialLoader" class="initial-loader">
 <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
 <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
 <div id="percentText" class="percent-text">0%</div>
 </div>
 
-<!-- 第二阶段：转转动画 + 动态文字 -->
 <div id="loadingOverlay" class="loading-overlay">
 <div class="spinner"></div>
 <div id="loadingSubtitle" class="loading-subtitle"></div>
@@ -816,15 +821,92 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<div class="modal-overlay" id="settingsModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('settingsModal')">×</button><h2>Settings</h2><div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label></div><div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div><div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div><div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div><div class="settings-group"><label>Enable Crosshair Assist</label><input type="checkbox" id="chkCrosshair"></div><div class="settings-group"><label>Crosshair Color</label><select id="selCrosshairColor"><option value="red">Red</option><option value="blue">Blue</option><option value="lime">Lime</option><option value="yellow">Yellow</option><option value="purple">Lilac</option><option value="transparent">Transparent</option></select></div><button class="btn" id="btnResetAll">Reset All</button></div></div>
-<div class="modal-overlay" id="privacyModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('privacyModal')">×</button><h2>Privacy Notice</h2><p>Demo environment - no persistent data collection.</p></div></div>
-<div class="modal-overlay" id="tradeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('tradeModal')">×</button><h2>Trademarks & Disclaimer</h2><p>All trademarks belong to respective owners.</p></div></div>
-<div class="modal-overlay" id="licenceModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('licenceModal')">×</button><h2>Licence</h2><p>© iubanova / Nanjing University.</p></div></div>
+<!-- ========== 完整版 Privacy 模态框 ========== -->
+<div class="modal-overlay" id="privacyModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Data & Privacy Notice – Test Environment</h2>
+<p style="margin-bottom:1rem; font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including:</p>
+<ul style="margin: 0 0 1rem 2rem; line-height:1.5;">
+<li>IP address</li>
+<li>Browser fingerprint / user agent</li>
+<li>Mouse movements and interaction patterns</li>
+<li>Device characteristics</li>
+</ul>
+<p style="margin-bottom:1rem; line-height:1.5;">This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p>
+<p style="margin-bottom:0.5rem;"><a href="https://www.hcaptcha.com/privacy" target="_blank" style="color:#88f;">hCaptcha Privacy Policy</a></p>
+<p><a href="https://www.hcaptcha.com/terms" target="_blank" style="color:#88f;">hCaptcha Terms of Service</a></p>
+</div>
+</div>
+
+<!-- ========== 完整版 Trademarks & disclaimer 模态框 ========== -->
+<div class="modal-overlay" id="tradeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Trademarks & disclaimer</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p>
+<p style="margin-bottom:1rem;">Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p>
+<p style="margin-bottom:1rem;">All trademarks, logos, and product names belong to their respective owners, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>Dodge / Hemi (Stellantis NV)</li>
+<li>Apple Inc. / iPhone (Apple Inc.)</li>
+<li>The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation)</li>
+</ul>
+<p style="margin-bottom:1rem;">iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners.</p>
+<p style="margin-bottom:1rem;">These placeholder images will be removed or replaced prior to any commercial or production release of this website.</p>
+<p>No copyright or trademark infringement is intended. If you are a rights holder and have concerns, please contact us.</p>
+</div>
+</div>
+</div>
+
+<!-- ========== 完整版 Licence 模态框 ========== -->
+<div class="modal-overlay" id="licenceModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('licenceModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Licence</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website and its entire contents, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>All source code, HTML, CSS, JavaScript</li>
+<li>Visual design, layout, and user interface</li>
+<li>Text, documentation, and explanatory materials</li>
+<li>Images, icons, and graphical assets (unless otherwise attributed)</li>
+</ul>
+<p style="margin-bottom:1rem;">are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p>
+<p style="margin-bottom:1rem;">Unless explicitly stated otherwise:</p>
+<ol style="margin: 0 0 1rem 2rem;">
+<li>You may view, navigate, and interact with this website for its intended demonstration purposes.</li>
+<li>You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission.</li>
+<li>You may not create derivative works based on this website's design, logic, or structure.</li>
+<li>Temporary viewing in a browser cache does not grant any license for reuse.</li>
+</ol>
+<p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p>
+</div>
+</div>
+</div>
+
+<!-- 设置模态框 -->
+<div class="modal-overlay" id="settingsModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+<h2 style="margin-bottom:1.5rem; font-family:Georgia, serif;">Settings</h2>
+<div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label></div>
+<div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div>
+<div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div>
+<div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div>
+<div class="settings-group"><label>Enable Crosshair Assist</label><input type="checkbox" id="chkCrosshair"></div>
+<div class="settings-group"><label>Crosshair Color</label><select id="selCrosshairColor"><option value="red">Red</option><option value="blue">Blue</option><option value="lime">Lime</option><option value="yellow">Yellow</option><option value="purple">Lilac</option><option value="transparent">Transparent</option></select></div>
+<button class="btn" id="btnResetAll">Reset All</button>
+</div>
+</div>
 
 <div id="crosshairContainer"><div class="crosshair-line-x" id="chX"></div><div class="crosshair-line-y" id="chY"></div></div>
 
 <script>
-// 进度条预加载逻辑 (略作简化但完整保留功能)
+// 进度条预加载逻辑
 (function(){
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
     if(isMobile){
@@ -880,6 +962,20 @@ I have read, understood, and agree to the terms above.
         img.src = url;
     });
 })();
+
+// 模态窗口动画控制函数
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
 
 let hCaptchaPassed = false;
 let checkAgreed = false;
@@ -992,8 +1088,6 @@ async function startSecondStageLoading() {
     }, 300);
 }
 
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 document.getElementById('openSettingsBtn').addEventListener('click', () => openModal('settingsModal'));
 document.getElementById('btnPrivacy').addEventListener('click', () => openModal('privacyModal'));
 document.getElementById('btnTrade').addEventListener('click', () => openModal('tradeModal'));
