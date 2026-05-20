@@ -385,27 +385,37 @@ text-align: center;
 max-width: 1000px;
 width: 100%;
 }
-.hero img {
+/* Hero图片样式 - 初始超大，滚动后恢复 */
+.hero-image {
 width: 100%;
-max-width: 800px;
+max-width: 1400px;
 border-radius: 16px;
 margin-bottom: 2rem;
 box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+cursor: pointer;
+}
+.hero-image.scrolled {
+max-width: 800px;
 }
 .hero h1 {
 margin-bottom: 2rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 font-weight: normal;
-line-height: 1.3;
+line-height: 1.2;
 }
 .title-line1 {
-font-size: 2.2rem;
+font-size: 2.8rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 color: var(--text-color);
 }
+.title-line1 strong {
+font-size: 3.2rem;
+font-weight: bold;
+}
 .healing-flash {
 font-family: 'Arial', 'GDS Transport', sans-serif;
-font-size: 3.2rem;
+font-size: 4rem;
 font-weight: bold;
 background: linear-gradient(90deg, #00d2ff, #00ff75, #ffeb3b, #fff, #00d2ff);
 background-size: 400% 400%;
@@ -416,7 +426,7 @@ display: inline-block;
 }
 .trade-mark {
 font-family: 'Arial', sans-serif;
-font-size: 1.4rem;
+font-size: 1.6rem;
 font-weight: normal;
 color: var(--text-color);
 background: none;
@@ -427,7 +437,7 @@ vertical-align: super;
 margin-left: 2px;
 }
 .title-line2 {
-font-size: 2rem;
+font-size: 3rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 color: var(--text-color);
 display: inline-block;
@@ -436,6 +446,19 @@ white-space: nowrap;
 @media (max-width: 700px) {
 .title-line2 {
 white-space: normal;
+font-size: 2rem;
+}
+.title-line1 {
+font-size: 1.8rem;
+}
+.title-line1 strong {
+font-size: 2rem;
+}
+.healing-flash {
+font-size: 2.4rem;
+}
+.trade-mark {
+font-size: 1rem;
 }
 }
 @keyframes healingScroll {
@@ -531,7 +554,6 @@ font-family: Georgia, 'Times New Roman', Times, serif;
 .footer-link:hover {
 color: var(--text-color);
 }
-/* ========== 模态窗口动画 ========== */
 .modal-overlay {
 position: fixed;
 top: 0;
@@ -741,12 +763,10 @@ I have read, understood, and agree to the terms above.
 
 <main>
 <section class="hero">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
+<img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
 <h1>
-    <span class="title-line1">Our most advanced </span>
-    <span class="healing-flash">Healing</span><span class="trade-mark">™</span>
-    <span class="title-line1"> system.</span>
-    <br>
+    <span class="title-line1">Our most advanced <strong>system.</strong></span><br>
+    <span class="healing-flash">Healing</span><span class="trade-mark">™</span><br>
     <span class="title-line2">Amazing. Surprising.</span>
 </h1>
 <div class="hero-btns">
@@ -821,7 +841,7 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<!-- ========== 完整版 Privacy 模态框 ========== -->
+<!-- Privacy 模态框 -->
 <div class="modal-overlay" id="privacyModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
@@ -841,7 +861,7 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<!-- ========== 完整版 Trademarks & disclaimer 模态框 ========== -->
+<!-- Trademarks & disclaimer 模态框 -->
 <div class="modal-overlay" id="tradeModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeModal('tradeModal')">×</button>
@@ -862,7 +882,7 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
-<!-- ========== 完整版 Licence 模态框 ========== -->
+<!-- Licence 模态框 -->
 <div class="modal-overlay" id="licenceModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeModal('licenceModal')">×</button>
@@ -962,6 +982,26 @@ I have read, understood, and agree to the terms above.
         img.src = url;
     });
 })();
+
+// 滚动控制Hero图片大小：初始超大，滚动后变小
+function initHeroImageScroll() {
+    const heroImage = document.getElementById('heroImage');
+    if (!heroImage) return;
+    
+    // 初始状态：超大图片
+    heroImage.classList.remove('scrolled');
+    
+    // 监听滚动事件
+    window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
+        // 滚动超过100px时添加scrolled类，移除超大样式
+        if (scrollY > 50) {
+            heroImage.classList.add('scrolled');
+        } else {
+            heroImage.classList.remove('scrolled');
+        }
+    });
+}
 
 // 模态窗口动画控制函数
 function openModal(id) {
@@ -1085,6 +1125,8 @@ async function startSecondStageLoading() {
         loadingOverlay.style.visibility = 'hidden';
         mainInterface.style.filter = 'none';
         document.getElementById('mainApp').style.display = 'flex';
+        // 主应用显示后初始化滚动图片效果
+        initHeroImageScroll();
     }, 300);
 }
 
