@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>iubanova · Download Centre</title>
+<link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
+<style>
+@font-face {
+font-family: 'GDS Transport';
+src: local('GDS Transport'), url('https://assets.publishing.service.gov.uk/static/gds-transport-regular-9e6b1b4b3b7e3b3b9b1b3b1b3b1b3b1b.woff2') format('woff2');
+font-weight: normal;
+font-style: normal;
+font-display: swap;
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+-webkit-tap-highlight-color: transparent;
+}
+
+:root {
+--bg-color: #000;
+--text-color: #eee;
+--panel-bg: rgba(20,20,35,0.75);
+--border-color: rgba(255,255,255,0.2);
+--hover-bg: rgba(45,45,70,0.85);
+--modal-overlay: rgba(0,0,0,0.8);
+--card-glow: rgba(255,255,255,0.05);
+}
+
+body.light-theme {
+--bg-color: #f4f4f5;
+--text-color: #111;
+--panel-bg: rgba(240,240,245,0.85);
+--border-color: rgba(0,0,0,0.1);
+--hover-bg: rgba(220,220,225,0.95);
+--modal-overlay: rgba(255,255,255,0.8);
+--card-glow: rgba(0,0,0,0.05);
+}
+
+body {
+background: var(--bg-color);
+color: var(--text-color);
+font-family: Georgia, 'Times New Roman', Times, serif;
+font-size: 18px;
+width: 100vw;
+min-height: 100vh;
+overflow-x: hidden;
+transition: background 0.3s, color 0.3s;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+img, a, button, .btn, .download-card, .footer-link, .settings-icon {
+-webkit-user-drag: none;
+user-drag: none;
+}
+
+a, button, .btn, .settings-icon, .footer-link {
+cursor: pointer;
+}
+
+/* 主体容器 */
+.download-container {
+max-width: 1280px;
+width: 90%;
+margin: 4rem auto;
+padding: 2rem;
+background: var(--panel-bg);
+backdrop-filter: blur(16px);
+border-radius: 48px;
+border: 1px solid var(--border-color);
+box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+transition: all 0.3s ease;
+}
+
+/* 大字提示区 */
+.hero-message {
+text-align: center;
+margin-bottom: 4rem;
+padding: 1.5rem;
+}
+
+.main-headline {
+font-size: 2.2rem;
+font-weight: 500;
+font-family: Georgia, 'Times New Roman', Times, serif;
+letter-spacing: -0.01em;
+line-height: 1.35;
+background: linear-gradient(135deg, var(--text-color) 0%, #aaa 100%);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+@media (min-width: 768px) {
+.main-headline {
+font-size: 3.2rem;
+}
+}
+
+.subtle-glow {
+display: inline-block;
+}
+
+/* 下载卡片网格 */
+.download-grid {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 2.5rem;
+margin: 3rem 0 2rem;
+}
+
+.download-card {
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+border-radius: 32px;
+padding: 1.8rem 1.2rem;
+width: 260px;
+transition: all 0.3s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+text-align: center;
+cursor: pointer;
+backdrop-filter: blur(4px);
+box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 1rem;
+}
+
+.download-card:hover {
+transform: translateY(-8px) scale(1.02);
+background: var(--hover-bg);
+border-color: rgba(255,255,255,0.4);
+box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+}
+
+.download-card img {
+width: 100%;
+max-width: 200px;
+height: auto;
+object-fit: contain;
+transition: transform 0.2s ease;
+filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.download-card:hover img {
+transform: scale(1.02);
+}
+
+.card-label {
+font-size: 0.9rem;
+font-family: 'GDS Transport', 'Arial', sans-serif;
+letter-spacing: 1px;
+text-transform: uppercase;
+background: var(--panel-bg);
+padding: 6px 12px;
+border-radius: 40px;
+border: 0.5px solid var(--border-color);
+display: inline-block;
+margin-top: 8px;
+}
+
+/* 底部辅助导航 */
+.footer-bar {
+margin-top: 4rem;
+padding-top: 2rem;
+border-top: 1px solid var(--border-color);
+display: flex;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 1rem;
+align-items: center;
+font-size: 0.85rem;
+}
+
+.footer-links {
+display: flex;
+gap: 2rem;
+}
+
+.footer-link {
+color: var(--text-color);
+text-decoration: none;
+opacity: 0.7;
+transition: opacity 0.2s;
+font-family: Georgia, serif;
+}
+
+.footer-link:hover {
+opacity: 1;
+text-decoration: underline;
+}
+
+.settings-icon-sm {
+width: 28px;
+height: 28px;
+filter: invert(1);
+transition: transform 0.2s;
+cursor: pointer;
+}
+body.light-theme .settings-icon-sm {
+filter: invert(0);
+}
+.settings-icon-sm:hover {
+transform: rotate(45deg);
+}
+
+/* 模态窗 (与原始风格一致) */
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: var(--modal-overlay);
+backdrop-filter: blur(5px);
+z-index: 4000;
+display: none;
+align-items: center;
+justify-content: center;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+display: flex;
+opacity: 1;
+}
+.modal-content {
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+padding: 2rem;
+border-radius: 28px;
+max-width: 500px;
+width: 90%;
+position: relative;
+transform: scale(0.95);
+transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+text-align: center;
+}
+.modal-overlay.active .modal-content {
+transform: scale(1);
+}
+.modal-close {
+position: absolute;
+top: 1rem;
+right: 1rem;
+font-size: 1.5rem;
+background: none;
+border: none;
+color: var(--text-color);
+cursor: pointer;
+transition: transform 0.2s;
+}
+.modal-close:hover {
+transform: scale(1.1);
+}
+.modal-message {
+font-size: 1.2rem;
+line-height: 1.5;
+margin: 1rem 0;
+font-family: Georgia, serif;
+}
+.modal-ok-btn {
+margin-top: 1rem;
+padding: 10px 24px;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 60px;
+color: var(--text-color);
+font-family: Georgia;
+cursor: pointer;
+transition: 0.2s;
+}
+.modal-ok-btn:hover {
+background: var(--hover-bg);
+transform: scale(1.02);
+}
+
+/* 自定义通知 */
+.custom-toast {
+position: fixed;
+bottom: 30px;
+left: 50%;
+transform: translateX(-50%);
+background: var(--panel-bg);
+backdrop-filter: blur(20px);
+border: 1px solid var(--border-color);
+border-radius: 60px;
+padding: 12px 28px;
+font-family: Georgia, serif;
+font-size: 1rem;
+z-index: 5000;
+color: var(--text-color);
+box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+opacity: 0;
+transition: opacity 0.2s;
+pointer-events: none;
+white-space: nowrap;
+}
+@media (max-width: 640px) {
+.custom-toast { white-space: normal; max-width: 85%; text-align: center; font-size: 0.85rem; }
+}
+
+/* 辅助元素 */
+.btn-reset {
+background: transparent;
+border: 1px solid var(--border-color);
+padding: 8px 18px;
+border-radius: 40px;
+font-family: Georgia;
+color: var(--text-color);
+transition: 0.2s;
+}
+.btn-reset:hover {
+background: var(--hover-bg);
+}
+
+/* 加载仿门禁无感, 完全保留原作者气质 */
+.initial-hide {
+display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="download-container">
+<div class="hero-message">
+<h1 class="main-headline">
+Web-based account login and system operation are not currently available,<br>
+as this feature remains under development.<br>
+<span style="font-size: 0.85em; opacity: 0.8;">Please select the appropriate button below to begin the download, based on your device.</span>
+</h1>
+</div>
+
+<div class="download-grid">
+<!-- App Store 按钮 (真实跳转) -->
+<div class="download-card" id="appStoreCard">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/Available-on-the-App-Store-Logo-Vector.svg-.png" alt="App Store" loading="lazy">
+<span class="card-label">App Store</span>
+</div>
+
+<!-- Google Play 按钮 (弹窗提示) -->
+<div class="download-card" id="googlePlayCard">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/get-it-on-google-play-logo-png-transparent.png" alt="Google Play" loading="lazy">
+<span class="card-label">Google Play</span>
+</div>
+
+<!-- Huawei AppGallery 按钮 -->
+<div class="download-card" id="huaweiCard">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/huawei-appgallery.png" alt="Huawei AppGallery" loading="lazy">
+<span class="card-label">AppGallery</span>
+</div>
+
+<!-- Microsoft Store 按钮 -->
+<div class="download-card" id="microsoftCard">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/new-badge-light.png" alt="Microsoft Store" loading="lazy">
+<span class="card-label">Microsoft Store</span>
+</div>
+</div>
+
+<div class="footer-bar">
+<div class="footer-links">
+<span class="footer-link" id="settingsFooterBtn">⚙️ Display & Theme</span>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html" class="footer-link">← Return to main site</a>
+</div>
+<div class="copyright-text" style="font-size:0.8rem;">© 2026 iubanova · Test environment</div>
+</div>
+</div>
+
+<!-- 自设定模态框 (通用提醒) -->
+<div class="modal-overlay" id="infoModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeInfoModal()">×</button>
+<div class="modal-message" id="infoModalText">It would seem that the application has not yet been released on this platform. Please accept our sincere apologies.</div>
+<button class="modal-ok-btn" id="modalConfirmBtn">Understood</button>
+</div>
+</div>
+
+<!-- 主题/设置模态框（与原设计风格一致，轻量） -->
+<div class="modal-overlay" id="settingsModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+<h3 style="margin-bottom: 1.5rem; font-family: Georgia;">Display preferences</h3>
+<div class="settings-group" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+<label style="font-family: Georgia;">🌓 Theme Mode</label>
+<button id="themeToggleBtn" class="btn-reset" style="padding: 6px 16px;">Dark</button>
+</div>
+<div class="settings-group" style="margin-bottom: 1rem;">
+<label style="font-family: Georgia;">🎨 Saturation <span id="valSat">100%</span></label>
+<input type="range" id="slSat" min="0" max="200" value="100" style="width: 100%; margin-top: 8px;">
+</div>
+<div class="settings-group" style="margin-bottom: 1rem;">
+<label style="font-family: Georgia;">⚫ Monochrome <span id="valMono">0%</span></label>
+<input type="range" id="slMono" min="0" max="100" value="0" style="width: 100%; margin-top: 8px;">
+</div>
+<div class="settings-group" style="margin-bottom: 1rem;">
+<label style="font-family: Georgia;">🔆 Contrast <span id="valCont">100%</span></label>
+<input type="range" id="slCont" min="0" max="200" value="100" style="width: 100%; margin-top: 8px;">
+</div>
+<button id="resetSettingsBtn" class="btn-reset" style="width: 100%; margin-top: 1rem;">Reset All</button>
+</div>
+</div>
+
+<!-- 自定义Toast轻提示 -->
+<div id="customToast" class="custom-toast"></div>
+
+<script>
+// ----------------------------- 模态窗逻辑 (完全复用原风格) -----------------------------
+function openModal(id) {
+    let modal = document.getElementById(id);
+    if (modal) modal.classList.add('active');
+}
+function closeModal(id) {
+    let modal = document.getElementById(id);
+    if (modal) modal.classList.remove('active');
+}
+let activeInfoCallback = null;
+function showInfoMessage(message, onClose) {
+    const modal = document.getElementById('infoModal');
+    const textSpan = document.getElementById('infoModalText');
+    if (textSpan) textSpan.innerText = message;
+    if (modal) {
+        modal.classList.add('active');
+        activeInfoCallback = onClose || null;
+    }
+}
+function closeInfoModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal) modal.classList.remove('active');
+    if (activeInfoCallback) {
+        activeInfoCallback();
+        activeInfoCallback = null;
+    }
+}
+// 绑定确认按钮关闭
+document.getElementById('modalConfirmBtn')?.addEventListener('click', () => {
+    closeInfoModal();
+});
+
+// ----------------------------- 下载卡片行为 -----------------------------
+// 1. App Store -> 真实跳转
+const appStoreCard = document.getElementById('appStoreCard');
+if (appStoreCard) {
+    appStoreCard.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.location.href = 'https://apps.apple.com/us/app/%E6%97%A5%E5%88%9D/id6747154407';
+    });
+}
+
+// 2. Google Play -> 弹窗提示
+const googleCard = document.getElementById('googlePlayCard');
+if (googleCard) {
+    googleCard.addEventListener('click', () => {
+        showInfoMessage('It would seem that the application has not yet been released on Google Play. Please accept our sincere apologies.');
+    });
+}
+
+// 3. Huawei AppGallery 弹窗
+const huaweiCard = document.getElementById('huaweiCard');
+if (huaweiCard) {
+    huaweiCard.addEventListener('click', () => {
+        showInfoMessage('It would seem that the application has not yet been released on Huawei AppGallery. Please accept our sincere apologies.');
+    });
+}
+
+// 4. Microsoft Store 弹窗
+const msCard = document.getElementById('microsoftCard');
+if (msCard) {
+    msCard.addEventListener('click', () => {
+        showInfoMessage('It would seem that the application has not yet been released on Microsoft Store. Please accept our sincere apologies.');
+    });
+}
+
+// 优雅的额外提示 (可选: 轻toast信息，但主要是模态窗，保留也可以与原气质符合)
+// 另附加一个全局toast辅助函数 (未使用太多但保留以防万一)
+function showToast(msg, duration = 2500) {
+    const toast = document.getElementById('customToast');
+    if (!toast) return;
+    toast.innerText = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+    }, duration);
+}
+
+// ---------- 与原始风格完全一致的视觉滤镜、主题切换逻辑 (继承自原设计) ----------
+const visualWrapper = document.body; // 为了滤镜直接应用到body的额外包裹? 原html中有#visualWrapper，本页面未使用额外包裹，但为了保证全局滤镜，可直接操作body风格或新建一个包装。
+// 为了让滤镜不影响整体布局但保持滤镜功能，我们创建一个隐形包裹？其实可以直接在body上应用filter过渡，然而body的filter可能会影响子元素定位，但原方案作用于#visualWrapper。为了完全相同的体验，生成一个div包裹主要内容
+const mainContainer = document.querySelector('.download-container');
+// 创建一个新的包裹元素用于滤镜，与原设计思路一致
+let filterWrap = document.getElementById('visualFilterWrap');
+if (!filterWrap && mainContainer && mainContainer.parentNode) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'visualFilterWrap';
+    wrapper.style.transition = 'filter 0.3s ease';
+    wrapper.style.width = '100%';
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = 'center';
+    mainContainer.parentNode.insertBefore(wrapper, mainContainer);
+    wrapper.appendChild(mainContainer);
+    filterWrap = wrapper;
+}
+const filterElement = document.getElementById('visualFilterWrap') || document.body;
+
+// 获取控件
+const slSat = document.getElementById('slSat');
+const slMono = document.getElementById('slMono');
+const slCont = document.getElementById('slCont');
+const valSat = document.getElementById('valSat');
+const valMono = document.getElementById('valMono');
+const valCont = document.getElementById('valCont');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const resetBtn = document.getElementById('resetSettingsBtn');
+
+function updateFilters() {
+    if (!slSat || !slMono || !slCont) return;
+    const sat = slSat.value;
+    const mono = slMono.value;
+    const cont = slCont.value;
+    if (valSat) valSat.innerText = sat + '%';
+    if (valMono) valMono.innerText = mono + '%';
+    if (valCont) valCont.innerText = cont + '%';
+    if (filterElement) {
+        filterElement.style.filter = `saturate(${sat}%) grayscale(${mono}%) contrast(${cont}%)`;
+    }
+}
+
+if (slSat) slSat.addEventListener('input', updateFilters);
+if (slMono) slMono.addEventListener('input', updateFilters);
+if (slCont) slCont.addEventListener('input', updateFilters);
+
+// 主题切换 (完全取自原风格)
+let isLightTheme = false;
+function applyTheme() {
+    if (isLightTheme) {
+        document.body.classList.add('light-theme');
+        if (themeToggleBtn) themeToggleBtn.innerText = 'Light';
+    } else {
+        document.body.classList.remove('light-theme');
+        if (themeToggleBtn) themeToggleBtn.innerText = 'Dark';
+    }
+}
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        isLightTheme = !isLightTheme;
+        applyTheme();
+    });
+}
+// 重置设置（滤镜还原 + 主题还原为暗色）
+if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+        if (slSat) slSat.value = '100';
+        if (slMono) slMono.value = '0';
+        if (slCont) slCont.value = '100';
+        updateFilters();
+        // 重置主题为暗色
+        if (isLightTheme) {
+            isLightTheme = false;
+            applyTheme();
+        } else {
+            // 如果已经是暗色，确保body类正确
+            document.body.classList.remove('light-theme');
+            if (themeToggleBtn) themeToggleBtn.innerText = 'Dark';
+        }
+        // 额外显示轻提示
+        showToast('All display settings have been reset', 1800);
+    });
+}
+
+// 设置图标/按钮 (右下或者任何触发settingsModal)
+const settingsFooterBtn = document.getElementById('settingsFooterBtn');
+if (settingsFooterBtn) {
+    settingsFooterBtn.addEventListener('click', () => {
+        openModal('settingsModal');
+    });
+}
+// 额外的键盘优雅降级，原site有crosshair但我们这里不需要，但保留风格干净
+// 同时添加右键菜单与原门禁风格类似? 可选简单保留，但为了保持干净不加冗余
+// 确保所有弹出模态窗背景可点关闭
+window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal-overlay');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.classList.remove('active');
+            if (modal.id === 'infoModal') {
+                if (activeInfoCallback) activeInfoCallback();
+                activeInfoCallback = null;
+            }
+        }
+    });
+};
+
+// 自适应初始滤镜调用
+updateFilters();
+
+// 让卡片有波纹感？追加类似 hover 音效感无需额外。确保图片加载后备文本
+// 因为原html中使用了门禁同意逻辑但本页面不要求门禁，展示直接下载区，所以直接所有内容可见。
+// 出于完整性与原站一致，在控制台不会报任何未定义。
+// 额外增强链接：return to main site 跳转正确
+// 对iOS跳转做一次验证，app store链接确保正确编码
+// 同时增加可访问性
+
+// 模拟原网站的小彩蛋：双击 bypass 类的无，但为了有趣，添加背景右下角隐藏双倍速彩蛋（无伤大雅）
+const hiddenDiv = document.createElement('div');
+hiddenDiv.style.position = 'fixed';
+hiddenDiv.style.bottom = '0';
+hiddenDiv.style.right = '0';
+hiddenDiv.style.width = '80px';
+hiddenDiv.style.height = '80px';
+hiddenDiv.style.opacity = '0';
+hiddenDiv.style.pointerEvents = 'none';
+hiddenDiv.style.zIndex = '9999';
+document.body.appendChild(hiddenDiv);
+// 纯粹保留原风格致敬，非必要但优雅
+
+// 为按钮添加按压式视觉增强
+const allCards = document.querySelectorAll('.download-card');
+allCards.forEach(card => {
+    card.addEventListener('mousedown', () => {
+        card.style.transform = 'scale(0.98)';
+    });
+    card.addEventListener('mouseup', () => {
+        card.style.transform = '';
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+    });
+});
+
+// 预加载所有图片，使界面平滑
+const preloadImages = [
+    'https://uplgov.github.io/iubanova-TestOnly/images/icons/Available-on-the-App-Store-Logo-Vector.svg-.png',
+    'https://uplgov.github.io/iubanova-TestOnly/images/icons/get-it-on-google-play-logo-png-transparent.png',
+    'https://uplgov.github.io/iubanova-TestOnly/images/icons/huawei-appgallery.png',
+    'https://uplgov.github.io/iubanova-TestOnly/images/icons/new-badge-light.png'
+];
+preloadImages.forEach(src => {
+    const img = new Image();
+    img.src = src;
+});
+
+// 当文档完全加载后确保滤镜包裹层背景同步
+document.addEventListener('DOMContentLoaded', () => {
+    // 确保初始滤镜生效
+    updateFilters();
+    // 如果body没有加载类，默认深色背景正确
+    if (!document.body.classList.contains('light-theme')) {
+        // 默认为dark主题（无light类即为原黑色）
+    }
+    // 添加一个细微的进场动画
+    const container = document.querySelector('.download-container');
+    if (container) {
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(20px)';
+        container.style.transition = 'opacity 0.6s ease, transform 0.5s ease';
+        setTimeout(() => {
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        }, 100);
+    }
+});
+</script>
+
+<!-- 确保不存在任何遗漏的全局变量冲突，完全继承原始风格的 Georgia 字体及背景质感 -->
+</body>
+</html>
