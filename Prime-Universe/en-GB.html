@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -19,6 +19,16 @@ margin: 0;
 padding: 0;
 box-sizing: border-box;
 -webkit-tap-highlight-color: transparent;
+}
+/* 门禁界面可选中、可复制 */
+#gatekeeper, #gatekeeper * {
+user-select: text !important;
+-webkit-user-select: text !important;
+-moz-user-select: text !important;
+-ms-user-select: text !important;
+}
+/* 其他区域不可选中 */
+body:not(.gatekeeper-visible) #mainApp, body:not(.gatekeeper-visible) nav, body:not(.gatekeeper-visible) main, body:not(.gatekeeper-visible) footer {
 user-select: none;
 -webkit-user-select: none;
 -moz-user-select: none;
@@ -53,8 +63,6 @@ transition: background 0.3s, color 0.3s;
 img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .dropdown-item {
 -webkit-user-drag: none;
 user-drag: none;
-user-select: none;
--webkit-user-select: none;
 }
 /* 默认所有可点击元素显示手指光标 */
 a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass {
@@ -495,12 +503,33 @@ flex-direction: column;
 align-items: center;
 text-align: center;
 gap: 1rem;
+transition: all 0.3s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+/* 板块悬停放大效果 - 0.2秒延迟后触发 */
+.grid-item.hover-expand {
+transform: scale(1.05);
+background: var(--hover-bg);
+box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+transition: all 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand img {
+transform: scale(1.08);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand h3 {
+transform: scale(1.04);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand .btn {
+transform: scale(1.05);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
 }
 .grid-item img {
 width: 100%;
 aspect-ratio: 1/1;
 object-fit: cover;
 border-radius: 12px;
+transition: transform 0.2s ease;
 }
 .grid-item h3 {
 font-size: 1.9rem;
@@ -512,6 +541,10 @@ align-items: center;
 justify-content: center;
 line-height: 1.3;
 text-align: center;
+transition: transform 0.2s ease;
+}
+.grid-item .btn {
+transition: transform 0.2s ease;
 }
 footer {
 background: var(--panel-bg);
@@ -812,22 +845,22 @@ I have read, understood, and agree to the terms above.
 </section>
 
 <section class="grid-container">
-<div class="grid-item">
+<div class="grid-item" id="gridItem1">
 <img src="https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team">
 <h3>Built by researchers,<br>for real-world impact.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html" class="btn">Meet the team</a>
 </div>
-<div class="grid-item">
+<div class="grid-item" id="gridItem2">
 <img src="https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security">
 <h3>Your data is never a product.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
 </div>
-<div class="grid-item">
+<div class="grid-item" id="gridItem3">
 <img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dcdui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
 <h3>See it for yourself,<br>No commitment.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
 </div>
-<div class="grid-item">
+<div class="grid-item" id="gridItem4">
 <img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*beb24de4322.jpg" alt="Stories">
 <h3>From pilot to production.<br>Proven in the field.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
@@ -1031,6 +1064,24 @@ function initHeroScroll(){
     window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
 }
 
+// ========== 板块悬停放大效果 (0.2秒延迟) ==========
+const gridItems = document.querySelectorAll('.grid-item');
+gridItems.forEach(item => {
+    let hoverTimer = null;
+    item.addEventListener('mouseenter', () => {
+        hoverTimer = setTimeout(() => {
+            item.classList.add('hover-expand');
+        }, 200);
+    });
+    item.addEventListener('mouseleave', () => {
+        if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+        }
+        item.classList.remove('hover-expand');
+    });
+});
+
 // ========== 瞄准镜系统 ==========
 let crosshairEnabled=false;
 let currentHoverElement=null;
@@ -1046,8 +1097,6 @@ function updateCrosshairMode(){
         document.body.classList.add('crosshair-mode');
         cursorDiv.style.borderColor=color;
         cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
-        const pseudoColor=color==='transparent'?'rgba(255,255,255,0.5)':color;
-        cursorDiv.style.setProperty('--crosshair-color',pseudoColor);
     }else{
         cursorDiv.style.display='none';
         document.body.classList.remove('crosshair-mode');
@@ -1068,7 +1117,6 @@ document.addEventListener('mousemove',(e)=>{
         cursorDiv.style.top=e.clientY+'px';
     }
 });
-// 监听所有可点击元素，鼠标进入时十字旋转45度
 const clickables=document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass');
 clickables.forEach(el=>{
     el.addEventListener('mouseenter',()=>{
