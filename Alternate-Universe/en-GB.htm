@@ -2,555 +2,783 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>iubanova</title>
 <link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  background: white;
-  color: #222;
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 16px;
-  line-height: 1.5;
-}
-img, a, button {
-  -webkit-user-drag: none;
-}
-.btn, button, .nav-link, .footer-link {
-  cursor: pointer;
-}
-.mobile-warning {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #fff;
-  z-index: 10000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  text-align: center;
-  color: #222;
-}
-.initial-loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-.loader-logo {
-  width: 150px;
-  margin-bottom: 2rem;
-}
-.loader-logo img {
-  width: 100%;
-}
-.progress-bar-container {
-  width: 260px;
-  height: 4px;
-  background: #ddd;
-  border-radius: 2px;
-  overflow: hidden;
-}
-.progress-fill {
-  width: 0%;
-  height: 100%;
-  background: #333;
-}
-.percent-text {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-}
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  z-index: 3000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s;
-}
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 2px solid #ccc;
-  border-top: 2px solid #333;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.loading-subtitle {
-  font-size: 14px;
-  color: #555;
-  text-align: center;
-  padding: 8px 16px;
-}
-.btn {
-  padding: 10px 20px;
-  margin: 5px;
-  background: #eee;
-  border: 1px solid #ccc;
-  color: #222;
-  font-size: 14px;
-  border-radius: 4px;
-  text-decoration: none;
-  display: inline-block;
-  font-family: Georgia, serif;
-}
-.btn:hover {
-  background: #ddd;
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-#gatekeeper {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
-  max-width: 700px;
-  margin: 0 auto;
-}
-.gate-box {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-.gate-box h2 {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-}
-.gate-box ul {
-  margin: 1rem 0 1rem 1.5rem;
-}
-.gate-check {
-  margin: 1.2rem 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.gate-check input {
-  width: 18px;
-  height: 18px;
-}
-#mainApp {
-  display: none;
-  flex-direction: column;
-  min-height: 100vh;
-}
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem 1.5rem;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ddd;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.nav-left, .nav-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.nav-logo-container {
-  width: 32px;
-  height: 32px;
-}
-.nav-logo {
-  width: 100%;
-  content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png');
-}
-.nav-link {
-  color: #222;
-  text-decoration: none;
-  padding: 5px 8px;
-}
-.dropdown {
-  position: relative;
-}
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  border: 1px solid #ddd;
-  min-width: 160px;
-  flex-direction: column;
-  padding: 0.3rem 0;
-}
-.dropdown:hover .dropdown-menu {
-  display: flex;
-}
-.dropdown-item {
-  padding: 0.5rem 1rem;
-  color: #222;
-  text-decoration: none;
-}
-.dropdown-item:hover {
-  background: #f0f0f0;
-}
-.settings-icon {
-  width: 24px;
-  height: 24px;
-  filter: invert(0);
-}
-.lang-mode-btn {
-  background: transparent;
-  border: 1px solid #ccc;
-  padding: 5px 12px;
-  border-radius: 4px;
-  font-family: Georgia, serif;
-}
-main {
-  flex: 1;
-  padding: 2rem;
-}
-.hero {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-.hero-image {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 1.5rem;
-}
-.hero h1 {
-  font-size: 1.8rem;
-  font-weight: normal;
-  margin-bottom: 1.5rem;
-}
-.healing-flash {
-  font-weight: bold;
-}
-.trade-mark {
-  font-size: 0.9rem;
-  vertical-align: super;
-}
-.hero-btns {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-@media(max-width: 700px) {
-  .grid-container {
-    grid-template-columns: 1fr;
+  /* 极简样式：无动画、白底黑字、系统默认控件 */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-}
-.grid-item {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-}
-.grid-item img {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 0.8rem;
-}
-.grid-item h3 {
-  font-size: 1.2rem;
-  margin-bottom: 0.8rem;
-  font-weight: normal;
-}
-footer {
-  background: #f5f5f5;
-  border-top: 1px solid #ddd;
-  padding: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1.5rem;
-  font-size: 13px;
-}
-.footer-logo img {
-  width: 100px;
-}
-.copyright-text {
-  color: #888;
-  margin-top: 5px;
-}
-.footer-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.footer-section h4 {
-  font-size: 1rem;
-  margin-bottom: 0.2rem;
-}
-.footer-link {
-  color: #555;
-  text-decoration: none;
-}
-.footer-link:hover {
-  color: #000;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 4000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.active {
-  display: flex;
-}
-.modal-content {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-}
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.3rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.settings-group {
-  margin-bottom: 1rem;
-}
-.settings-group label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-input[type="range"] {
-  width: 100%;
-}
-select {
-  padding: 5px;
-  width: 100%;
-}
-.hidden-bypass {
-  position: fixed;
-  width: 120px;
-  height: 120px;
-  background: transparent;
-  z-index: 5000;
-}
-.custom-context-menu {
-  position: fixed;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px 0;
-  min-width: 160px;
-  z-index: 50000;
-}
-.custom-context-menu-item {
-  padding: 6px 15px;
-  cursor: pointer;
-}
-.custom-context-menu-item:hover {
-  background: #f0f0f0;
-}
-.custom-context-menu hr {
-  margin: 4px 0;
-}
-#customCursor {
-  display: none;
-}
+  body {
+    background: white;
+    color: black;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+    line-height: 1.5;
+    width: 100%;
+    min-height: 100vh;
+  }
+  /* 保持门禁区域文字可选 */
+  #gatekeeper, #gatekeeper * {
+    user-select: text;
+  }
+  /* 其他区域不禁用选择，保持自然 */
+  img, a, button {
+    user-select: auto;
+    -webkit-user-drag: auto;
+  }
+  /* 完全使用系统按钮样式，不自定义背景 */
+  button, .btn, input[type="button"], input[type="submit"] {
+    background: buttonface;
+    border: 1px solid #a0a0a0;
+    padding: 6px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 0;
+  }
+  button:hover, .btn:hover {
+    background: #e0e0e0;
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  /* 移动端警告 */
+  .mobile-warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+    flex-direction: column;
+    gap: 1rem;
+    border: 2px solid red;
+  }
+  /* 初始加载器 */
+  .initial-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  .loader-logo {
+    width: 180px;
+    margin-bottom: 2rem;
+  }
+  .loader-logo img {
+    width: 100%;
+  }
+  .progress-bar-container {
+    width: 280px;
+    height: 4px;
+    background: #ccc;
+  }
+  .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #000;
+  }
+  .percent-text {
+    margin-top: 10px;
+    font-family: monospace;
+  }
+  /* 加载覆盖层 */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.98);
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #aaa;
+    border-top: 2px solid #000;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .loading-subtitle {
+    margin-top: 1rem;
+    font-size: 16px;
+    color: #333;
+  }
+  /* 门禁样式 – 简约白底框 */
+  #gatekeeper {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .gate-box {
+    background: #fefefe;
+    border: 1px solid #aaa;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+  }
+  .gate-box h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  .gate-box ul {
+    margin: 1rem 0 1rem 2rem;
+  }
+  .gate-check {
+    margin: 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .gate-check input {
+    width: 20px;
+    height: 20px;
+  }
+  /* 主应用 */
+  #mainApp {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  /* 导航栏 – 恢复所有菜单项 */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+    flex-wrap: wrap;
+  }
+  .nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .nav-logo-container {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+  }
+  .nav-logo {
+    width: 100%;
+    content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png');
+  }
+  .nav-logo-container:hover .nav-logo {
+    content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png');
+  }
+  .nav-link {
+    color: black;
+    text-decoration: none;
+    padding: 6px 0;
+    display: inline-block;
+  }
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #aaa;
+    min-width: 180px;
+    z-index: 200;
+    padding: 0.5rem 0;
+  }
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  .dropdown-item {
+    display: block;
+    padding: 6px 20px;
+    color: black;
+    text-decoration: none;
+  }
+  .dropdown-item:hover {
+    background: #eaeaea;
+  }
+  .lang-mode-btn, .settings-icon {
+    background: none;
+    border: 1px solid #888;
+    padding: 5px 12px;
+    font-family: inherit;
+    font-size: 16px;
+  }
+  .settings-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }
+  /* main */
+  main {
+    flex: 1;
+    padding: 2rem;
+  }
+  .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .hero-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: normal;
+  }
+  .title-line1 .healing-flash {
+    font-weight: bold;
+  }
+  .title-line1 .trade-mark {
+    font-size: 0.9rem;
+    vertical-align: super;
+  }
+  .hero-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  @media (max-width: 700px) {
+    .grid-container { grid-template-columns: 1fr; }
+  }
+  .grid-item {
+    border: 1px solid #ccc;
+    padding: 1.5rem;
+    text-align: center;
+    background: #fafafa;
+  }
+  .grid-item img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  .grid-item h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: normal;
+  }
+  /* 页脚 – 完全照搬原版内容结构 */
+  footer {
+    background: #f5f5f5;
+    border-top: 1px solid #ccc;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .footer-logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .footer-logo img {
+    width: 150px;
+  }
+  .copyright-text {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .footer-section h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.2rem;
+  }
+  .footer-link {
+    color: #333;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  /* 模态框 */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 5000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  .modal-content {
+    background: white;
+    border: 1px solid #222;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+  .settings-group {
+    margin-bottom: 1.2rem;
+  }
+  .settings-group label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  input[type="range"] {
+    width: 100%;
+  }
+  select {
+    width: 100%;
+    padding: 6px;
+  }
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .hidden-bypass {
+    position: fixed;
+    width: 140px;
+    height: 140px;
+    z-index: 5000;
+    background: transparent;
+  }
+  .custom-context-menu {
+    position: fixed;
+    background: white;
+    border: 1px solid #888;
+    padding: 6px 0;
+    min-width: 180px;
+    z-index: 60000;
+  }
+  .custom-context-menu-item {
+    padding: 8px 20px;
+    cursor: pointer;
+  }
+  .custom-context-menu-item:hover {
+    background: #eee;
+  }
+  #customCursor {
+    display: none;
+  }
 </style>
 </head>
 <body>
 
 <div id="mobileWarning" class="mobile-warning" style="display: none;">
-<p>Please access from a desktop computer.</p>
+  <div class="warning-text-block">
+    <p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
+    <hr>
+    <p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
+    <hr>
+    <p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
+  </div>
 </div>
 
 <div id="initialLoader" class="initial-loader">
-<div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
-<div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
-<div id="percentText" class="percent-text">0%</div>
+  <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
+  <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
+  <div id="percentText" class="percent-text">0%</div>
 </div>
 
 <div id="loadingOverlay" class="loading-overlay">
-<div class="spinner"></div>
-<div id="loadingSubtitle" class="loading-subtitle"></div>
+  <div class="spinner"></div>
+  <div id="loadingSubtitle" class="loading-subtitle"></div>
 </div>
 
-<div id="visualWrapper">
-<div id="gatekeeper">
-    <div id="bypassTopRight" class="hidden-bypass" style="top:0;right:0;"></div>
-    <div id="bypassBottomLeft" class="hidden-bypass" style="bottom:0;left:0;"></div>
+<div id="visualWrapper" style="filter: none;">
+  <!-- 门禁区域 -->
+  <div id="gatekeeper">
+    <div id="bypassTopRight" class="hidden-bypass" style="top:0; right:0;"></div>
+    <div id="bypassBottomLeft" class="hidden-bypass" style="bottom:0; left:0;"></div>
     <div class="gate-box">
-        <h2>Test Site — Demonstration Only</h2>
-        <p>By proceeding you agree:</p>
-        <ul>
-            <li>Not for real-world or clinical use</li>
-            <li>All content is for testing only</li>
-            <li>No liability for use of this test system</li>
-        </ul>
-        <label class="gate-check"><input type="checkbox" id="agreeCheck"> I agree to the terms</label>
-        <div class="h-captcha" data-sitekey="b1b8c6e6-6586-4d9e-8eee-745a861c8974" data-callback="onCaptchaSuccess"></div>
+      <h2>This is a non-production test site for evaluation and demonstration purposes only.</h2>
+      <p style="font-weight: bold;">By proceeding, you acknowledge and agree that:</p>
+      <ul>
+        <li>This website is not intended for real-world or clinical use.</li>
+        <li>All content, models, and outputs are for demonstration and testing only.</li>
+        <li>No health, safety, or operational decisions should be based on this test environment.</li>
+        <li>iubanova and Nanjing University accept no liability for any use or misuse of this test system.</li>
+        <li>You will not share, distribute, or replicate any test data or outputs without explicit permission.</li>
+      </ul>
+      <label class="gate-check">
+        <input type="checkbox" id="agreeCheck">
+        I have read, understood, and agree to the terms above.
+      </label>
+      <p style="margin-bottom: 1rem; font-weight: bold;">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</p>
+      <div class="h-captcha" data-sitekey="b1b8c6e6-6586-4d9e-8eee-745a861c8974" data-callback="onCaptchaSuccess"></div>
     </div>
     <button id="continueBtn" class="btn" disabled>Continue</button>
-</div>
+  </div>
 
-<div id="mainApp">
-<nav>
-    <div class="nav-left">
-        <div class="nav-logo-container" id="navLogoBtn"><img class="nav-logo" alt="Logo"></div>
-        <div class="dropdown"><span class="nav-link">About</span><div class="dropdown-menu"><a href="#" class="dropdown-item">Our Story</a><a href="#" class="dropdown-item">Leadership</a></div></div>
-        <a href="#" class="nav-link">News</a>
-        <a href="#" class="nav-link">Solutions</a>
-        <a href="#" class="nav-link">Pricing</a>
-        <a href="#" class="nav-link">Support</a>
-    </div>
-    <div class="nav-right">
-        <button id="langModeBtn" class="lang-mode-btn">LANG</button>
+  <!-- 主应用 -->
+  <div id="mainApp">
+    <nav>
+      <div class="nav-left">
+        <div class="nav-logo-container" id="navLogoBtn">
+          <img class="nav-logo" alt="Logo">
+        </div>
+        <div class="dropdown">
+          <span class="nav-link">About</span>
+          <div class="dropdown-menu">
+            <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/ourstory.html" class="dropdown-item">Our Story</a>
+            <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/leadership.html" class="dropdown-item">Leadership Insight</a>
+            <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/find-us.html" class="dropdown-item">Contacts & Visit</a>
+          </div>
+        </div>
+        <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/news.html" class="nav-link">News</a>
+        <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="nav-link">Solutions</a>
+        <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html" class="nav-link">Pricing</a>
+        <div class="dropdown">
+          <span class="nav-link">Resources</span>
+          <div class="dropdown-menu">
+            <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html" class="dropdown-item">Archive</a>
+            <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html" class="dropdown-item">Knowledge Base</a>
+          </div>
+        </div>
+        <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html" class="nav-link">Support Centre</a>
+      </div>
+      <div class="nav-right">
+        <button id="langModeBtn" class="lang-mode-btn">LANG & MODE</button>
         <img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png" class="settings-icon" id="openSettingsBtn" alt="Settings">
-        <a href="#" class="btn" style="margin:0;">Login</a>
-    </div>
-</nav>
+        <a href="https://uplgov.github.io/iubanova-TestOnly/myaccount.htm" class="btn" style="margin:0;">Login</a>
+      </div>
+    </nav>
 
-<main>
-    <section class="hero">
-        <img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing">
-        <h1><span class="healing-flash">Healing</span><span class="trade-mark">™</span> system.<br>Amazing. Surprising.</h1>
-        <div class="hero-btns"><a href="#" class="btn">Dive into…</a><a href="#" class="btn">Request demo</a></div>
-    </section>
-    <div class="grid-container">
-        <div class="grid-item"><img src="https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team"><h3>Built by researchers</h3><a href="#" class="btn">Meet team</a></div>
-        <div class="grid-item"><img src="https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security"><h3>Your data is never a product</h3><a href="#" class="btn">Security</a></div>
-        <div class="grid-item"><img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience"><h3>See it for yourself</h3><a href="#" class="btn">Experience pack</a></div>
-        <div class="grid-item"><img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories"><h3>Customer stories</h3><a href="#" class="btn">Read more</a></div>
-    </div>
-</main>
+    <main>
+      <section class="hero">
+        <img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
+        <h1>
+          <span class="title-line1">Our most advanced <span class="healing-flash">Healing</span><span class="trade-mark">™</span> system.</span><br>
+          <span class="title-line2">Amazing. Surprising.</span>
+        </h1>
+        <div class="hero-btns">
+          <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="btn">Dive into…</a>
+          <a href="https://uplgov.github.io/iubanova-TestOnly/demo.html" class="btn">Request a demo</a>
+        </div>
+      </section>
 
-<footer>
-    <div class="footer-logo-wrapper"><div class="footer-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div><div class="copyright-text">© 2026 iubanova</div></div>
-    <div class="footer-section"><h4>Website</h4><span class="footer-link" id="btnPrivacy">Privacy</span><span class="footer-link" id="btnTrade">Disclaimer</span></div>
-    <div class="footer-section"><h4>Links</h4><a href="#" class="footer-link">Nanjing University</a></div>
-</footer>
-</div>
+      <section class="grid-container">
+        <div class="grid-item">
+          <img src="https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team">
+          <h3>Built by researchers,<br>for real-world impact.</h3>
+          <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html" class="btn">Meet the team</a>
+        </div>
+        <div class="grid-item">
+          <img src="https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security">
+          <h3>Your data is never a product.</h3>
+          <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
+        </div>
+        <div class="grid-item">
+          <img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
+          <h3>See it for yourself,<br>No commitment.</h3>
+          <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
+        </div>
+        <div class="grid-item">
+          <img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories">
+          <h3>From pilot to production.<br>Proven in the field.</h3>
+          <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer 完全照搬原始结构 -->
+    <footer>
+      <div class="footer-logo-wrapper">
+        <div class="footer-logo">
+          <img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="3d logo">
+        </div>
+        <div class="copyright-text">© 2026 iubanova</div>
+      </div>
+      <div class="footer-section">
+        <h4>Website</h4>
+        <span class="footer-link" id="btnPrivacy">Privacy</span>
+        <span class="footer-link" id="btnTrade">Trademarks & disclaimer</span>
+        <span class="footer-link" id="btnLicence">Licence</span>
+        <a href="https://uplgov.github.io/iubanova-TestOnly/sitemap.xml" class="footer-link">Sitemap</a>
+      </div>
+      <div class="footer-section">
+        <h4>Links</h4>
+        <a href="https://www.nju.edu.cn/en/" target="_blank" class="footer-link">Nanjing University</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">YouTube</a>
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">X</a>
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">FaceBook</a>
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">LinkedIn</a>
+      </div>
+    </footer>
+  </div>
 </div>
 
 <div id="customCursor"></div>
-<div id="customContextMenu" class="custom-context-menu" style="display:none;"></div>
+<div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
 
-<div class="modal-overlay" id="langModeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('langModeModal')">×</button><h3>Language</h3><p>Activate Google Translate?</p><div class="modal-buttons" style="display:flex;gap:10px;margin-top:1rem;"><button id="langModalYes" class="btn">Yes</button><button id="langModalPortal" class="btn">Portal</button></div></div></div>
-<div class="modal-overlay" id="privacyModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('privacyModal')">×</button><h3>Privacy</h3><p>No personal data collected. hCaptcha may collect device data per its policy.</p></div></div>
-<div class="modal-overlay" id="tradeModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('tradeModal')">×</button><h3>Disclaimer</h3><p>Test environment only. All trademarks belong to their owners.</p></div></div>
-<div class="modal-overlay" id="settingsModal"><div class="modal-content"><button class="modal-close" onclick="closeModal('settingsModal')">×</button><h3>Settings</h3><div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn" style="padding:2px 10px;">Dark</button></label></div><div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div><div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div><div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div><button class="btn" id="btnResetAll">Reset</button></div></div>
+<!-- 模态框 -->
+<div class="modal-overlay" id="langModeModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('langModeModal')">×</button>
+    <h3 style="margin-bottom: 1rem;">Language & Mode Selection</h3>
+    <p>Returning to the portal allows you to switch loading modes and languages. Do you need to view this website in a language other than British English, Traditional Chinese, Simplified Chinese, or Classical Chinese? Clicking "Yes" will activate the Google Translate component. Please note that the translation may be inaccurate.</p>
+    <div class="modal-buttons">
+      <button id="langModalYes" class="btn">Yes</button>
+      <button id="langModalPortal" class="btn">Return to the Portal</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+    <h2>Data & Privacy Notice – Test Environment</h2>
+    <p><em>This test site is operated by iubanova for demonstration purposes only.</em></p>
+    <p>iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p>
+    <p>However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including: IP address, browser fingerprint / user agent, mouse movements and interaction patterns, device characteristics.</p>
+    <p>This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p>
+    <p><a href="https://www.hcaptcha.com/privacy" target="_blank">hCaptcha Privacy Policy</a> | <a href="https://www.hcaptcha.com/terms" target="_blank">hCaptcha Terms of Service</a></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="tradeModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+    <h2>Trademarks & disclaimer</h2>
+    <p>This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p>
+    <p>Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p>
+    <p>All trademarks, logos, and product names belong to their respective owners, including but not limited to: Dodge / Hemi (Stellantis NV), Apple Inc. / iPhone (Apple Inc.), The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation).</p>
+    <p>iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners. These placeholder images will be removed or replaced prior to any commercial or production release. No copyright or trademark infringement is intended.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="licenceModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('licenceModal')">×</button>
+    <h2>Licence</h2>
+    <p>This website and its entire contents, including but not limited to: all source code, HTML, CSS, JavaScript; visual design, layout, and user interface; text, documentation, and explanatory materials; images, icons, and graphical assets (unless otherwise attributed) are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p>
+    <p>Unless explicitly stated otherwise: (1) You may view, navigate, and interact with this website for its intended demonstration purposes. (2) You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission. (3) You may not create derivative works based on this website's design, logic, or structure. (4) Temporary viewing in a browser cache does not grant any license for reuse.</p>
+    <p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+    <h2>Settings</h2>
+    <div class="settings-group"><label>Theme <button id="themeToggleBtn" class="btn" style="padding:2px 12px;">Dark</button></label></div>
+    <div class="settings-group"><label>Saturation <span id="valSat">100%</span></label><input type="range" id="slSat" min="0" max="200" value="100"></div>
+    <div class="settings-group"><label>Monochrome <span id="valMono">0%</span></label><input type="range" id="slMono" min="0" max="100" value="0"></div>
+    <div class="settings-group"><label>Contrast <span id="valCont">100%</span></label><input type="range" id="slCont" min="0" max="200" value="100"></div>
+    <div class="settings-group"><label><input type="checkbox" id="chkCrosshair"> Enable Crosshair Assist</label></div>
+    <div class="settings-group"><label>Crosshair Color</label><select id="selCrosshairColor"><option value="red">Red</option><option value="blue">Blue</option><option value="lime">Lime</option><option value="yellow">Yellow</option><option value="purple">Lilac</option><option value="transparent">Transparent</option></select></div>
+    <button id="btnResetAll" class="btn">Reset All</button>
+  </div>
+</div>
 
 <script>
-(function(){
-    if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
-        document.getElementById('mobileWarning').style.display='flex';
-        document.getElementById('initialLoader').style.display='none';
-        return;
+  // 移动端检测
+  (function() {
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth <= 800 && window.innerHeight <= 700)) {
+      document.getElementById('mobileWarning').style.display = 'flex';
+      document.getElementById('initialLoader').style.display = 'none';
+      return;
     }
-    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg"];
-    let loaded=0,total=imgs.length,finish=false;
-    const fill=document.getElementById('progressFill'),pt=document.getElementById('percentText'),loader=document.getElementById('initialLoader');
-    function upd(){if(finish)return;let p=Math.floor(loaded/total*100);fill.style.width=p+'%';pt.innerText=p+'%';if(loaded>=total&&!finish){finish=true;setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>{loader.style.display='none';document.getElementById('gatekeeper').style.display='flex';},300);},200);}}
-    setTimeout(()=>{if(!finish&&loaded<total){loaded=total;upd();}},6000);
-    imgs.forEach(u=>{let img=new Image();img.onload=()=>{loaded++;upd();};img.onerror=()=>{loaded++;upd();};img.src=u;});
-})();
+    const imgs = [
+      "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
+      "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png",
+      "https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png",
+      "https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png",
+      "https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png",
+      "https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg",
+      "https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg",
+      "https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg",
+      "https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg"
+    ];
+    let loaded = 0, total = imgs.length, finish = false;
+    const fill = document.getElementById('progressFill'), pt = document.getElementById('percentText'), loader = document.getElementById('initialLoader');
+    function upd() {
+      if (finish) return;
+      let p = Math.floor(loaded / total * 100);
+      fill.style.width = p + '%';
+      pt.innerText = p + '%';
+      if (loaded >= total && !finish) {
+        finish = true;
+        setTimeout(() => {
+          loader.style.opacity = '0';
+          setTimeout(() => {
+            loader.style.display = 'none';
+            document.getElementById('gatekeeper').style.display = 'flex';
+          }, 300);
+        }, 150);
+      }
+    }
+    setTimeout(() => { if (!finish && loaded < total) { loaded = total; upd(); } }, 5000);
+    imgs.forEach(u => { let img = new Image(); img.onload = () => { loaded++; upd(); }; img.onerror = () => { loaded++; upd(); }; img.src = u; });
+  })();
 
-let hCaptchaPassed=false,checkAgreed=false;
-function onCaptchaSuccess(){hCaptchaPassed=true;updateGate();}
-function updateGate(){let btn=document.getElementById('continueBtn');if(hCaptchaPassed&&checkAgreed)btn.removeAttribute('disabled');else btn.setAttribute('disabled','true');}
-document.getElementById('agreeCheck').addEventListener('change',e=>{checkAgreed=e.target.checked;updateGate();});
-document.getElementById('continueBtn').addEventListener('click',()=>startSecondStageLoading());
-function bypass(){startSecondStageLoading();}
-document.getElementById('bypassTopRight').addEventListener('dblclick',bypass);
-document.getElementById('bypassBottomLeft').addEventListener('dblclick',bypass);
+  let hCaptchaPassed = false, checkAgreed = false;
+  function onCaptchaSuccess() { hCaptchaPassed = true; updateGate(); }
+  function updateGate() { let btn = document.getElementById('continueBtn'); if (hCaptchaPassed && checkAgreed) btn.removeAttribute('disabled'); else btn.setAttribute('disabled', 'true'); }
+  document.getElementById('agreeCheck').addEventListener('change', e => { checkAgreed = e.target.checked; updateGate(); });
+  document.getElementById('continueBtn').addEventListener('click', () => startSecondStageLoading());
+  function bypass() { startSecondStageLoading(); }
+  document.getElementById('bypassTopRight').addEventListener('dblclick', bypass);
+  document.getElementById('bypassBottomLeft').addEventListener('dblclick', bypass);
 
-let subInt=null;
-const subs=["Loading...","Almost ready","Please wait","Preparing content"];
-function startSub(){let idx=0,el=document.getElementById('loadingSubtitle');el.innerText=subs[0];if(subInt)clearInterval(subInt);subInt=setInterval(()=>{idx=(idx+1)%subs.length;el.innerText=subs[idx];},1500);}
-async function startSecondStageLoading(){
-    document.getElementById('gatekeeper').style.display='none';
-    let ov=document.getElementById('loadingOverlay'),mw=document.getElementById('visualWrapper');
-    mw.style.filter="brightness(0.7) blur(2px)";
-    await new Promise(r=>setTimeout(r,400));
-    ov.style.visibility='visible';ov.style.opacity='1';startSub();
-    await new Promise(r=>setTimeout(r,1800));
-    if(subInt)clearInterval(subInt);ov.style.opacity='0';
-    setTimeout(()=>{ov.style.visibility='hidden';mw.style.filter='none';document.getElementById('mainApp').style.display='flex';},300);
-}
+  let subInt = null;
+  const subs = ["A restless melody is playing.", "Fancy brewing a cup of tea while you wait?", "We're preparing some fine content for you.", "Please bear with us for a moment.", "Warming up the system.", "Almost there."];
+  function startSub() {
+    let idx = 0, el = document.getElementById('loadingSubtitle');
+    if (subInt) clearInterval(subInt);
+    el.innerText = subs[0];
+    subInt = setInterval(() => { idx = (idx + 1) % subs.length; el.innerText = subs[idx]; }, 1600);
+  }
+  async function startSecondStageLoading() {
+    document.getElementById('gatekeeper').style.display = 'none';
+    let ov = document.getElementById('loadingOverlay'), mw = document.getElementById('visualWrapper');
+    mw.style.transition = "filter 0.3s";
+    mw.style.filter = "brightness(0.8) blur(2px)";
+    await new Promise(r => setTimeout(r, 300));
+    ov.style.visibility = 'visible'; ov.style.opacity = '1'; startSub();
+    await new Promise(r => setTimeout(r, 2000));
+    if (subInt) clearInterval(subInt);
+    ov.style.opacity = '0';
+    setTimeout(() => {
+      ov.style.visibility = 'hidden';
+      mw.style.filter = 'none';
+      document.getElementById('mainApp').style.display = 'flex';
+    }, 250);
+  }
 
-function openModal(id){document.getElementById(id).classList.add('active');}
-function closeModal(id){document.getElementById(id).classList.remove('active');}
-document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
-document.getElementById('btnPrivacy').onclick=()=>openModal('privacyModal');
-document.getElementById('btnTrade').onclick=()=>openModal('tradeModal');
-document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
-document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'});};};
-document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
+  function openModal(id) { document.getElementById(id).classList.add('active'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+  document.getElementById('openSettingsBtn').onclick = () => openModal('settingsModal');
+  document.getElementById('btnPrivacy').onclick = () => openModal('privacyModal');
+  document.getElementById('btnTrade').onclick = () => openModal('tradeModal');
+  document.getElementById('btnLicence').onclick = () => openModal('licenceModal');
+  document.getElementById('langModeBtn').onclick = () => openModal('langModeModal');
+  document.getElementById('langModalYes').onclick = () => {
+    closeModal('langModeModal');
+    let d = document.createElement('div'); d.id = 'google_translate_element'; d.style.position = 'fixed'; d.style.bottom = '20px'; d.style.right = '20px'; d.style.zIndex = '9999'; d.style.background = 'white'; d.style.border = '1px solid #aaa'; d.style.padding = '10px'; document.body.appendChild(d);
+    let s = document.createElement('script'); s.src = 'https://translate.google.com/translate_a/element.js?cb=initGT'; document.body.appendChild(s);
+    window.initGT = function () { new google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element'); };
+  };
+  document.getElementById('langModalPortal').onclick = () => { window.location.href = 'https://uplgov.github.io/iubanova-TestOnly/index.htm'; };
 
-const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper');
-const valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
-function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
-slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
-let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!light;if(light){document.body.style.background='#222';document.body.style.color='#eee';document.getElementById('themeToggleBtn').innerText='Light';}else{document.body.style.background='white';document.body.style.color='#222';document.getElementById('themeToggleBtn').innerText='Dark';}};
-document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();};
-document.getElementById('navLogoBtn').onclick=()=>{if(!window.location.href.includes('en-GB.html'))window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
+  // 视觉滤镜
+  const slSat = document.getElementById('slSat'), slMono = document.getElementById('slMono'), slCont = document.getElementById('slCont'), vw = document.getElementById('visualWrapper');
+  const valSat = document.getElementById('valSat'), valMono = document.getElementById('valMono'), valCont = document.getElementById('valCont');
+  function upF() { valSat.innerText = slSat.value + '%'; valMono.innerText = slMono.value + '%'; valCont.innerText = slCont.value + '%'; vw.style.filter = `saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`; }
+  slSat.addEventListener('input', upF); slMono.addEventListener('input', upF); slCont.addEventListener('input', upF);
+  let light = false;
+  document.getElementById('themeToggleBtn').onclick = () => {
+    light = !light;
+    if (light) { document.body.style.background = '#1e1e1e'; document.body.style.color = '#eee'; document.getElementById('themeToggleBtn').innerText = 'Light'; }
+    else { document.body.style.background = 'white'; document.body.style.color = 'black'; document.getElementById('themeToggleBtn').innerText = 'Dark'; }
+  };
+  document.getElementById('btnResetAll').onclick = () => { slSat.value = 100; slMono.value = 0; slCont.value = 100; upF(); document.getElementById('chkCrosshair').checked = false; updateCrosshair(); if (light) { light = false; document.body.style.background = 'white'; document.body.style.color = 'black'; document.getElementById('themeToggleBtn').innerText = 'Dark'; } };
 
-const contextMenu=document.getElementById('customContextMenu');
-document.addEventListener('contextmenu',(e)=>{e.preventDefault();contextMenu.style.display='block';contextMenu.style.left=e.clientX+'px';contextMenu.style.top=e.clientY+'px';contextMenu.innerHTML=`<div class="custom-context-menu-item" id="ctxCopyURL">Copy URL</div><hr><div class="custom-context-menu-item" id="ctxSettings">Settings</div>`;document.getElementById('ctxCopyURL').onclick=()=>{navigator.clipboard.writeText(window.location.href);contextMenu.style.display='none';};document.getElementById('ctxSettings').onclick=()=>{openModal('settingsModal');contextMenu.style.display='none';};});
-document.addEventListener('click',()=>{contextMenu.style.display='none';});
+  // 十字线简单实现
+  const cursorDiv = document.getElementById('customCursor');
+  function updateCrosshair() {
+    const enabled = document.getElementById('chkCrosshair').checked;
+    if (enabled) { cursorDiv.style.display = 'block'; document.body.classList.add('crosshair-mode'); } else { cursorDiv.style.display = 'none'; document.body.classList.remove('crosshair-mode'); }
+  }
+  document.getElementById('chkCrosshair').addEventListener('change', updateCrosshair);
+  document.addEventListener('mousemove', (e) => { if (document.getElementById('chkCrosshair').checked) { cursorDiv.style.left = e.clientX + 'px'; cursorDiv.style.top = e.clientY + 'px'; } });
+  updateCrosshair();
+
+  // 自定义右键菜单简化
+  const ctxMenu = document.getElementById('customContextMenu');
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    ctxMenu.style.display = 'block';
+    ctxMenu.style.left = e.clientX + 'px';
+    ctxMenu.style.top = e.clientY + 'px';
+    ctxMenu.innerHTML = `<div class="custom-context-menu-item" id="ctxCopyURL">Copy the URL</div><hr><div class="custom-context-menu-item" id="ctxSettings">Settings</div>`;
+    document.getElementById('ctxCopyURL').onclick = () => { navigator.clipboard.writeText(window.location.href); ctxMenu.style.display = 'none'; };
+    document.getElementById('ctxSettings').onclick = () => { openModal('settingsModal'); ctxMenu.style.display = 'none'; };
+  });
+  document.addEventListener('click', () => { ctxMenu.style.display = 'none'; });
+
+  // 左上角logo跳转逻辑: 目标 https://uplgov.github.io/iubanova-TestOnly/Alternate-Universe/en-GB.htm
+  const logoBtn = document.getElementById('navLogoBtn');
+  const targetUrl = 'https://uplgov.github.io/iubanova-TestOnly/Alternate-Universe/en-GB.htm';
+  logoBtn.onclick = function(e) {
+    if (window.location.href === targetUrl || window.location.href.indexOf('Alternate-Universe/en-GB.htm') !== -1) {
+      e.preventDefault();
+      return;
+    }
+    window.location.href = targetUrl;
+  };
 </script>
 </body>
 </html>
