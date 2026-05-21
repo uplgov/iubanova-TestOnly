@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iubanova</title>
+    <title>Portal</title>
+    <link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
     <style>
         @font-face {
             font-family: 'GDS Transport';
@@ -26,7 +27,7 @@
             height: 100vh;
             width: 100vw;
             position: relative;
-            font-size: 18px; /* 全局基准字号增大 */
+            font-size: 18px;
         }
         img {
             -webkit-user-drag: none;
@@ -84,7 +85,7 @@
             transition: opacity 0.5s ease;
         }
         .loader-logo {
-            width: 200px;  /* 略微增大Logo */
+            width: 200px;
             max-width: 35%;
             margin-bottom: 2.5rem;
         }
@@ -224,6 +225,45 @@
             border-color: rgba(255,255,210,0.4);
             box-shadow: 0 0 12px rgba(255,255,200,0.25), inset 0 1px 1px rgba(255,255,255,0.2);
         }
+        /* 键盘焦点环动画：从屏幕四周聚拢 */
+        .lang-btn:focus-visible {
+            outline: none;
+            animation: focusRingGather 0.35s ease-out forwards;
+            position: relative;
+            z-index: 30;
+        }
+        @keyframes focusRingGather {
+            0% {
+                box-shadow: 0 0 0 0px rgba(255,255,200,0), 0 0 0 0px rgba(255,255,180,0);
+                border-color: rgba(255,255,210,0.1);
+            }
+            20% {
+                box-shadow: 0 0 0 8px rgba(255,255,200,0.25), 0 0 0 16px rgba(255,255,180,0.1);
+                border-color: rgba(255,255,210,0.6);
+            }
+            100% {
+                box-shadow: 0 0 0 2px rgba(255,255,210,0.7), 0 0 0 4px rgba(255,255,180,0.3);
+                border-color: rgba(255,255,210,0.85);
+            }
+        }
+        /* 呼吸灯效果 */
+        .lang-btn.keyboard-focus-breathe {
+            animation: breathePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes breathePulse {
+            0% {
+                box-shadow: 0 0 0 2px rgba(255,255,210,0.5), 0 0 0 4px rgba(255,255,180,0.2);
+                border-color: rgba(255,255,210,0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 3px rgba(255,255,210,0.85), 0 0 0 6px rgba(255,255,180,0.4);
+                border-color: rgba(255,255,210,0.95);
+            }
+            100% {
+                box-shadow: 0 0 0 2px rgba(255,255,210,0.5), 0 0 0 4px rgba(255,255,180,0.2);
+                border-color: rgba(255,255,210,0.7);
+            }
+        }
         .btn-ripple {
             position: absolute;
             border-radius: 50%;
@@ -322,6 +362,8 @@
             padding: 10px 18px;
             border-radius: 60px;
             transition: opacity 0.25s ease-in-out;
+            font-family: 'Times New Roman', Georgia, '华文楷书', 'Georgia', serif;
+            font-style: normal;
         }
         .tooltip-pop {
             animation: fadeSlideUp 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
@@ -687,6 +729,21 @@
             rightPanel.style.backgroundPosition = "center";
         }
         
+        // 键盘焦点呼吸灯管理
+        let currentFocusBtn = null;
+        function addKeyboardBreathe(btn) {
+            if(currentFocusBtn === btn) return;
+            if(currentFocusBtn) {
+                currentFocusBtn.classList.remove('keyboard-focus-breathe');
+            }
+            btn.classList.add('keyboard-focus-breathe');
+            currentFocusBtn = btn;
+        }
+        function removeKeyboardBreathe(btn) {
+            btn.classList.remove('keyboard-focus-breathe');
+            if(currentFocusBtn === btn) currentFocusBtn = null;
+        }
+        
         function addRipple(btn, event){
             const rect = btn.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height)*1.2;
@@ -770,6 +827,27 @@
                         greetingDiv.classList.add('reveal');
                     }
                 });
+            });
+            // 键盘焦点：当按钮通过Tab获得焦点时，触发图片切换和问候语
+            btn.addEventListener('focus', (e) => {
+                addKeyboardBreathe(btn);
+                if(langCodeForGreeting) {
+                    const now = new Date();
+                    const greetingText = getGreeting(langCodeForGreeting, now.getHours());
+                    greetingDiv.innerText = greetingText;
+                    revealGreetingWithWave();
+                    if(langCodeForGreeting === 'en') leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg')";
+                    else leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')";
+                }
+            });
+            btn.addEventListener('blur', () => {
+                removeKeyboardBreathe(btn);
+                const nowHour = new Date().getHours();
+                greetingDiv.innerText = getGreeting('en', nowHour);
+                greetingDiv.classList.remove('reveal');
+                void greetingDiv.offsetWidth;
+                greetingDiv.classList.add('reveal');
+                leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg')";
             });
         }
         
