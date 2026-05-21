@@ -1,1 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>iubanova</title>
+<link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background: #000;
+  color: #eee;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 18px;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .dropdown-item {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass {
+  cursor: pointer;
+}
+body.crosshair-mode, body.crosshair-mode a, body.crosshair-mode button, body.crosshair-mode .btn, body.crosshair-mode .nav-link, body.crosshair-mode .lang-mode-btn, body.crosshair-mode .footer-link, body.crosshair-mode .dropdown-item, body.crosshair-mode .settings-icon, body.crosshair-mode .modal-close, body.crosshair-mode .gate-check input, body.crosshair-mode .hidden-bypass {
+  cursor: none;
+}
+.mobile-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0c12;
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+  flex-direction: column;
+  gap: 2rem;
+  color: #eee;
+  font-weight: 500;
+}
+.warning-text-block p {
+  margin: 1rem 0;
+  line-height: 1.4;
+  font-size: 1.2rem;
+  max-width: 600px;
+}
+hr {
+  width: 60px;
+  margin: 0.5rem auto;
+  border-color: #444;
+}
+.initial-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  transition: opacity 0.5s ease;
+}
+.loader-logo {
+  width: 200px;
+  max-width: 35%;
+  margin-bottom: 2.5rem;
+}
+.loader-logo img {
+  width: 100%;
+  display: block;
+}
+.progress-bar-container {
+  width: 320px;
+  max-width: 70%;
+  height: 6px;
+  background: #2a2a2e;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1.5rem 0 0.8rem;
+}
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #f0f0f0;
+  transition: width 0.2s linear;
+}
+.percent-text {
+  color: #ccc;
+  font-size: 1rem;
+  margin-top: 10px;
+  font-family: monospace;
+}
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(16px);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  color: white;
+}
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spinVerySlow 2.8s linear infinite;
+  margin-bottom: 1.5rem;
+}
+@keyframes spinVerySlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.loading-subtitle {
+  font-size: 1.1rem;
+  max-width: 85%;
+  text-align: center;
+  background: rgba(0,0,0,0.5);
+  padding: 10px 18px;
+  border-radius: 60px;
+  transition: opacity 0.25s ease-in-out;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+.btn {
+  position: relative;
+  padding: 14px 24px;
+  margin: 8px;
+  background: rgba(20,20,35,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #eee;
+  font-weight: 500;
+  font-size: 1.1rem;
+  border-radius: 60px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+  transition: transform 0.1s ease, background 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: inline-block;
+  text-decoration: none;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.btn:hover {
+  background: rgba(45,45,70,0.85);
+  transform: scale(1.01);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+#gatekeeper {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+.gate-box {
+  background: rgba(20,20,35,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+.gate-box h2 {
+  margin-bottom: 1rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.gate-box ul {
+  margin: 1rem 0 1rem 2rem;
+  line-height: 1.6;
+}
+.gate-check {
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+}
+.gate-check input {
+  width: 20px;
+  height: 20px;
+}
+#mainApp {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+}
+#visualWrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(20,20,35,0.75);
+  backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-left, .nav-right, .nav-center {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.nav-logo-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.nav-logo-container:hover {
+  background: #000;
+  box-shadow: 0 0 0 2px #000;
+}
+.nav-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png');
+}
+.nav-logo-container:hover .nav-logo {
+  content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png');
+}
+.nav-link {
+  color: #eee;
+  text-decoration: none;
+  font-weight: 500;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  display: inline-block;
+}
+.nav-link:hover {
+  border-color: #fff;
+}
+.dropdown {
+  position: relative;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(20,20,35,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  min-width: 200px;
+  flex-direction: column;
+  padding: 0.5rem 0;
+  backdrop-filter: blur(25px);
+}
+.dropdown:hover .dropdown-menu {
+  display: flex;
+}
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  color: #eee;
+  text-decoration: none;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.dropdown-item:hover {
+  background: rgba(45,45,70,0.85);
+}
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  filter: invert(1);
+  transition: transform 0.2s;
+}
+.settings-icon:hover {
+  transform: rotate(45deg);
+}
+.lang-mode-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #eee;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.lang-mode-btn:hover {
+  background: rgba(45,45,70,0.85);
+  transform: scale(1.02);
+}
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  gap: 4rem;
+}
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 1000px;
+  width: 100%;
+}
+.hero-image {
+  width: 100%;
+  max-width: 2000px;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  transition: all 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.hero-image.scrolled {
+  max-width: 800px;
+}
+.hero h1 {
+  margin-bottom: 2rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: normal;
+  line-height: 1.2;
+}
+.title-line1 {
+  font-size: 2.4rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: #eee;
+}
+.title-line1 .healing-flash {
+  font-family: 'Arial', 'GDS Transport', sans-serif;
+  font-size: 3.2rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #00d2ff, #00ff75, #ffeb3b, #fff, #00d2ff);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: healingScroll 6s linear infinite;
+  display: inline-block;
+}
+.title-line1 .trade-mark {
+  font-family: 'Arial', sans-serif;
+  font-size: 1.6rem;
+  font-weight: normal;
+  color: #eee;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+  display: inline-block;
+  vertical-align: super;
+  margin-left: 2px;
+}
+.title-line2 {
+  font-size: 2.8rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: #eee;
+  display: inline-block;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .title-line2 {
+    white-space: normal;
+    font-size: 1.8rem;
+  }
+  .title-line1 {
+    font-size: 1.6rem;
+  }
+  .title-line1 .healing-flash {
+    font-size: 2rem;
+  }
+  .title-line1 .trade-mark {
+    font-size: 1rem;
+  }
+  .hero-image.scrolled {
+    max-width: 90%;
+  }
+}
+@keyframes healingScroll {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 1000px;
+  width: 100%;
+}
+@media(max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+.grid-item {
+  background: rgba(20,20,35,0.75);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand {
+  transform: scale(1.05);
+  background: rgba(45,45,70,0.85);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.grid-item.hover-expand img {
+  transform: scale(1.08);
+}
+.grid-item.hover-expand h3 {
+  transform: scale(1.04);
+}
+.grid-item.hover-expand .btn {
+  transform: scale(1.05);
+}
+.grid-item img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+.grid-item h3 {
+  font-size: 1.9rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: bold;
+  flex: 1;
+  line-height: 1.3;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+footer {
+  background: rgba(20,20,35,0.75);
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding: 3rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.footer-logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.footer-logo img {
+  width: 150px;
+}
+.copyright-text {
+  font-size: 0.9rem;
+  color: #888;
+}
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.footer-section h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: #eee;
+}
+.footer-link {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.footer-link:hover {
+  color: #eee;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+  z-index: 4000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+.modal-content {
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #eee;
+  transition: transform 0.2s;
+}
+.modal-close:hover {
+  transform: scale(1.1);
+}
+.settings-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.settings-group label {
+  display: flex;
+  justify-content: space-between;
+}
+input[type="range"] {
+  width: 100%;
+}
+select {
+  padding: 8px;
+  background: rgba(20,20,35,0.75);
+  color: #eee;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  font-family: Georgia, serif;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.hidden-bypass {
+  position: fixed;
+  width: 160px;
+  height: 160px;
+  z-index: 5000;
+  background: transparent;
+}
+.goog-te-banner-frame {
+  display: none !important;
+}
+.goog-te-menu-frame {
+  z-index: 10001 !important;
+}
+body {
+  top: 0 !important;
+}
+#customCursor {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.9);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.2);
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, border-color 0.2s;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(2px);
+  display: none;
+}
+#customCursor::before {
+  content: "✛";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  font-size: 18px;
+  color: rgba(255,255,255,0.9);
+  transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+#customCursor.crosshair-rotate::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.custom-context-menu {
+  position: fixed;
+  background: rgba(20,20,35,0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 50000;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  font-family: Georgia, serif;
+}
+.custom-context-menu-item {
+  padding: 10px 20px;
+  color: #eee;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+.custom-context-menu-item:hover {
+  background: rgba(45,45,70,0.85);
+}
+.custom-context-menu-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.custom-context-menu hr {
+  margin: 4px 0;
+  border-color: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
 
+<div id="mobileWarning" class="mobile-warning" style="display: none;">
+<div class="warning-text-block">
+<p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
+<hr>
+<p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
+<hr>
+<p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
+</div>
+</div>
+
+<div id="initialLoader" class="initial-loader">
+<div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
+<div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
+<div id="percentText" class="percent-text">0%</div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+<div class="spinner"></div>
+<div id="loadingSubtitle" class="loading-subtitle"></div>
+</div>
+
+<div id="visualWrapper">
+<div id="gatekeeper">
+    <div id="bypassTopRight" class="hidden-bypass" style="top: 0; right: 0;"></div>
+    <div id="bypassBottomLeft" class="hidden-bypass" style="bottom: 0; left: 0;"></div>
+<div class="gate-box">
+<h2>This is a non-production test site for evaluation and demonstration purposes only.</h2>
+<p style="font-weight: bold;">By proceeding, you acknowledge and agree that:</p>
+<ul>
+<li>This website is not intended for real-world or clinical use.</li>
+<li>All content, models, and outputs are for demonstration and testing only.</li>
+<li>No health, safety, or operational decisions should be based on this test environment.</li>
+<li>iubanova and Nanjing University accept no liability for any use or misuse of this test system.</li>
+<li>You will not share, distribute, or replicate any test data or outputs without explicit permission.</li>
+</ul>
+<label class="gate-check">
+<input type="checkbox" id="agreeCheck">
+I have read, understood, and agree to the terms above.
+</label>
+<p style="margin-bottom: 1rem; font-weight: bold;">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</p>
+<div class="h-captcha" data-sitekey="b1b8c6e6-6586-4d9e-8eee-745a861c8974" data-callback="onCaptchaSuccess"></div>
+</div>
+<button id="continueBtn" class="btn" disabled>Continue</button>
+</div>
+
+<div id="mainApp">
+<nav>
+<div class="nav-left">
+<div class="nav-logo-container" id="navLogoBtn">
+<img class="nav-logo" alt="Logo">
+</div>
+<div class="dropdown">
+<span class="nav-link">About</span>
+<div class="dropdown-menu">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/ourstory.html" class="dropdown-item">Our Story</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/leadership.html" class="dropdown-item">Leadership Insight</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/find-us.html" class="dropdown-item">Contacts & Visit</a>
+</div>
+</div>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/news.html" class="nav-link">News</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="nav-link">Solutions</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html" class="nav-link">Pricing</a>
+<div class="dropdown">
+<span class="nav-link">Resources</span>
+<div class="dropdown-menu">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html" class="dropdown-item">Archive</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html" class="dropdown-item">Knowledge Base</a>
+</div>
+</div>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html" class="nav-link">Support Centre</a>
+</div>
+<div class="nav-right">
+<button id="langModeBtn" class="lang-mode-btn">LANG & MODE</button>
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png" class="settings-icon" id="openSettingsBtn" alt="Settings">
+<a href="https://uplgov.github.io/iubanova-TestOnly/myaccount.htm" class="btn" style="margin:0;">Login</a>
+</div>
+</nav>
+
+<main>
+<section class="hero">
+<img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
+<h1>
+    <span class="title-line1">Our most advanced <span class="healing-flash">Healing</span><span class="trade-mark">™</span> system.</span><br>
+    <span class="title-line2">Amazing. Surprising.</span>
+</h1>
+<div class="hero-btns">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="btn">Dive into…</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/demo.html" class="btn">Request a demo</a>
+</div>
+</section>
+
+<section class="grid-container">
+<div class="grid-item" id="gridItem1">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team">
+<h3>Built by researchers,<br>for real-world impact.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html" class="btn">Meet the team</a>
+</div>
+<div class="grid-item" id="gridItem2">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security">
+<h3>Your data is never a product.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
+</div>
+<div class="grid-item" id="gridItem3">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
+<h3>See it for yourself,<br>No commitment.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
+</div>
+<div class="grid-item" id="gridItem4">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories">
+<h3>From pilot to production.<br>Proven in the field.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="footer-logo-wrapper">
+<div class="footer-logo">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="3d logo">
+</div>
+<div class="copyright-text">© 2026 iubanova</div>
+</div>
+<div class="footer-section">
+<h4>Website</h4>
+<span class="footer-link" id="btnPrivacy">Privacy</span>
+<span class="footer-link" id="btnTrade">Trademarks & disclaimer</span>
+<span class="footer-link" id="btnLicence">Licence</span>
+<a href="https://uplgov.github.io/iubanova-TestOnly/sitemap.xml" class="footer-link">Sitemap</a>
+</div>
+<div class="footer-section">
+<h4>Links</h4>
+<a href="https://www.nju.edu.cn/en/" target="_blank" class="footer-link">Nanjing University</a>
+</div>
+<div class="footer-section">
+<h4>Follow Us</h4>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">YouTube</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">X</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">FaceBook</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">LinkedIn</a>
+</div>
+</footer>
+</div>
+</div>
+
+<div id="customCursor"></div>
+<div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
+
+<div class="modal-overlay" id="langModeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('langModeModal')">×</button>
+<h3 style="margin-bottom: 1rem;">Language & Mode Selection</h3>
+<p>Returning to the portal allows you to switch loading modes and languages. Do you need to view this website in a language other than British English, Traditional Chinese, Simplified Chinese, or Classical Chinese? Clicking "Yes" will activate the Google Translate component. Please note that the translation may be inaccurate.</p>
+<div class="modal-buttons">
+<button id="langModalYes" class="btn">Yes</button>
+<button id="langModalPortal" class="btn">Return to the Portal</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="privacyModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Data & Privacy Notice – Test Environment</h2>
+<p style="margin-bottom:1rem; font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including IP address, browser fingerprint, mouse movements and interaction patterns, device characteristics.</p>
+<p style="margin-bottom:0.5rem;"><a href="https://www.hcaptcha.com/privacy" target="_blank" style="color:#88f;">hCaptcha Privacy Policy</a></p>
+<p><a href="https://www.hcaptcha.com/terms" target="_blank" style="color:#88f;">hCaptcha Terms of Service</a></p>
+</div>
+</div>
+
+<div class="modal-overlay" id="tradeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Trademarks & disclaimer</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p>
+<p style="margin-bottom:1rem;">Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p>
+<p style="margin-bottom:1rem;">All trademarks, logos, and product names belong to their respective owners. iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners.</p>
+<p>No copyright or trademark infringement is intended. If you are a rights holder and have concerns, please contact us.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="licenceModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('licenceModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Licence</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website and its entire contents, including source code, design, text, and images, are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p>
+<p>Unless explicitly stated otherwise, you may view and interact with this website for its intended demonstration purposes, but you may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion without prior written permission.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+<h2 style="margin-bottom:1.5rem; font-family:Georgia, serif;">Settings</h2>
+<div class="settings-group">
+<label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label>
+</div>
+<div class="settings-group">
+<label>Saturation <span id="valSat">100%</span></label>
+<input type="range" id="slSat" min="0" max="200" value="100">
+</div>
+<div class="settings-group">
+<label>Monochrome <span id="valMono">0%</span></label>
+<input type="range" id="slMono" min="0" max="100" value="0">
+</div>
+<div class="settings-group">
+<label>Contrast <span id="valCont">100%</span></label>
+<input type="range" id="slCont" min="0" max="200" value="100">
+</div>
+<div class="settings-group" style="flex-direction:row; align-items:center; justify-content:space-between;">
+<label style="flex:1;">Enable Crosshair Assist</label>
+<input type="checkbox" id="chkCrosshair" style="width:20px; height:20px;">
+</div>
+<div class="settings-group">
+<label>Crosshair Color</label>
+<select id="selCrosshairColor">
+<option value="red">Red</option>
+<option value="blue">Blue</option>
+<option value="lime">Lime</option>
+<option value="yellow">Yellow</option>
+<option value="purple">Lilac</option>
+<option value="transparent">Transparent</option>
+</select>
+</div>
+<button class="btn" id="btnResetAll" style="width:100%; margin-top:1rem;">Reset All</button>
+</div>
+</div>
+
+<script>
+(function(){
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(window.innerWidth<=1024&&window.innerHeight<=800)){
+        document.getElementById('mobileWarning').style.display='flex';
+        document.getElementById('initialLoader').style.display='none';
+        document.body.style.overflow='hidden';
+        return;
+    }
+    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg"];
+    let loaded=0,total=imgs.length,finish=false;
+    const fill=document.getElementById('progressFill'),pt=document.getElementById('percentText'),loader=document.getElementById('initialLoader');
+    function upd(){if(finish)return;let p=Math.floor(loaded/total*100);fill.style.width=p+'%';pt.innerText=p+'%';if(loaded>=total&&!finish){finish=true;setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>{loader.style.display='none';document.getElementById('gatekeeper').style.display='flex';},400);},200);}}
+    setTimeout(()=>{if(!finish&&loaded<total){loaded=total;upd();}},8000);
+    imgs.forEach(u=>{let img=new Image();img.onload=()=>{loaded++;upd();};img.onerror=()=>{loaded++;upd();};img.src=u;});
+})();
+
+let hCaptchaPassed=false,checkAgreed=false;
+function onCaptchaSuccess(){hCaptchaPassed=true;updateGate();}
+function updateGate(){let btn=document.getElementById('continueBtn');if(hCaptchaPassed&&checkAgreed)btn.removeAttribute('disabled');else btn.setAttribute('disabled','true');}
+document.getElementById('agreeCheck').addEventListener('change',e=>{checkAgreed=e.target.checked;updateGate();});
+document.getElementById('continueBtn').addEventListener('click',()=>startSecondStageLoading());
+function bypass(){startSecondStageLoading();}
+document.getElementById('bypassTopRight').addEventListener('dblclick',bypass);
+document.getElementById('bypassBottomLeft').addEventListener('dblclick',bypass);
+
+let subInt=null,warning=false;
+const subs=["Use ⌘ + D to add our website to your Favourites in Safari.","A restless melody is playing.","Fancy brewing a cup of tea while you wait?","We're preparing some fine content for you.","Press ⌘ + H to hide the current window and do something else while you wait.","Please bear with us for a moment.","Warming up the Hemi™ V8.","Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™","Almost there.","A good internet connection reduces loading time.","The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.","We will present it to you shortly."];
+function startSub(){if(subInt)clearInterval(subInt);if(warning)return;let idx=Math.floor(Math.random()*subs.length),el=document.getElementById('loadingSubtitle');el.innerText=subs[idx];el.style.opacity='1';subInt=setInterval(()=>{if(warning)return;el.style.opacity='0';setTimeout(()=>{if(warning)return;let nidx=Math.floor(Math.random()*subs.length);if(nidx===idx)nidx=(nidx+1)%subs.length;idx=nidx;el.innerText=subs[idx];el.style.opacity='1';},200);},1300);}
+async function testConn(){let fail=0;for(let ep of ['youtube.com','google.co.uk','translate.google.co.uk']){try{await fetch(`https://${ep}/favicon.ico?t=${Date.now()}`,{mode:'no-cors'});}catch(e){fail++;}if(fail>=2)break;}return fail>=2;}
+async function startSecondStageLoading(){
+    document.getElementById('gatekeeper').style.display='none';
+    let ov=document.getElementById('loadingOverlay'),mw=document.getElementById('visualWrapper');
+    mw.style.transition="filter 0.7s cubic-bezier(0.23,1,0.32,1)";mw.style.filter="brightness(0.35) blur(4px)";
+    await new Promise(r=>setTimeout(r,700));
+    ov.style.visibility='visible';ov.style.opacity='1';startSub();
+    let poor=await testConn();
+    await new Promise(r=>setTimeout(r,poor?2800:2200));
+    if(subInt)clearInterval(subInt);ov.style.opacity='0';
+    setTimeout(()=>{ov.style.visibility='hidden';mw.style.filter='none';document.getElementById('mainApp').style.display='flex';initHeroScroll();},300);
+}
+function initHeroScroll(){
+    let img=document.getElementById('heroImage');
+    if(!img)return;
+    let ticking=false;
+    window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
+}
+const gridItems = document.querySelectorAll('.grid-item');
+gridItems.forEach(item => {
+    let hoverTimer = null;
+    item.addEventListener('mouseenter', () => { hoverTimer = setTimeout(() => { item.classList.add('hover-expand'); }, 200); });
+    item.addEventListener('mouseleave', () => { if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; } item.classList.remove('hover-expand'); });
+});
+let crosshairEnabled=false;
+let currentHoverElement=null;
+const cursorDiv=document.getElementById('customCursor');
+const chkCrosshairSetting=document.getElementById('chkCrosshair');
+const selCrosshairColor=document.getElementById('selCrosshairColor');
+function updateCrosshairMode(){
+    crosshairEnabled=chkCrosshairSetting.checked;
+    const color=selCrosshairColor.value;
+    if(crosshairEnabled){
+        cursorDiv.style.display='block';
+        document.body.classList.add('crosshair-mode');
+        cursorDiv.style.borderColor=color;
+        cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
+    }else{
+        cursorDiv.style.display='none';
+        document.body.classList.remove('crosshair-mode');
+    }
+}
+function updateCrosshairColor(){
+    if(!crosshairEnabled)return;
+    const color=selCrosshairColor.value;
+    cursorDiv.style.borderColor=color;
+    cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
+}
+chkCrosshairSetting.addEventListener('change',updateCrosshairMode);
+selCrosshairColor.addEventListener('change',updateCrosshairColor);
+document.addEventListener('mousemove',(e)=>{ if(crosshairEnabled){ cursorDiv.style.left=e.clientX+'px'; cursorDiv.style.top=e.clientY+'px'; } });
+const clickables=document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass');
+clickables.forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ if(!crosshairEnabled)return; if(currentHoverElement===el)return; currentHoverElement=el; cursorDiv.classList.add('crosshair-rotate'); });
+    el.addEventListener('mouseleave',()=>{ if(!crosshairEnabled)return; if(currentHoverElement===el){ cursorDiv.classList.remove('crosshair-rotate'); currentHoverElement=null; } });
+});
+updateCrosshairMode();
+const contextMenu=document.getElementById('customContextMenu');
+document.addEventListener('contextmenu',(e)=>{ e.preventDefault(); contextMenu.style.display='block'; contextMenu.style.left=e.clientX+'px'; contextMenu.style.top=e.clientY+'px'; let prevUrl=document.referrer||''; contextMenu.innerHTML=`<div class="custom-context-menu-item ${!prevUrl?'disabled':''}" id="ctxLastPage">Last Page you are on</div><div class="custom-context-menu-item" id="ctxCopyURL">Copy the URL</div><hr><div class="custom-context-menu-item" id="ctxSettings">Settings</div>`; document.getElementById('ctxLastPage').onclick=()=>{if(prevUrl)window.location.href=prevUrl;contextMenu.style.display='none';}; document.getElementById('ctxCopyURL').onclick=()=>{navigator.clipboard.writeText(window.location.href);contextMenu.style.display='none';}; document.getElementById('ctxSettings').onclick=()=>{openModal('settingsModal');contextMenu.style.display='none';}; });
+document.addEventListener('click',()=>{contextMenu.style.display='none';});
+function openModal(id){let m=document.getElementById(id);if(m)m.classList.add('active');}
+function closeModal(id){let m=document.getElementById(id);if(m)m.classList.remove('active');}
+document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
+document.getElementById('btnPrivacy').onclick=()=>openModal('privacyModal');
+document.getElementById('btnTrade').onclick=()=>openModal('tradeModal');
+document.getElementById('btnLicence').onclick=()=>openModal('licenceModal');
+document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
+document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};};
+document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
+const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper'),valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
+function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
+slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
+let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!light;if(light){document.body.classList.add('light-theme');document.getElementById('themeToggleBtn').innerText='Light';}else{document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshairSetting.checked=false;selCrosshairColor.value='red';updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
+</script>
+</body>
+</html>
