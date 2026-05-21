@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -64,11 +64,9 @@ img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .
 -webkit-user-drag: none;
 user-drag: none;
 }
-/* 默认所有可点击元素显示手指光标 */
 a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass {
 cursor: pointer;
 }
-/* 开启瞄准镜模式时隐藏默认光标 */
 body.crosshair-mode, body.crosshair-mode a, body.crosshair-mode button, body.crosshair-mode .btn, body.crosshair-mode .nav-link, body.crosshair-mode .lang-mode-btn, body.crosshair-mode .footer-link, body.crosshair-mode .dropdown-item, body.crosshair-mode .settings-icon, body.crosshair-mode .modal-close, body.crosshair-mode .gate-check input, body.crosshair-mode .hidden-bypass {
 cursor: none;
 }
@@ -505,7 +503,6 @@ text-align: center;
 gap: 1rem;
 transition: all 0.3s cubic-bezier(0.2, 0.95, 0.4, 1.05);
 }
-/* 板块悬停放大效果 - 0.2秒延迟后触发 */
 .grid-item.hover-expand {
 transform: scale(1.05);
 background: var(--hover-bg);
@@ -688,7 +685,6 @@ z-index: 10001 !important;
 body {
 top: 0 !important;
 }
-/* 自定义瞄准镜圆圈 */
 #customCursor {
 position: fixed;
 width: 40px;
@@ -717,7 +713,6 @@ transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
 #customCursor.crosshair-rotate::before {
 transform: translate(-50%, -50%) rotate(45deg);
 }
-/* 自定义右键菜单 */
 .custom-context-menu {
 position: fixed;
 background: var(--panel-bg);
@@ -856,12 +851,12 @@ I have read, understood, and agree to the terms above.
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
 </div>
 <div class="grid-item" id="gridItem3">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dcdui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
 <h3>See it for yourself,<br>No commitment.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
 </div>
 <div class="grid-item" id="gridItem4">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*beb24de4322.jpg" alt="Stories">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories">
 <h3>From pilot to production.<br>Proven in the field.</h3>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
 </div>
@@ -1024,7 +1019,7 @@ I have read, understood, and agree to the terms above.
         document.body.style.overflow='hidden';
         return;
     }
-    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dcdui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*beb24de4322.jpg"];
+    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg"];
     let loaded=0,total=imgs.length,finish=false;
     const fill=document.getElementById('progressFill'),pt=document.getElementById('percentText'),loader=document.getElementById('initialLoader');
     function upd(){if(finish)return;let p=Math.floor(loaded/total*100);fill.style.width=p+'%';pt.innerText=p+'%';if(loaded>=total&&!finish){finish=true;setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>{loader.style.display='none';document.getElementById('gatekeeper').style.display='flex';},400);},200);}}
@@ -1064,7 +1059,7 @@ function initHeroScroll(){
     window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
 }
 
-// ========== 板块悬停放大效果 (0.2秒延迟) ==========
+// 板块悬停放大效果 (0.2秒延迟)
 const gridItems = document.querySelectorAll('.grid-item');
 gridItems.forEach(item => {
     let hoverTimer = null;
@@ -1082,7 +1077,7 @@ gridItems.forEach(item => {
     });
 });
 
-// ========== 瞄准镜系统 ==========
+// 瞄准镜系统
 let crosshairEnabled=false;
 let currentHoverElement=null;
 const cursorDiv=document.getElementById('customCursor');
@@ -1135,7 +1130,7 @@ clickables.forEach(el=>{
 });
 updateCrosshairMode();
 
-// ========== 自定义右键菜单 ==========
+// 自定义右键菜单
 const contextMenu=document.getElementById('customContextMenu');
 document.addEventListener('contextmenu',(e)=>{
     e.preventDefault();
@@ -1155,7 +1150,6 @@ document.addEventListener('contextmenu',(e)=>{
 });
 document.addEventListener('click',()=>{contextMenu.style.display='none';});
 
-// ========== 模态框控制 ==========
 function openModal(id){let m=document.getElementById(id);if(m)m.classList.add('active');}
 function closeModal(id){let m=document.getElementById(id);if(m)m.classList.remove('active');}
 document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
@@ -1166,7 +1160,6 @@ document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
 document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};};
 document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
 
-// ========== 滤镜和主题 ==========
 const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper'),valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
 function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
 slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
