@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>iubanova · Download Centre</title>
+<title>iubanova</title>
 <link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 <style>
@@ -20,13 +20,14 @@ padding: 0;
 box-sizing: border-box;
 -webkit-tap-highlight-color: transparent;
 }
-/* 门禁界面可选中、可复制（本页无门禁但保留风格） */
+/* 门禁界面可选中、可复制 */
 #gatekeeper, #gatekeeper * {
 user-select: text !important;
 -webkit-user-select: text !important;
 -moz-user-select: text !important;
 -ms-user-select: text !important;
 }
+/* 其他区域不可选中 */
 body:not(.gatekeeper-visible) #mainApp, body:not(.gatekeeper-visible) nav, body:not(.gatekeeper-visible) main, body:not(.gatekeeper-visible) footer {
 user-select: none;
 -webkit-user-select: none;
@@ -63,16 +64,208 @@ img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .
 -webkit-user-drag: none;
 user-drag: none;
 }
-a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close {
+a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass {
 cursor: pointer;
 }
-body.crosshair-mode, body.crosshair-mode a, body.crosshair-mode button, body.crosshair-mode .btn, body.crosshair-mode .nav-link, body.crosshair-mode .lang-mode-btn, body.crosshair-mode .footer-link, body.crosshair-mode .dropdown-item, body.crosshair-mode .settings-icon, body.crosshair-mode .modal-close {
+body.crosshair-mode, body.crosshair-mode a, body.crosshair-mode button, body.crosshair-mode .btn, body.crosshair-mode .nav-link, body.crosshair-mode .lang-mode-btn, body.crosshair-mode .footer-link, body.crosshair-mode .dropdown-item, body.crosshair-mode .settings-icon, body.crosshair-mode .modal-close, body.crosshair-mode .gate-check input, body.crosshair-mode .hidden-bypass {
 cursor: none;
 }
-#mainApp {
+.mobile-warning {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: #0a0c12;
+backdrop-filter: blur(8px);
+z-index: 10000;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 2rem;
+text-align: center;
+flex-direction: column;
+gap: 2rem;
+color: #eee;
+font-weight: 500;
+}
+.warning-text-block p {
+margin: 1rem 0;
+line-height: 1.4;
+font-size: 1.2rem;
+max-width: 600px;
+}
+hr {
+width: 60px;
+margin: 0.5rem auto;
+border-color: #444;
+}
+.initial-loader {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: #000;
 display: flex;
 flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 2000;
+transition: opacity 0.5s ease;
+}
+.loader-logo {
+width: 200px;
+max-width: 35%;
+margin-bottom: 2.5rem;
+}
+.loader-logo img {
+width: 100%;
+display: block;
+}
+.progress-bar-container {
+width: 320px;
+max-width: 70%;
+height: 6px;
+background: #2a2a2e;
+border-radius: 10px;
+overflow: hidden;
+margin: 1.5rem 0 0.8rem;
+}
+.progress-fill {
+width: 0%;
+height: 100%;
+background: #f0f0f0;
+transition: width 0.2s linear;
+}
+.percent-text {
+color: #ccc;
+font-size: 1rem;
+margin-top: 10px;
+font-family: monospace;
+}
+.loading-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.92);
+backdrop-filter: blur(16px);
+z-index: 3000;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+color: white;
+}
+.spinner {
+width: 44px;
+height: 44px;
+border: 3px solid rgba(255,255,255,0.2);
+border-top: 3px solid white;
+border-radius: 50%;
+animation: spinVerySlow 2.8s linear infinite;
+margin-bottom: 1.5rem;
+}
+@keyframes spinVerySlow {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.loading-subtitle {
+font-size: 1.1rem;
+max-width: 85%;
+text-align: center;
+background: rgba(0,0,0,0.5);
+padding: 10px 18px;
+border-radius: 60px;
+transition: opacity 0.25s ease-in-out;
+font-family: 'Times New Roman', Georgia, serif;
+}
+.btn {
+position: relative;
+padding: 14px 24px;
+margin: 8px;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+color: var(--text-color);
+font-weight: 500;
+font-size: 1.1rem;
+border-radius: 60px;
+text-align: center;
+backdrop-filter: blur(4px);
+overflow: hidden;
+transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+display: inline-block;
+text-decoration: none;
+font-family: Georgia, 'Times New Roman', Times, serif;
+}
+body.light-theme .btn {
+box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.btn:hover {
+background: var(--hover-bg);
+transform: scale(1.01);
+border-color: rgba(150,150,150,0.4);
+}
+.btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+#gatekeeper {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
 min-height: 100vh;
+padding: 2rem;
+max-width: 800px;
+margin: 0 auto;
+text-align: center;
+position: relative;
+}
+.gate-box {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 2rem;
+margin-bottom: 2rem;
+text-align: left;
+}
+.gate-box h2 {
+margin-bottom: 1rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.gate-box ul {
+margin: 1rem 0 1rem 2rem;
+line-height: 1.6;
+}
+.gate-check {
+margin: 1.5rem 0;
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 1.1rem;
+}
+.gate-check input {
+width: 20px;
+height: 20px;
+}
+#mainApp {
+display: none;
+flex-direction: column;
+min-height: 100vh;
+}
+#visualWrapper {
+width: 100%;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
 }
 nav {
 display: flex;
@@ -196,69 +389,159 @@ align-items: center;
 padding: 4rem 2rem;
 gap: 4rem;
 }
-.hero-download {
+.hero {
 display: flex;
 flex-direction: column;
 align-items: center;
 text-align: center;
-max-width: 1100px;
+max-width: 1000px;
 width: 100%;
-margin-bottom: 1rem;
 }
-.hero-download h1 {
+.hero-image {
+width: 100%;
+max-width: 2000px;
+border-radius: 16px;
+margin-bottom: 2rem;
+box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+transition: all 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.hero-image.scrolled {
+max-width: 800px;
+transition: all 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.hero h1 {
+margin-bottom: 2rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 font-weight: normal;
-line-height: 1.3;
-margin-bottom: 2rem;
+line-height: 1.2;
 }
-.download-message {
-font-size: 2rem;
+.title-line1 {
+font-size: 2.4rem;
 font-family: Georgia, 'Times New Roman', Times, serif;
 color: var(--text-color);
-max-width: 1000px;
 }
-.download-message span {
+.title-line1 .healing-flash {
+font-family: 'Arial', 'GDS Transport', sans-serif;
+font-size: 3.2rem;
+font-weight: bold;
+background: linear-gradient(90deg, #00d2ff, #00ff75, #ffeb3b, #fff, #00d2ff);
+background-size: 400% 400%;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+animation: healingScroll 6s linear infinite;
 display: inline-block;
 }
-@media (max-width: 768px) {
-.download-message {
-font-size: 1.5rem;
+.title-line1 .trade-mark {
+font-family: 'Arial', sans-serif;
+font-size: 1.6rem;
+font-weight: normal;
+color: var(--text-color);
+background: none;
+-webkit-text-fill-color: currentColor;
+animation: none;
+display: inline-block;
+vertical-align: super;
+margin-left: 2px;
+}
+.title-line2 {
+font-size: 2.8rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+color: var(--text-color);
+display: inline-block;
+white-space: nowrap;
+}
+@media (max-width: 700px) {
+.title-line2 {
+white-space: normal;
+font-size: 1.8rem;
+}
+.title-line1 {
+font-size: 1.6rem;
+}
+.title-line1 .healing-flash {
+font-size: 2rem;
+}
+.title-line1 .trade-mark {
+font-size: 1rem;
+}
+.hero-image.scrolled {
+max-width: 90%;
 }
 }
-.download-grid {
+@keyframes healingScroll {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+.hero-btns {
 display: flex;
+gap: 1rem;
 flex-wrap: wrap;
 justify-content: center;
-gap: 3rem;
-margin: 2rem 0 3rem;
 }
-.download-item {
+.grid-container {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 2rem;
+max-width: 1000px;
+width: 100%;
+}
+@media(max-width: 768px) {
+.grid-container {
+grid-template-columns: 1fr;
+}
+}
+.grid-item {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 16px;
+padding: 1.5rem;
 display: flex;
 flex-direction: column;
 align-items: center;
-justify-content: center;
-transition: all 0.2s ease-out;
-cursor: pointer;
-background: transparent;
-border: none;
-padding: 0;
-margin: 0;
+text-align: center;
+gap: 1rem;
+transition: all 0.3s cubic-bezier(0.2, 0.95, 0.4, 1.05);
 }
-.download-item img {
-width: 200px;
-height: auto;
-object-fit: contain;
+.grid-item.hover-expand {
+transform: scale(1.05);
+background: var(--hover-bg);
+box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+transition: all 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand img {
+transform: scale(1.08);
 transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
-display: block;
-border-radius: 0;
 }
-.download-item:hover img {
-transform: scale(1.12);
+.grid-item.hover-expand h3 {
+transform: scale(1.04);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
 }
-@media (max-width: 640px) {
-.download-item img {
-width: 140px;
+.grid-item.hover-expand .btn {
+transform: scale(1.05);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
 }
+.grid-item img {
+width: 100%;
+aspect-ratio: 1/1;
+object-fit: cover;
+border-radius: 12px;
+transition: transform 0.2s ease;
+}
+.grid-item h3 {
+font-size: 1.9rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+font-weight: bold;
+flex: 1;
+display: flex;
+align-items: center;
+justify-content: center;
+line-height: 1.3;
+text-align: center;
+transition: transform 0.2s ease;
+}
+.grid-item .btn {
+transition: transform 0.2s ease;
 }
 footer {
 background: var(--panel-bg);
@@ -297,7 +580,6 @@ color: #888;
 text-decoration: none;
 transition: color 0.2s;
 font-family: Georgia, 'Times New Roman', Times, serif;
-cursor: pointer;
 }
 .footer-link:hover {
 color: var(--text-color);
@@ -346,7 +628,6 @@ background: none;
 border: none;
 color: var(--text-color);
 transition: transform 0.2s;
-cursor: pointer;
 }
 .modal-close:hover {
 transform: scale(1.1);
@@ -378,32 +659,31 @@ justify-content: flex-end;
 gap: 1rem;
 margin-top: 2rem;
 }
-.btn {
-position: relative;
-padding: 14px 24px;
-margin: 8px;
-background: var(--panel-bg);
-border: 1px solid var(--border-color);
-color: var(--text-color);
-font-weight: 500;
-font-size: 1.1rem;
-border-radius: 60px;
-text-align: center;
-backdrop-filter: blur(4px);
-overflow: hidden;
-transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
-box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-display: inline-block;
-text-decoration: none;
-font-family: Georgia, 'Times New Roman', Times, serif;
+.hidden-bypass {
+position: fixed;
+width: 160px;
+height: 160px;
+z-index: 5000;
+background: transparent;
 }
-body.light-theme .btn {
-box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+.maintenance-frame {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+border: none;
+z-index: 10000;
+background: #000;
 }
-.btn:hover {
-background: var(--hover-bg);
-transform: scale(1.01);
-border-color: rgba(150,150,150,0.4);
+.goog-te-banner-frame {
+display: none !important;
+}
+.goog-te-menu-frame {
+z-index: 10001 !important;
+}
+body {
+top: 0 !important;
 }
 #customCursor {
 position: fixed;
@@ -415,7 +695,7 @@ box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.2);
 pointer-events: none;
 z-index: 99999;
 transform: translate(-50%, -50%);
-transition: width 0.2s, border-color 0.2s;
+transition: width 0.2s, height 0.2s, border-color 0.2s;
 background: rgba(255,255,255,0.05);
 backdrop-filter: blur(2px);
 display: none;
@@ -450,7 +730,6 @@ padding: 10px 20px;
 color: var(--text-color);
 transition: background 0.2s;
 font-size: 0.9rem;
-cursor: pointer;
 }
 .custom-context-menu-item:hover {
 background: var(--hover-bg);
@@ -467,6 +746,53 @@ border-color: var(--border-color);
 </style>
 </head>
 <body>
+
+<div id="mobileWarning" class="mobile-warning" style="display: none;">
+<div class="warning-text-block">
+<p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
+<hr>
+<p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
+<hr>
+<p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
+</div>
+</div>
+
+<div id="initialLoader" class="initial-loader">
+<div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
+<div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
+<div id="percentText" class="percent-text">0%</div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+<div class="spinner"></div>
+<div id="loadingSubtitle" class="loading-subtitle"></div>
+</div>
+
+<div id="visualWrapper" style="filter: saturate(100%) grayscale(0%) contrast(100%);">
+<div id="gatekeeper">
+    <div id="bypassTopRight" class="hidden-bypass" style="top: 0; right: 0;"></div>
+    <div id="bypassBottomLeft" class="hidden-bypass" style="bottom: 0; left: 0;"></div>
+
+<div class="gate-box">
+<h2>This is a non-production test site for evaluation and demonstration purposes only.</h2>
+<p style="font-weight: bold;">By proceeding, you acknowledge and agree that:</p>
+<ul>
+<li>This website is not intended for real-world or clinical use.</li>
+<li>All content, models, and outputs are for demonstration and testing only.</li>
+<li>No health, safety, or operational decisions should be based on this test environment.</li>
+<li>iubanova and Nanjing University accept no liability for any use or misuse of this test system.</li>
+<li>You will not share, distribute, or replicate any test data or outputs without explicit permission.</li>
+</ul>
+<label class="gate-check">
+<input type="checkbox" id="agreeCheck">
+I have read, understood, and agree to the terms above.
+</label>
+<p style="margin-bottom: 1rem; font-weight: bold;">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</p>
+<div class="h-captcha" data-sitekey="b1b8c6e6-6586-4d9e-8eee-745a861c8974" data-callback="onCaptchaSuccess"></div>
+</div>
+<button id="continueBtn" class="btn" disabled>Continue</button>
+</div>
+
 <div id="mainApp">
 <nav>
 <div class="nav-left">
@@ -501,29 +827,38 @@ border-color: var(--border-color);
 </nav>
 
 <main>
-<section class="hero-download">
-<h1 class="download-message">
-Web-based account login and system operation are not currently available,<br>
-as this feature remains under development.<br>
-Please select the appropriate button below to begin the download, based on your device.
+<section class="hero">
+<img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
+<h1>
+    <span class="title-line1">Our most advanced <span class="healing-flash">Healing</span><span class="trade-mark">™</span> system.</span><br>
+    <span class="title-line2">Amazing. Surprising.</span>
 </h1>
-<div class="download-grid">
-<!-- App Store 图片按钮 -->
-<div class="download-item" id="appStoreBtn">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/Available-on-the-App-Store-Logo-Vector.svg-.png" alt="App Store">
+<div class="hero-btns">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="btn">Dive into…</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/demo.html" class="btn">Request a demo</a>
 </div>
-<!-- Google Play 图片按钮 -->
-<div class="download-item" id="googlePlayBtn">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/get-it-on-google-play-logo-png-transparent.png" alt="Google Play">
+</section>
+
+<section class="grid-container">
+<div class="grid-item" id="gridItem1">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team">
+<h3>Built by researchers,<br>for real-world impact.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html" class="btn">Meet the team</a>
 </div>
-<!-- Huawei AppGallery -->
-<div class="download-item" id="huaweiBtn">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/huawei-appgallery.png" alt="Huawei AppGallery">
+<div class="grid-item" id="gridItem2">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security">
+<h3>Your data is never a product.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
 </div>
-<!-- Microsoft Store -->
-<div class="download-item" id="microsoftBtn">
-<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/new-badge-light.png" alt="Microsoft Store">
+<div class="grid-item" id="gridItem3">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
+<h3>See it for yourself,<br>No commitment.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
 </div>
+<div class="grid-item" id="gridItem4">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories">
+<h3>From pilot to production.<br>Proven in the field.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
 </div>
 </section>
 </main>
@@ -555,11 +890,12 @@ Please select the appropriate button below to begin the download, based on your 
 </div>
 </footer>
 </div>
+</div>
 
 <div id="customCursor"></div>
 <div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
 
-<!-- 模态框（与原index完全一致） -->
+<!-- 模态框 -->
 <div class="modal-overlay" id="langModeModal">
 <div class="modal-content">
 <button class="modal-close" onclick="closeModal('langModeModal')">×</button>
@@ -675,27 +1011,79 @@ Please select the appropriate button below to begin the download, based on your 
 </div>
 
 <script>
-// ---------- 下载按钮交互 ----------
-document.getElementById('appStoreBtn')?.addEventListener('click', () => {
-    window.location.href = 'https://apps.apple.com/us/app/%E6%97%A5%E5%88%9D/id6747154407';
-});
-function showAlertMessage(msg) {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay active';
-    modal.style.display = 'flex';
-    modal.innerHTML = `<div class="modal-content" style="max-width:450px; text-align:center;"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button><div style="margin:1rem 0; font-size:1.2rem;">${msg}</div><button class="btn" onclick="this.closest('.modal-overlay').remove()">OK</button></div>`;
-    document.body.appendChild(modal);
-}
-document.getElementById('googlePlayBtn')?.addEventListener('click', () => showAlertMessage('It would seem that the application has not yet been released on Google Play. Please accept our sincere apologies.'));
-document.getElementById('huaweiBtn')?.addEventListener('click', () => showAlertMessage('It would seem that the application has not yet been released on Huawei AppGallery. Please accept our sincere apologies.'));
-document.getElementById('microsoftBtn')?.addEventListener('click', () => showAlertMessage('It would seem that the application has not yet been released on Microsoft Store. Please accept our sincere apologies.'));
+// 进度条预加载
+(function(){
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(window.innerWidth<=1024&&window.innerHeight<=800)){
+        document.getElementById('mobileWarning').style.display='flex';
+        document.getElementById('initialLoader').style.display='none';
+        document.body.style.overflow='hidden';
+        return;
+    }
+    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg"];
+    let loaded=0,total=imgs.length,finish=false;
+    const fill=document.getElementById('progressFill'),pt=document.getElementById('percentText'),loader=document.getElementById('initialLoader');
+    function upd(){if(finish)return;let p=Math.floor(loaded/total*100);fill.style.width=p+'%';pt.innerText=p+'%';if(loaded>=total&&!finish){finish=true;setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>{loader.style.display='none';document.getElementById('gatekeeper').style.display='flex';},400);},200);}}
+    setTimeout(()=>{if(!finish&&loaded<total){loaded=total;upd();}},8000);
+    imgs.forEach(u=>{let img=new Image();img.onload=()=>{loaded++;upd();};img.onerror=()=>{loaded++;upd();};img.src=u;});
+})();
 
-// 瞄准镜系统（完全照搬原index）
+let hCaptchaPassed=false,checkAgreed=false;
+function onCaptchaSuccess(){hCaptchaPassed=true;updateGate();}
+function updateGate(){let btn=document.getElementById('continueBtn');if(hCaptchaPassed&&checkAgreed)btn.removeAttribute('disabled');else btn.setAttribute('disabled','true');}
+document.getElementById('agreeCheck').addEventListener('change',e=>{checkAgreed=e.target.checked;updateGate();});
+document.getElementById('continueBtn').addEventListener('click',()=>startSecondStageLoading());
+function bypass(){startSecondStageLoading();}
+document.getElementById('bypassTopRight').addEventListener('dblclick',bypass);
+document.getElementById('bypassBottomLeft').addEventListener('dblclick',bypass);
+
+let subInt=null,warning=false;
+const subs=["Use ⌘ + D to add our website to your Favourites in Safari.","A restless melody is playing.","Fancy brewing a cup of tea while you wait?","We're preparing some fine content for you.","Press ⌘ + H to hide the current window and do something else while you wait.","Please bear with us for a moment.","Warming up the Hemi™ V8.","Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™","Almost there.","A good internet connection reduces loading time.","The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.","We will present it to you shortly."];
+function startSub(){if(subInt)clearInterval(subInt);if(warning)return;let idx=Math.floor(Math.random()*subs.length),el=document.getElementById('loadingSubtitle');el.innerText=subs[idx];el.style.opacity='1';subInt=setInterval(()=>{if(warning)return;el.style.opacity='0';setTimeout(()=>{if(warning)return;let nidx=Math.floor(Math.random()*subs.length);if(nidx===idx)nidx=(nidx+1)%subs.length;idx=nidx;el.innerText=subs[idx];el.style.opacity='1';},200);},1300);}
+async function testConn(){let fail=0;for(let ep of ['youtube.com','google.co.uk','translate.google.co.uk']){try{await fetch(`https://${ep}/favicon.ico?t=${Date.now()}`,{mode:'no-cors'});}catch(e){fail++;}if(fail>=2)break;}return fail>=2;}
+async function startSecondStageLoading(){
+    document.getElementById('gatekeeper').style.display='none';
+    let ov=document.getElementById('loadingOverlay'),mw=document.getElementById('visualWrapper');
+    mw.style.transition="filter 0.7s cubic-bezier(0.23,1,0.32,1)";mw.style.filter="brightness(0.35) blur(4px)";
+    await new Promise(r=>setTimeout(r,700));
+    ov.style.visibility='visible';ov.style.opacity='1';startSub();
+    let poor=await testConn();
+    await new Promise(r=>setTimeout(r,poor?2800:2200));
+    if(subInt)clearInterval(subInt);ov.style.opacity='0';
+    setTimeout(()=>{ov.style.visibility='hidden';mw.style.filter='none';document.getElementById('mainApp').style.display='flex';initHeroScroll();},300);
+}
+
+function initHeroScroll(){
+    let img=document.getElementById('heroImage');
+    if(!img)return;
+    let ticking=false;
+    window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
+}
+
+// 板块悬停放大效果 (0.2秒延迟)
+const gridItems = document.querySelectorAll('.grid-item');
+gridItems.forEach(item => {
+    let hoverTimer = null;
+    item.addEventListener('mouseenter', () => {
+        hoverTimer = setTimeout(() => {
+            item.classList.add('hover-expand');
+        }, 200);
+    });
+    item.addEventListener('mouseleave', () => {
+        if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+        }
+        item.classList.remove('hover-expand');
+    });
+});
+
+// 瞄准镜系统
 let crosshairEnabled=false;
 let currentHoverElement=null;
 const cursorDiv=document.getElementById('customCursor');
 const chkCrosshairSetting=document.getElementById('chkCrosshair');
 const selCrosshairColor=document.getElementById('selCrosshairColor');
+
 function updateCrosshairMode(){
     crosshairEnabled=chkCrosshairSetting.checked;
     const color=selCrosshairColor.value;
@@ -715,71 +1103,69 @@ function updateCrosshairColor(){
     cursorDiv.style.borderColor=color;
     cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
 }
-if(chkCrosshairSetting) chkCrosshairSetting.addEventListener('change',updateCrosshairMode);
-if(selCrosshairColor) selCrosshairColor.addEventListener('change',updateCrosshairColor);
+chkCrosshairSetting.addEventListener('change',updateCrosshairMode);
+selCrosshairColor.addEventListener('change',updateCrosshairColor);
+
 document.addEventListener('mousemove',(e)=>{
-    if(crosshairEnabled && cursorDiv){
+    if(crosshairEnabled){
         cursorDiv.style.left=e.clientX+'px';
         cursorDiv.style.top=e.clientY+'px';
     }
 });
-const clickables=document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .download-item');
+const clickables=document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass');
 clickables.forEach(el=>{
     el.addEventListener('mouseenter',()=>{
         if(!crosshairEnabled)return;
         if(currentHoverElement===el)return;
         currentHoverElement=el;
-        cursorDiv?.classList.add('crosshair-rotate');
+        cursorDiv.classList.add('crosshair-rotate');
     });
     el.addEventListener('mouseleave',()=>{
         if(!crosshairEnabled)return;
         if(currentHoverElement===el){
-            cursorDiv?.classList.remove('crosshair-rotate');
+            cursorDiv.classList.remove('crosshair-rotate');
             currentHoverElement=null;
         }
     });
 });
 updateCrosshairMode();
 
-// 自定义右键菜单（原样）
+// 自定义右键菜单
 const contextMenu=document.getElementById('customContextMenu');
 document.addEventListener('contextmenu',(e)=>{
     e.preventDefault();
-    if(contextMenu){
-        contextMenu.style.display='block';
-        contextMenu.style.left=e.clientX+'px';
-        contextMenu.style.top=e.clientY+'px';
-        let prevUrl=document.referrer||'';
-        contextMenu.innerHTML=`
-            <div class="custom-context-menu-item ${!prevUrl?'disabled':''}" id="ctxLastPage">Last Page you are on</div>
-            <div class="custom-context-menu-item" id="ctxCopyURL">Copy the URL</div>
-            <hr>
-            <div class="custom-context-menu-item" id="ctxSettings">Settings</div>
-        `;
-        document.getElementById('ctxLastPage')?.addEventListener('click',()=>{if(prevUrl)window.location.href=prevUrl;contextMenu.style.display='none';});
-        document.getElementById('ctxCopyURL')?.addEventListener('click',()=>{navigator.clipboard.writeText(window.location.href);contextMenu.style.display='none';});
-        document.getElementById('ctxSettings')?.addEventListener('click',()=>{openModal('settingsModal');contextMenu.style.display='none';});
-    }
+    contextMenu.style.display='block';
+    contextMenu.style.left=e.clientX+'px';
+    contextMenu.style.top=e.clientY+'px';
+    let prevUrl=document.referrer||'';
+    contextMenu.innerHTML=`
+        <div class="custom-context-menu-item ${!prevUrl?'disabled':''}" id="ctxLastPage">Last Page you are on</div>
+        <div class="custom-context-menu-item" id="ctxCopyURL">Copy the URL</div>
+        <hr>
+        <div class="custom-context-menu-item" id="ctxSettings">Settings</div>
+    `;
+    document.getElementById('ctxLastPage').onclick=()=>{if(prevUrl)window.location.href=prevUrl;contextMenu.style.display='none';};
+    document.getElementById('ctxCopyURL').onclick=()=>{navigator.clipboard.writeText(window.location.href);contextMenu.style.display='none';};
+    document.getElementById('ctxSettings').onclick=()=>{openModal('settingsModal');contextMenu.style.display='none';};
 });
-document.addEventListener('click',()=>{if(contextMenu)contextMenu.style.display='none';});
+document.addEventListener('click',()=>{contextMenu.style.display='none';});
 
 function openModal(id){let m=document.getElementById(id);if(m)m.classList.add('active');}
 function closeModal(id){let m=document.getElementById(id);if(m)m.classList.remove('active');}
-document.getElementById('openSettingsBtn')?.addEventListener('click',()=>openModal('settingsModal'));
-document.getElementById('btnPrivacy')?.addEventListener('click',()=>openModal('privacyModal'));
-document.getElementById('btnTrade')?.addEventListener('click',()=>openModal('tradeModal'));
-document.getElementById('btnLicence')?.addEventListener('click',()=>openModal('licenceModal'));
-document.getElementById('langModeBtn')?.addEventListener('click',()=>openModal('langModeModal'));
-document.getElementById('langModalYes')?.addEventListener('click',()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};});
-document.getElementById('langModalPortal')?.addEventListener('click',()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';});
+document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
+document.getElementById('btnPrivacy').onclick=()=>openModal('privacyModal');
+document.getElementById('btnTrade').onclick=()=>openModal('tradeModal');
+document.getElementById('btnLicence').onclick=()=>openModal('licenceModal');
+document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
+document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};};
+document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
 
-const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.body,valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
-function upF(){if(valSat)valSat.innerText=slSat.value+'%';if(valMono)valMono.innerText=slMono.value+'%';if(valCont)valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
-if(slSat)slSat.addEventListener('input',upF);if(slMono)slMono.addEventListener('input',upF);if(slCont)slCont.addEventListener('input',upF);
-let light=false;const themeToggle=document.getElementById('themeToggleBtn');if(themeToggle)themeToggle.onclick=()=>{light=!light;if(light){document.body.classList.add('light-theme');themeToggle.innerText='Light';}else{document.body.classList.remove('light-theme');themeToggle.innerText='Dark';}};
-document.getElementById('btnResetAll')?.addEventListener('click',()=>{if(slSat)slSat.value=100;if(slMono)slMono.value=0;if(slCont)slCont.value=100;upF();if(chkCrosshairSetting)chkCrosshairSetting.checked=false;if(selCrosshairColor)selCrosshairColor.value='red';updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');if(themeToggle)themeToggle.innerText='Dark';}});
-document.getElementById('navLogoBtn')?.addEventListener('click',function(e){window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';});
-upF();
+const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper'),valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
+function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
+slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
+let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!light;if(light){document.body.classList.add('light-theme');document.getElementById('themeToggleBtn').innerText='Light';}else{document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshairSetting.checked=false;selCrosshairColor.value='red';updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
 </script>
 </body>
 </html>
