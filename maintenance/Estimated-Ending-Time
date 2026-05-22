@@ -1,0 +1,7 @@
+-date <22 May 26> to <N/A>
+-<exact>
+#"exact, between, unpredictable, long-term"
+
+-time(UTC) <9:00><am> to <10:03><am>
+-<between>
+#"exact, between, unpredictable, long-term"
