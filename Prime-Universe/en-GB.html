@@ -741,6 +741,28 @@ pointer-events: none;
 margin: 4px 0;
 border-color: var(--border-color);
 }
+#maintenanceOverlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 15000;
+background: var(--bg-color);
+display: none;
+overflow-y: auto;
+}
+#maintenanceContent {
+width: 100%;
+min-height: 100%;
+padding: 2rem;
+color: var(--text-color);
+}
+.maintenance-link {
+color: #88f;
+text-decoration: underline;
+cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -890,6 +912,10 @@ I have read, understood, and agree to the terms above.
 </div>
 </div>
 
+<div id="maintenanceOverlay">
+<div id="maintenanceContent"></div>
+</div>
+
 <div id="customCursor"></div>
 <div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
 
@@ -1023,7 +1049,7 @@ I have read, understood, and agree to the terms above.
     imgs.forEach(u=>{let img=new Image();img.onload=()=>{loaded++;upd();};img.onerror=()=>{loaded++;upd();};img.src=u;});
 })();
 
-async function checkMaintenanceAndRedirect() {
+async function checkMaintenanceAndShow() {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -1036,8 +1062,18 @@ async function checkMaintenanceAndRedirect() {
                 const maintResponse = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/maintenance.htm', { cache: 'no-store' });
                 if(maintResponse.ok) {
                     const maintHtml = await maintResponse.text();
-                    document.documentElement.innerHTML = maintHtml;
-                    document.title = 'Under Maintenance';
+                    const overlay = document.getElementById('maintenanceOverlay');
+                    const contentDiv = document.getElementById('maintenanceContent');
+                    contentDiv.innerHTML = maintHtml;
+                    overlay.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        #maintenanceOverlay { background: var(--bg-color); color: var(--text-color); }
+                        #maintenanceContent a { color: #88f; }
+                        .maintenance-link-fix { color: #88f; text-decoration: underline; cursor: pointer; }
+                    `;
+                    document.head.appendChild(style);
                     return true;
                 }
             }
@@ -1184,7 +1220,7 @@ document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value
 document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
 
 (async function() {
-    const isMaintenance = await checkMaintenanceAndRedirect();
+    const isMaintenance = await checkMaintenanceAndShow();
     if(isMaintenance) return;
 })();
 </script>
