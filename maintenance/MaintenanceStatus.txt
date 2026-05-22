@@ -7,6 +7,27 @@ cd: >> 6604
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ERR</title>
+
+
+
+
+----
+
+
+
+"when you have eliminated the impossible, whatever remains, however improbable, must be the truth."
+
+
+----
+
+
+
+
+
+
+
+
+
   <style>
     * {
       margin: 0;
