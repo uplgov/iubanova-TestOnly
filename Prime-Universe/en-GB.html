@@ -1,1087 +1,1171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Portal</title>
-    <style>
-        @font-face {
-            font-family: 'GDS Transport';
-            src: local('GDS Transport'), url('https://assets.publishing.service.gov.uk/static/gds-transport-regular-9e6b1b4b3b7e3b3b9b1b3b1b3b1b3b1b.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            background: #000;
-            overflow: hidden;
-            font-family: system-ui, 'Segoe UI', 'SF Pro Text', 'Noto Sans', sans-serif;
-            height: 100vh;
-            width: 100vw;
-            position: relative;
-            font-size: 18px;
-        }
-        img {
-            -webkit-user-drag: none;
-            user-drag: none;
-            pointer-events: auto;
-        }
-        .app-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background: #000;
-        }
-        .mobile-warning {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0c12;
-            backdrop-filter: blur(8px);
-            z-index: 10000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
-            flex-direction: column;
-            gap: 2rem;
-            color: #eee;
-            font-weight: 500;
-        }
-        .warning-text-block p {
-            margin: 1rem 0;
-            line-height: 1.4;
-            font-size: 1.2rem;
-            max-width: 600px;
-        }
-        hr {
-            width: 60px;
-            margin: 0.5rem auto;
-            border-color: #444;
-        }
-        .initial-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            transition: opacity 0.5s ease;
-        }
-        .loader-logo {
-            width: 200px;
-            max-width: 35%;
-            margin-bottom: 2.5rem;
-        }
-        .loader-logo img {
-            width: 100%;
-            display: block;
-        }
-        .progress-bar-container {
-            width: 320px;
-            max-width: 70%;
-            height: 6px;
-            background: #2a2a2e;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 1.5rem 0 0.8rem;
-        }
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            background: #f0f0f0;
-            transition: width 0.2s linear;
-        }
-        .percent-text {
-            color: #ccc;
-            font-size: 1rem;
-            margin-top: 10px;
-            font-family: monospace;
-        }
-        .main-interface {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.8s ease;
-            position: relative;
-        }
-        .left-panel {
-            flex: 1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-            transition: filter 0.7s cubic-bezier(0.23, 1, 0.32, 1), brightness 0.7s ease;
-        }
-        .right-panel {
-            flex: 1;
-            background-color: #000;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.2rem;
-            transition: filter 0.7s cubic-bezier(0.23, 1, 0.32, 1), brightness 0.7s ease;
-        }
-        .right-panel::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.65) 75%, rgba(0,0,0,0.92) 100%);
-            pointer-events: none;
-            z-index: 2;
-        }
-        .right-panel-blur {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(6px);
-            mask: linear-gradient(90deg, transparent 0%, transparent 30%, black 70%, black 100%);
-            -webkit-mask: linear-gradient(90deg, transparent 0%, transparent 30%, black 70%, black 100%);
-            pointer-events: none;
-            z-index: 1;
-        }
-        .left-panel::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 80px;
-            height: 100%;
-            background: linear-gradient(to left, rgba(0,0,0,0.95), rgba(0,0,0,0));
-            pointer-events: none;
-        }
-        .greeting-text {
-            font-family: 'GDS Transport', 'Segoe UI', system-ui;
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 1.2rem;
-            color: rgba(255,248,220,0.92);
-            text-shadow: 0 0 8px rgba(0,0,0,0.5);
-            letter-spacing: 1px;
-            font-weight: 400;
-            backdrop-filter: blur(0px);
-            padding: 0 16px;
-            transition: all 0.4s cubic-bezier(0.34, 1.1, 0.55, 1);
-            filter: blur(5px);
-            opacity: 0.55;
-            transform: scale(0.98);
-        }
-        .greeting-text.reveal {
-            filter: blur(0px);
-            opacity: 1;
-            transform: scale(1);
-            transition: all 0.45s cubic-bezier(0.2, 1.2, 0.4, 1);
-        }
-        .lang-btn {
-            position: relative;
-            width: 300px;
-            max-width: 80%;
-            padding: 14px 0;
-            margin: 8px 0;
-            background: rgba(20,20,35,0.75);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: rgba(255,255,235,0.95);
-            font-weight: 500;
-            font-size: 1.1rem;
-            border-radius: 60px;
-            cursor: pointer;
-            text-align: center;
-            backdrop-filter: blur(4px);
-            overflow: hidden;
-            transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
-            z-index: 20;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-        }
-        .lang-btn:hover {
-            background: rgba(45,45,70,0.85);
-            transform: scale(1.01);
-            border-color: rgba(255,255,210,0.4);
-            box-shadow: 0 0 12px rgba(255,255,200,0.25), inset 0 1px 1px rgba(255,255,255,0.2);
-        }
-        .btn-ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,245,0.5) 0%, rgba(255,255,210,0.15) 80%);
-            transform: scale(0);
-            animation: rippleEffectVerySlow 1.7s ease-out forwards;
-            pointer-events: none;
-            filter: blur(4px);
-        }
-        @keyframes rippleEffectVerySlow {
-            0% { transform: scale(0); opacity: 0.55; }
-            100% { transform: scale(10); opacity: 0; }
-        }
-        .star {
-            position: absolute;
-            background: rgba(210,210,210,0.3);
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0.28;
-            box-shadow: 0 0 1px rgba(200,200,180,0.15);
-            transition: opacity 0.08s linear;
-        }
-        .star-flicker {
-            animation: starBlink 0.18s ease-in-out 2;
-        }
-        @keyframes starBlink {
-            0% { opacity: 0.28; transform: scale(1); }
-            50% { opacity: 0.02; transform: scale(0.92); }
-            100% { opacity: 0.28; transform: scale(1); }
-        }
-        .hover-glow {
-            position: absolute;
-            width: 130px;
-            height: 130px;
-            background: radial-gradient(circle, rgba(255,255,210,0.28) 0%, rgba(255,255,180,0.06) 50%, rgba(255,255,255,0) 85%);
-            border-radius: 50%;
-            filter: blur(15px);
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: opacity 0.1s linear;
-            z-index: 7;
-        }
-        .mode-buttons-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            width: 100%;
-            z-index: 20;
-        }
-        .back-btn {
-            background: rgba(30,30,55,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-top: 16px;
-            width: 220px;
-            padding: 10px 0;
-            font-size: 0.95rem;
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.92);
-            backdrop-filter: blur(16px);
-            z-index: 3000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            color: white;
-        }
-        .spinner {
-            width: 44px;
-            height: 44px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spinVerySlow 2.8s linear infinite;
-            margin-bottom: 1.5rem;
-        }
-        @keyframes spinVerySlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loading-subtitle {
-            font-size: 1.1rem;
-            max-width: 85%;
-            text-align: center;
-            background: rgba(0,0,0,0.5);
-            padding: 10px 18px;
-            border-radius: 60px;
-            transition: opacity 0.25s ease-in-out;
-            font-family: 'Times New Roman', Georgia, '华文楷书', 'Georgia', serif;
-            font-style: normal;
-        }
-        .tooltip-pop {
-            animation: fadeSlideUp 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateX(-50%) translateY(6px); }
-            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        .en-font {
-            font-family: 'Times New Roman', Georgia, 'Playfair Display', serif;
-        }
-        .cjk-font {
-            font-family: '华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', 'Noto Sans CJK SC', serif;
-        }
-        .mode-title {
-            font-family: 'GDS Transport', 'Segoe UI', system-ui;
-            font-size: 1.6rem;
-            margin-bottom: 1.2rem;
-            font-weight: 400;
-            text-align: center;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, rgba(255,245,200,0.9), rgba(220,210,170,0.7));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
-        .footer-scroll {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 0.85rem;
-            color: rgba(220,220,200,0.8);
-            font-style: italic;
-            z-index: 200;
-            pointer-events: none;
-            backdrop-filter: blur(2px);
-            padding: 6px;
-            transition: opacity 0.5s;
-            background: rgba(0,0,0,0.3);
-            border-radius: 40px;
-            width: auto;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-        }
-        .footer-copyright {
-            position: fixed;
-            bottom: 16px;
-            left: 20px;
-            font-size: 0.8rem;
-            color: rgba(210,210,190,0.7);
-            font-family: monospace;
-            z-index: 200;
-            pointer-events: none;
-            text-shadow: 0 0 2px black;
-            background: rgba(0,0,0,0.4);
-            padding: 4px 12px;
-            border-radius: 16px;
-            backdrop-filter: blur(2px);
-        }
-        .scroll-text {
-            display: inline-block;
-            animation: fadeScroll 2.2s ease-in-out infinite;
-        }
-        @keyframes fadeScroll {
-            0% { opacity: 0.3; transform: translateY(1px); }
-            50% { opacity: 0.95; transform: translateY(0px); }
-            100% { opacity: 0.3; transform: translateY(-1px); }
-        }
-        .maintenance-frame {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 10000;
-            background: #000;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>iubanova</title>
+<link rel="icon" type="image/png" href="https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png">
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<style>
+@font-face {
+font-family: 'GDS Transport';
+src: local('GDS Transport'), url('https://assets.publishing.service.gov.uk/static/gds-transport-regular-9e6b1b4b3b7e3b3b9b1b3b1b3b1b3b1b.woff2') format('woff2');
+font-weight: normal;
+font-style: normal;
+font-display: swap;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+-webkit-tap-highlight-color: transparent;
+}
+/* 门禁界面可选中、可复制 */
+#gatekeeper, #gatekeeper * {
+user-select: text !important;
+-webkit-user-select: text !important;
+-moz-user-select: text !important;
+-ms-user-select: text !important;
+}
+/* 其他区域不可选中 */
+body:not(.gatekeeper-visible) #mainApp, body:not(.gatekeeper-visible) nav, body:not(.gatekeeper-visible) main, body:not(.gatekeeper-visible) footer {
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
+:root {
+--bg-color: #000;
+--text-color: #eee;
+--panel-bg: rgba(20,20,35,0.75);
+--border-color: rgba(255,255,255,0.2);
+--hover-bg: rgba(45,45,70,0.85);
+--modal-overlay: rgba(0,0,0,0.8);
+}
+body.light-theme {
+--bg-color: #f4f4f5;
+--text-color: #111;
+--panel-bg: rgba(240,240,245,0.85);
+--border-color: rgba(0,0,0,0.1);
+--hover-bg: rgba(220,220,225,0.95);
+--modal-overlay: rgba(255,255,255,0.8);
+}
+body {
+background: var(--bg-color);
+color: var(--text-color);
+font-family: Georgia, 'Times New Roman', Times, serif;
+font-size: 18px;
+width: 100vw;
+min-height: 100vh;
+overflow-x: hidden;
+transition: background 0.3s, color 0.3s;
+}
+img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .dropdown-item {
+-webkit-user-drag: none;
+user-drag: none;
+}
+a, button, .btn, .lang-mode-btn, .nav-link, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass {
+cursor: pointer;
+}
+body.crosshair-mode, body.crosshair-mode a, body.crosshair-mode button, body.crosshair-mode .btn, body.crosshair-mode .nav-link, body.crosshair-mode .lang-mode-btn, body.crosshair-mode .footer-link, body.crosshair-mode .dropdown-item, body.crosshair-mode .settings-icon, body.crosshair-mode .modal-close, body.crosshair-mode .gate-check input, body.crosshair-mode .hidden-bypass {
+cursor: none;
+}
+.mobile-warning {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: #0a0c12;
+backdrop-filter: blur(8px);
+z-index: 10000;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 2rem;
+text-align: center;
+flex-direction: column;
+gap: 2rem;
+color: #eee;
+font-weight: 500;
+}
+.warning-text-block p {
+margin: 1rem 0;
+line-height: 1.4;
+font-size: 1.2rem;
+max-width: 600px;
+}
+hr {
+width: 60px;
+margin: 0.5rem auto;
+border-color: #444;
+}
+.initial-loader {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: #000;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 2000;
+transition: opacity 0.5s ease;
+}
+.loader-logo {
+width: 200px;
+max-width: 35%;
+margin-bottom: 2.5rem;
+}
+.loader-logo img {
+width: 100%;
+display: block;
+}
+.progress-bar-container {
+width: 320px;
+max-width: 70%;
+height: 6px;
+background: #2a2a2e;
+border-radius: 10px;
+overflow: hidden;
+margin: 1.5rem 0 0.8rem;
+}
+.progress-fill {
+width: 0%;
+height: 100%;
+background: #f0f0f0;
+transition: width 0.2s linear;
+}
+.percent-text {
+color: #ccc;
+font-size: 1rem;
+margin-top: 10px;
+font-family: monospace;
+}
+.loading-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.92);
+backdrop-filter: blur(16px);
+z-index: 3000;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+color: white;
+}
+.spinner {
+width: 44px;
+height: 44px;
+border: 3px solid rgba(255,255,255,0.2);
+border-top: 3px solid white;
+border-radius: 50%;
+animation: spinVerySlow 2.8s linear infinite;
+margin-bottom: 1.5rem;
+}
+@keyframes spinVerySlow {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.loading-subtitle {
+font-size: 1.1rem;
+max-width: 85%;
+text-align: center;
+background: rgba(0,0,0,0.5);
+padding: 10px 18px;
+border-radius: 60px;
+transition: opacity 0.25s ease-in-out;
+font-family: 'Times New Roman', Georgia, serif;
+}
+.btn {
+position: relative;
+padding: 14px 24px;
+margin: 8px;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+color: var(--text-color);
+font-weight: 500;
+font-size: 1.1rem;
+border-radius: 60px;
+text-align: center;
+backdrop-filter: blur(4px);
+overflow: hidden;
+transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+display: inline-block;
+text-decoration: none;
+font-family: Georgia, 'Times New Roman', Times, serif;
+}
+body.light-theme .btn {
+box-shadow: 0 4px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.btn:hover {
+background: var(--hover-bg);
+transform: scale(1.01);
+border-color: rgba(150,150,150,0.4);
+}
+.btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+#gatekeeper {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+padding: 2rem;
+max-width: 800px;
+margin: 0 auto;
+text-align: center;
+position: relative;
+}
+.gate-box {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 2rem;
+margin-bottom: 2rem;
+text-align: left;
+}
+.gate-box h2 {
+margin-bottom: 1rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.gate-box ul {
+margin: 1rem 0 1rem 2rem;
+line-height: 1.6;
+}
+.gate-check {
+margin: 1.5rem 0;
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 1.1rem;
+}
+.gate-check input {
+width: 20px;
+height: 20px;
+}
+#mainApp {
+display: none;
+flex-direction: column;
+min-height: 100vh;
+}
+#visualWrapper {
+width: 100%;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+nav {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1rem 2rem;
+background: var(--panel-bg);
+backdrop-filter: blur(25px);
+-webkit-backdrop-filter: blur(25px);
+border-bottom: 1px solid var(--border-color);
+position: sticky;
+top: 0;
+z-index: 100;
+}
+.nav-left, .nav-right, .nav-center {
+display: flex;
+align-items: center;
+gap: 1.5rem;
+}
+.nav-logo-container {
+width: 40px;
+height: 40px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
+transition: background 0.2s, box-shadow 0.2s;
+}
+.nav-logo-container:hover {
+background: #000;
+box-shadow: 0 0 0 2px #000;
+}
+.nav-logo {
+width: 100%;
+height: 100%;
+object-fit: contain;
+content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png');
+}
+.nav-logo-container:hover .nav-logo {
+content: url('https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png');
+}
+.nav-link {
+color: var(--text-color);
+text-decoration: none;
+font-weight: 500;
+font-family: Georgia, 'Times New Roman', Times, serif;
+position: relative;
+padding: 6px 12px;
+border: 1px solid transparent;
+border-radius: 4px;
+transition: border-color 0.2s, color 0.2s;
+display: inline-block;
+}
+body:not(.light-theme) .nav-link:hover {
+border-color: #fff;
+}
+body.light-theme .nav-link:hover {
+border-color: #000;
+}
+.dropdown {
+position: relative;
+}
+.dropdown-menu {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 8px;
+min-width: 200px;
+flex-direction: column;
+padding: 0.5rem 0;
+backdrop-filter: blur(25px);
+-webkit-backdrop-filter: blur(25px);
+}
+.dropdown:hover .dropdown-menu {
+display: flex;
+}
+.dropdown-item {
+padding: 0.75rem 1.5rem;
+color: var(--text-color);
+text-decoration: none;
+font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.dropdown-item:hover {
+background: var(--hover-bg);
+}
+.settings-icon {
+width: 32px;
+height: 32px;
+filter: invert(1);
+transition: transform 0.2s;
+}
+body.light-theme .settings-icon {
+filter: invert(0);
+}
+.settings-icon:hover {
+transform: rotate(45deg);
+}
+.lang-mode-btn {
+background: transparent;
+border: 1px solid var(--border-color);
+color: var(--text-color);
+padding: 6px 14px;
+border-radius: 30px;
+font-family: Georgia, 'Times New Roman', Times, serif;
+font-size: 0.9rem;
+transition: all 0.2s;
+backdrop-filter: blur(4px);
+}
+.lang-mode-btn:hover {
+background: var(--hover-bg);
+transform: scale(1.02);
+}
+main {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 4rem 2rem;
+gap: 4rem;
+}
+.hero {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+max-width: 1000px;
+width: 100%;
+}
+.hero-image {
+width: 100%;
+max-width: 2000px;
+border-radius: 16px;
+margin-bottom: 2rem;
+box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+transition: all 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.hero-image.scrolled {
+max-width: 800px;
+transition: all 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.hero h1 {
+margin-bottom: 2rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+font-weight: normal;
+line-height: 1.2;
+}
+.title-line1 {
+font-size: 2.4rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+color: var(--text-color);
+}
+.title-line1 .healing-flash {
+font-family: 'Arial', 'GDS Transport', sans-serif;
+font-size: 3.2rem;
+font-weight: bold;
+background: linear-gradient(90deg, #00d2ff, #00ff75, #ffeb3b, #fff, #00d2ff);
+background-size: 400% 400%;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+animation: healingScroll 6s linear infinite;
+display: inline-block;
+}
+.title-line1 .trade-mark {
+font-family: 'Arial', sans-serif;
+font-size: 1.6rem;
+font-weight: normal;
+color: var(--text-color);
+background: none;
+-webkit-text-fill-color: currentColor;
+animation: none;
+display: inline-block;
+vertical-align: super;
+margin-left: 2px;
+}
+.title-line2 {
+font-size: 2.8rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+color: var(--text-color);
+display: inline-block;
+white-space: nowrap;
+}
+@media (max-width: 700px) {
+.title-line2 {
+white-space: normal;
+font-size: 1.8rem;
+}
+.title-line1 {
+font-size: 1.6rem;
+}
+.title-line1 .healing-flash {
+font-size: 2rem;
+}
+.title-line1 .trade-mark {
+font-size: 1rem;
+}
+.hero-image.scrolled {
+max-width: 90%;
+}
+}
+@keyframes healingScroll {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+.hero-btns {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+justify-content: center;
+}
+.grid-container {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 2rem;
+max-width: 1000px;
+width: 100%;
+}
+@media(max-width: 768px) {
+.grid-container {
+grid-template-columns: 1fr;
+}
+}
+.grid-item {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 16px;
+padding: 1.5rem;
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+gap: 1rem;
+transition: all 0.3s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand {
+transform: scale(1.05);
+background: var(--hover-bg);
+box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+transition: all 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand img {
+transform: scale(1.08);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand h3 {
+transform: scale(1.04);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item.hover-expand .btn {
+transform: scale(1.05);
+transition: transform 0.25s cubic-bezier(0.2, 0.95, 0.4, 1.05);
+}
+.grid-item img {
+width: 100%;
+aspect-ratio: 1/1;
+object-fit: cover;
+border-radius: 12px;
+transition: transform 0.2s ease;
+}
+.grid-item h3 {
+font-size: 1.9rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+font-weight: bold;
+flex: 1;
+display: flex;
+align-items: center;
+justify-content: center;
+line-height: 1.3;
+text-align: center;
+transition: transform 0.2s ease;
+}
+.grid-item .btn {
+transition: transform 0.2s ease;
+}
+footer {
+background: var(--panel-bg);
+border-top: 1px solid var(--border-color);
+padding: 3rem 2rem;
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+gap: 2rem;
+}
+.footer-logo-wrapper {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+.footer-logo img {
+width: 150px;
+}
+.copyright-text {
+font-size: 0.9rem;
+color: #888;
+}
+.footer-section {
+display: flex;
+flex-direction: column;
+gap: 0.8rem;
+}
+.footer-section h4 {
+font-size: 1.2rem;
+margin-bottom: 0.5rem;
+font-family: Georgia, 'Times New Roman', Times, serif;
+color: var(--text-color);
+}
+.footer-link {
+color: #888;
+text-decoration: none;
+transition: color 0.2s;
+font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.footer-link:hover {
+color: var(--text-color);
+}
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: var(--modal-overlay);
+backdrop-filter: blur(5px);
+z-index: 4000;
+display: none;
+align-items: center;
+justify-content: center;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+display: flex;
+opacity: 1;
+}
+.modal-content {
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+padding: 2rem;
+border-radius: 16px;
+max-width: 600px;
+width: 90%;
+max-height: 80vh;
+overflow-y: auto;
+position: relative;
+transform: scale(0.95);
+transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.modal-overlay.active .modal-content {
+transform: scale(1);
+}
+.modal-close {
+position: absolute;
+top: 1rem;
+right: 1rem;
+font-size: 1.5rem;
+background: none;
+border: none;
+color: var(--text-color);
+transition: transform 0.2s;
+}
+.modal-close:hover {
+transform: scale(1.1);
+}
+.settings-group {
+margin-bottom: 1.5rem;
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+.settings-group label {
+display: flex;
+justify-content: space-between;
+}
+input[type="range"] {
+width: 100%;
+}
+select {
+padding: 8px;
+background: var(--panel-bg);
+color: var(--text-color);
+border: 1px solid var(--border-color);
+border-radius: 8px;
+font-family: Georgia, serif;
+}
+.modal-buttons {
+display: flex;
+justify-content: flex-end;
+gap: 1rem;
+margin-top: 2rem;
+}
+.hidden-bypass {
+position: fixed;
+width: 160px;
+height: 160px;
+z-index: 5000;
+background: transparent;
+}
+.maintenance-frame {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+border: none;
+z-index: 10000;
+background: #000;
+}
+.goog-te-banner-frame {
+display: none !important;
+}
+.goog-te-menu-frame {
+z-index: 10001 !important;
+}
+body {
+top: 0 !important;
+}
+#customCursor {
+position: fixed;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+border: 2px solid rgba(255,255,255,0.9);
+box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.2);
+pointer-events: none;
+z-index: 99999;
+transform: translate(-50%, -50%);
+transition: width 0.2s, height 0.2s, border-color 0.2s;
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(2px);
+display: none;
+}
+#customCursor::before {
+content: "✛";
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%) rotate(0deg);
+font-size: 18px;
+color: rgba(255,255,255,0.9);
+transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+#customCursor.crosshair-rotate::before {
+transform: translate(-50%, -50%) rotate(45deg);
+}
+.custom-context-menu {
+position: fixed;
+background: var(--panel-bg);
+backdrop-filter: blur(16px);
+border: 1px solid var(--border-color);
+border-radius: 12px;
+padding: 8px 0;
+min-width: 200px;
+z-index: 50000;
+box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+font-family: Georgia, serif;
+}
+.custom-context-menu-item {
+padding: 10px 20px;
+color: var(--text-color);
+transition: background 0.2s;
+font-size: 0.9rem;
+}
+.custom-context-menu-item:hover {
+background: var(--hover-bg);
+}
+.custom-context-menu-item.disabled {
+opacity: 0.4;
+cursor: not-allowed;
+pointer-events: none;
+}
+.custom-context-menu hr {
+margin: 4px 0;
+border-color: var(--border-color);
+}
+</style>
 </head>
 <body>
-<div class="app-container" id="appRoot">
-    <div id="mobileWarning" class="mobile-warning" style="display: none;">
-        <div class="warning-text-block">
-            <p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
-            <hr>
-            <p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
-            <hr>
-            <p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
-        </div>
-    </div>
-    <div id="initialLoader" class="initial-loader">
-        <div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
-        <div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
-        <div id="percentText" class="percent-text">0%</div>
-    </div>
-    <div id="mainInterface" class="main-interface">
-        <div id="leftPanel" class="left-panel" style="background-image: url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg');"></div>
-        <div id="rightPanel" class="right-panel" style="background-image: none; background-color: #000;">
-            <div class="right-panel-blur"></div>
-            <div id="langContainerWrapper" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                <div id="greetingMsg" class="greeting-text"></div>
-                <div id="langButtonsContainer" class="mode-buttons-wrapper">
-                    <button id="btnEn" class="lang-btn en-font">British English</button>
-                    <button id="BtnClassical" class="lang-btn cjk-font">華夏文言</button>
-                    <button id="BtnTrad" class="lang-btn cjk-font">正體官話</button>
-                    <button id="BtnSimp" class="lang-btn cjk-font">简体白话</button>
-                </div>
-            </div>
-            <div id="modeContainer" class="mode-buttons-wrapper" style="display: none;">
-                <div id="modeTitle" class="mode-title"></div>
-                <button id="fullExpBtn" class="lang-btn">完整的体验</button>
-                <button id="lowStressBtn" class="lang-btn">较低的压力</button>
-                <button id="backToLangBtn" class="lang-btn back-btn">← 返回</button>
-            </div>
-        </div>
-    </div>
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
-        <div id="loadingSubtitle" class="loading-subtitle"> </div>
-    </div>
-    <div class="footer-copyright">© 2026 iubanova</div>
-    <div id="footerScroll" class="footer-scroll"></div>
+
+<div id="mobileWarning" class="mobile-warning" style="display: none;">
+<div class="warning-text-block">
+<p>For the best experience, please access this website from a desktop or laptop computer. We apologise for any inconvenience caused.</p>
+<hr>
+<p>เพื่อประสิทธิภาพสูงสุดในการใช้งาน กรุณาเข้าใช้งานเว็บไซต์นี้ผ่านคอมพิวเตอร์เดสก์ท็อปหรือแล็ปท็อป ทางเราขออภัยในความไม่สะดวกที่เกิดขึ้น</p>
+<hr>
+<p>欲臻至佳體驗，請以台式或筆記型電腦訪本網站。不便之處，尚祈見諒。</p>
 </div>
+</div>
+
+<div id="initialLoader" class="initial-loader">
+<div class="loader-logo"><img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="logo"></div>
+<div class="progress-bar-container"><div id="progressFill" class="progress-fill"></div></div>
+<div id="percentText" class="percent-text">0%</div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+<div class="spinner"></div>
+<div id="loadingSubtitle" class="loading-subtitle"></div>
+</div>
+
+<div id="visualWrapper" style="filter: saturate(100%) grayscale(0%) contrast(100%);">
+<div id="gatekeeper">
+    <div id="bypassTopRight" class="hidden-bypass" style="top: 0; right: 0;"></div>
+    <div id="bypassBottomLeft" class="hidden-bypass" style="bottom: 0; left: 0;"></div>
+
+<div class="gate-box">
+<h2>This is a non-production test site for evaluation and demonstration purposes only.</h2>
+<p style="font-weight: bold;">By proceeding, you acknowledge and agree that:</p>
+<ul>
+<li>This website is not intended for real-world or clinical use.</li>
+<li>All content, models, and outputs are for demonstration and testing only.</li>
+<li>No health, safety, or operational decisions should be based on this test environment.</li>
+<li>iubanova and Nanjing University accept no liability for any use or misuse of this test system.</li>
+<li>You will not share, distribute, or replicate any test data or outputs without explicit permission.</li>
+</ul>
+<label class="gate-check">
+<input type="checkbox" id="agreeCheck">
+I have read, understood, and agree to the terms above.
+</label>
+<p style="margin-bottom: 1rem; font-weight: bold;">Verification required: Please complete the hCaptcha challenge below to confirm you are a human.</p>
+<div class="h-captcha" data-sitekey="b1b8c6e6-6586-4d9e-8eee-745a861c8974" data-callback="onCaptchaSuccess"></div>
+</div>
+<button id="continueBtn" class="btn" disabled>Continue</button>
+</div>
+
+<div id="mainApp">
+<nav>
+<div class="nav-left">
+<div class="nav-logo-container" id="navLogoBtn">
+<img class="nav-logo" alt="Logo">
+</div>
+<div class="dropdown">
+<span class="nav-link">About</span>
+<div class="dropdown-menu">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/ourstory.html" class="dropdown-item">Our Story</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/leadership.html" class="dropdown-item">Leadership Insight</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/find-us.html" class="dropdown-item">Contacts & Visit</a>
+</div>
+</div>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/news.html" class="nav-link">News</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="nav-link">Solutions</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/pricing.html" class="nav-link">Pricing</a>
+<div class="dropdown">
+<span class="nav-link">Resources</span>
+<div class="dropdown-menu">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/archive.html" class="dropdown-item">Archive</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/knowledge-base.html" class="dropdown-item">Knowledge Base</a>
+</div>
+</div>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html" class="nav-link">Support Centre</a>
+</div>
+<div class="nav-right">
+<button id="langModeBtn" class="lang-mode-btn">LANG & MODE</button>
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png" class="settings-icon" id="openSettingsBtn" alt="Settings">
+<a href="https://uplgov.github.io/iubanova-TestOnly/myaccount.htm" class="btn" style="margin:0;">Login</a>
+</div>
+</nav>
+
+<main>
+<section class="hero">
+<img id="heroImage" class="hero-image" src="https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png" alt="Healing system">
+<h1>
+    <span class="title-line1">Our most advanced <span class="healing-flash">Healing</span><span class="trade-mark">™</span> system.</span><br>
+    <span class="title-line2">Amazing. Surprising.</span>
+</h1>
+<div class="hero-btns">
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/solutions.html" class="btn">Dive into…</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/demo.html" class="btn">Request a demo</a>
+</div>
+</section>
+
+<section class="grid-container">
+<div class="grid-item" id="gridItem1">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg" alt="Team">
+<h3>Built by researchers,<br>for real-world impact.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/us.html" class="btn">Meet the team</a>
+</div>
+<div class="grid-item" id="gridItem2">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg" alt="Security">
+<h3>Your data is never a product.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/s&p.html" class="btn">Security & privacy</a>
+</div>
+<div class="grid-item" id="gridItem3">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg" alt="Experience">
+<h3>See it for yourself,<br>No commitment.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="btn">Get the experience pack</a>
+</div>
+<div class="grid-item" id="gridItem4">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg" alt="Stories">
+<h3>From pilot to production.<br>Proven in the field.</h3>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/stories.html" class="btn">Customer stories</a>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="footer-logo-wrapper">
+<div class="footer-logo">
+<img src="https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png" alt="3d logo">
+</div>
+<div class="copyright-text">© 2026 iubanova</div>
+</div>
+<div class="footer-section">
+<h4>Website</h4>
+<span class="footer-link" id="btnPrivacy">Privacy</span>
+<span class="footer-link" id="btnTrade">Trademarks & disclaimer</span>
+<span class="footer-link" id="btnLicence">Licence</span>
+<a href="https://uplgov.github.io/iubanova-TestOnly/sitemap.xml" class="footer-link">Sitemap</a>
+</div>
+<div class="footer-section">
+<h4>Links</h4>
+<a href="https://www.nju.edu.cn/en/" target="_blank" class="footer-link">Nanjing University</a>
+</div>
+<div class="footer-section">
+<h4>Follow Us</h4>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">YouTube</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">X</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">FaceBook</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">LinkedIn</a>
+</div>
+</footer>
+</div>
+</div>
+
+<div id="customCursor"></div>
+<div id="customContextMenu" class="custom-context-menu" style="display: none;"></div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="langModeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('langModeModal')">×</button>
+<h3 style="margin-bottom: 1rem;">Language & Mode Selection</h3>
+<p>Returning to the portal allows you to switch loading modes and languages. Do you need to view this website in a language other than British English, Traditional Chinese, Simplified Chinese, or Classical Chinese? Clicking "Yes" will activate the Google Translate component. Please note that the translation may be inaccurate.</p>
+<div class="modal-buttons">
+<button id="langModalYes" class="btn">Yes</button>
+<button id="langModalPortal" class="btn">Return to the Portal</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="privacyModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Data & Privacy Notice – Test Environment</h2>
+<p style="margin-bottom:1rem; font-style:italic;">This test site is operated by iubanova for demonstration purposes only.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">iubanova does not collect, store, or process any personal data through this test website. No accounts are created. No cookies are used for tracking. No information you provide (including any demo interactions) is retained or used for any purpose beyond the current session.</p>
+<p style="margin-bottom:1rem; line-height:1.5;">However, this site uses hCaptcha, a third-party security service provided by Intuition Machines, Inc. When you complete an hCaptcha challenge, hCaptcha may collect certain information from your device, including:</p>
+<ul style="margin: 0 0 1rem 2rem; line-height:1.5;">
+<li>IP address</li>
+<li>Browser fingerprint / user agent</li>
+<li>Mouse movements and interaction patterns</li>
+<li>Device characteristics</li>
+</ul>
+<p style="margin-bottom:1rem; line-height:1.5;">This data is collected and processed by hCaptcha under its own privacy policy and terms of service. iubanova does not receive, access, or control this information.</p>
+<p style="margin-bottom:0.5rem;"><a href="https://www.hcaptcha.com/privacy" target="_blank" style="color:#88f;">hCaptcha Privacy Policy</a></p>
+<p><a href="https://www.hcaptcha.com/terms" target="_blank" style="color:#88f;">hCaptcha Terms of Service</a></p>
+</div>
+</div>
+
+<div class="modal-overlay" id="tradeModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Trademarks & disclaimer</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website is a non-commercial, demonstration-only test environment for iubanova. It is not intended for production or public use.</p>
+<p style="margin-bottom:1rem;">Certain visual elements displayed on this site, including but not limited to imagery of the Dodge Hemi engine, Apple iPhone and The Wundertrium Laboratory Camellipinigrum Coffeypuniceus energy drinks, are included for illustrative and conceptual purposes only.</p>
+<p style="margin-bottom:1rem;">All trademarks, logos, and product names belong to their respective owners, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>Dodge / Hemi (Stellantis NV)</li>
+<li>Apple Inc. / iPhone (Apple Inc.)</li>
+<li>The Wundertrium Laboratory / Camellipinigrum Coffeypuniceus (The Wandwanderer Fundation)</li>
+</ul>
+<p style="margin-bottom:1rem;">iubanova is not affiliated with, endorsed by, or sponsored by any of these trademark owners.</p>
+<p style="margin-bottom:1rem;">These placeholder images will be removed or replaced prior to any commercial or production release of this website.</p>
+<p>No copyright or trademark infringement is intended. If you are a rights holder and have concerns, please contact us.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="licenceModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('licenceModal')">×</button>
+<h2 style="margin-bottom:1rem; font-family:Georgia, serif;">Licence</h2>
+<div style="line-height:1.6;">
+<p style="margin-bottom:1rem;">This website and its entire contents, including but not limited to:</p>
+<ul style="margin: 0 0 1rem 2rem;">
+<li>All source code, HTML, CSS, JavaScript</li>
+<li>Visual design, layout, and user interface</li>
+<li>Text, documentation, and explanatory materials</li>
+<li>Images, icons, and graphical assets (unless otherwise attributed)</li>
+</ul>
+<p style="margin-bottom:1rem;">are the exclusive property of IUBANOVA / Nanjing University School of Social and Behavioural Sciences, Richu Mental Health Research Centre.</p>
+<p style="margin-bottom:1rem;">Unless explicitly stated otherwise:</p>
+<ol style="margin: 0 0 1rem 2rem;">
+<li>You may view, navigate, and interact with this website for its intended demonstration purposes.</li>
+<li>You may not copy, reproduce, republish, reverse-engineer, scrape, or redistribute any portion of this website's code or content without prior written permission.</li>
+<li>You may not create derivative works based on this website's design, logic, or structure.</li>
+<li>Temporary viewing in a browser cache does not grant any license for reuse.</li>
+</ol>
+<p>This is a pre-release, non-commercial test environment. The absence of a complete legal notice elsewhere does not waive any rights.</p>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+<div class="modal-content">
+<button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+<h2 style="margin-bottom:1.5rem; font-family:Georgia, serif;">Settings</h2>
+<div class="settings-group">
+<label>Theme <button id="themeToggleBtn" class="btn" style="padding:4px 12px;">Dark</button></label>
+</div>
+<div class="settings-group">
+<label>Saturation <span id="valSat">100%</span></label>
+<input type="range" id="slSat" min="0" max="200" value="100">
+</div>
+<div class="settings-group">
+<label>Monochrome <span id="valMono">0%</span></label>
+<input type="range" id="slMono" min="0" max="100" value="0">
+</div>
+<div class="settings-group">
+<label>Contrast <span id="valCont">100%</span></label>
+<input type="range" id="slCont" min="0" max="200" value="100">
+</div>
+<div class="settings-group" style="flex-direction:row; align-items:center; justify-content:space-between;">
+<label style="flex:1;">Enable Crosshair Assist</label>
+<input type="checkbox" id="chkCrosshair" style="width:20px; height:20px;">
+</div>
+<div class="settings-group">
+<label>Crosshair Color</label>
+<select id="selCrosshairColor">
+<option value="red">Red</option>
+<option value="blue">Blue</option>
+<option value="lime">Lime</option>
+<option value="yellow">Yellow</option>
+<option value="purple">Lilac</option>
+<option value="transparent">Transparent</option>
+</select>
+</div>
+<button class="btn" id="btnResetAll" style="width:100%; margin-top:1rem;">Reset All</button>
+</div>
+</div>
+
 <script>
-    (function(){
-        try {
-            if('caches' in window) caches.keys().then(keys => keys.forEach(key => caches.delete(key)));
-            sessionStorage.clear();
-            localStorage.clear();
-        } catch(e){}
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && window.innerHeight <= 800);
-        const mobileWarningDiv = document.getElementById('mobileWarning');
-        const initialLoader = document.getElementById('initialLoader');
-        const mainInterface = document.getElementById('mainInterface');
-        if(isMobile){
-            mobileWarningDiv.style.display = 'flex';
-            initialLoader.style.display = 'none';
-            document.body.style.overflow = 'hidden';
-            document.addEventListener('contextmenu', (e) => e.preventDefault());
-            document.addEventListener('dragstart', (e) => e.preventDefault());
-            return;
+// 进度条预加载
+(function(){
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(window.innerWidth<=1024&&window.innerHeight<=800)){
+        document.getElementById('mobileWarning').style.display='flex';
+        document.getElementById('initialLoader').style.display='none';
+        document.body.style.overflow='hidden';
+        return;
+    }
+    const imgs=["https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-small.png","https://uplgov.github.io/iubanova-TestOnly/images/logos/i-large.png","https://uplgov.github.io/iubanova-TestOnly/images/icons/settings-icon.png","https://uplgov.github.io/iubanova-TestOnly/images/4d07ffdd-cd93-4937-b14e-cbac691bf174.png","https://uplgov.github.io/iubanova-TestOnly/images/13bc28a4-e883-4f4a-ad02-00482996039c.jpg","https://uplgov.github.io/iubanova-TestOnly/images/ab5a7be7-9e3b-4903-aa9b-e8fba9918e81.jpg","https://uplgov.github.io/iubanova-TestOnly/images/e345d4dc1c1e-dc**dui882-8e88-2ff7fa62a1008cth.jpg","https://uplgov.github.io/iubanova-TestOnly/images/22ef2f4df74-1d70-4*&beb24de4322.jpg"];
+    let loaded=0,total=imgs.length,finish=false;
+    const fill=document.getElementById('progressFill'),pt=document.getElementById('percentText'),loader=document.getElementById('initialLoader');
+    function upd(){if(finish)return;let p=Math.floor(loaded/total*100);fill.style.width=p+'%';pt.innerText=p+'%';if(loaded>=total&&!finish){finish=true;setTimeout(()=>{loader.style.opacity='0';setTimeout(()=>{loader.style.display='none';document.getElementById('gatekeeper').style.display='flex';},400);},200);}}
+    setTimeout(()=>{if(!finish&&loaded<total){loaded=total;upd();}},8000);
+    imgs.forEach(u=>{let img=new Image();img.onload=()=>{loaded++;upd();};img.onerror=()=>{loaded++;upd();};img.src=u;});
+})();
+
+let hCaptchaPassed=false,checkAgreed=false;
+function onCaptchaSuccess(){hCaptchaPassed=true;updateGate();}
+function updateGate(){let btn=document.getElementById('continueBtn');if(hCaptchaPassed&&checkAgreed)btn.removeAttribute('disabled');else btn.setAttribute('disabled','true');}
+document.getElementById('agreeCheck').addEventListener('change',e=>{checkAgreed=e.target.checked;updateGate();});
+document.getElementById('continueBtn').addEventListener('click',()=>startSecondStageLoading());
+function bypass(){startSecondStageLoading();}
+document.getElementById('bypassTopRight').addEventListener('dblclick',bypass);
+document.getElementById('bypassBottomLeft').addEventListener('dblclick',bypass);
+
+let subInt=null,warning=false;
+const subs=["Use ⌘ + D to add our website to your Favourites in Safari.","A restless melody is playing.","Fancy brewing a cup of tea while you wait?","We're preparing some fine content for you.","Press ⌘ + H to hide the current window and do something else while you wait.","Please bear with us for a moment.","Warming up the Hemi™ V8.","Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™","Almost there.","A good internet connection reduces loading time.","The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.","We will present it to you shortly."];
+function startSub(){if(subInt)clearInterval(subInt);if(warning)return;let idx=Math.floor(Math.random()*subs.length),el=document.getElementById('loadingSubtitle');el.innerText=subs[idx];el.style.opacity='1';subInt=setInterval(()=>{if(warning)return;el.style.opacity='0';setTimeout(()=>{if(warning)return;let nidx=Math.floor(Math.random()*subs.length);if(nidx===idx)nidx=(nidx+1)%subs.length;idx=nidx;el.innerText=subs[idx];el.style.opacity='1';},200);},1300);}
+async function testConn(){let fail=0;for(let ep of ['youtube.com','google.co.uk','translate.google.co.uk']){try{await fetch(`https://${ep}/favicon.ico?t=${Date.now()}`,{mode:'no-cors'});}catch(e){fail++;}if(fail>=2)break;}return fail>=2;}
+async function startSecondStageLoading(){
+    document.getElementById('gatekeeper').style.display='none';
+    let ov=document.getElementById('loadingOverlay'),mw=document.getElementById('visualWrapper');
+    mw.style.transition="filter 0.7s cubic-bezier(0.23,1,0.32,1)";mw.style.filter="brightness(0.35) blur(4px)";
+    await new Promise(r=>setTimeout(r,700));
+    ov.style.visibility='visible';ov.style.opacity='1';startSub();
+    let poor=await testConn();
+    await new Promise(r=>setTimeout(r,poor?2800:2200));
+    if(subInt)clearInterval(subInt);ov.style.opacity='0';
+    setTimeout(()=>{ov.style.visibility='hidden';mw.style.filter='none';document.getElementById('mainApp').style.display='flex';initHeroScroll();},300);
+}
+
+function initHeroScroll(){
+    let img=document.getElementById('heroImage');
+    if(!img)return;
+    let ticking=false;
+    window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{let y=window.scrollY;if(y>80)img.classList.add('scrolled');else img.classList.remove('scrolled');ticking=false;});ticking=true;}});
+}
+
+// 板块悬停放大效果 (0.2秒延迟)
+const gridItems = document.querySelectorAll('.grid-item');
+gridItems.forEach(item => {
+    let hoverTimer = null;
+    item.addEventListener('mouseenter', () => {
+        hoverTimer = setTimeout(() => {
+            item.classList.add('hover-expand');
+        }, 200);
+    });
+    item.addEventListener('mouseleave', () => {
+        if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
         }
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-        document.addEventListener('dragstart', (e) => e.preventDefault());
-        document.addEventListener('selectstart', (e) => e.preventDefault());
-        
-        const imagesToPreload = [
-            "https://uplgov.github.io/iubanova-TestOnly/images/logos/3dlogo.png",
-            "https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/bigben.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/teapot.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/thegreatwall.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/arandomstreet.jpg",
-            "https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg"
-        ];
-        let loadedCount = 0;
-        const totalImages = imagesToPreload.length;
-        const progressFill = document.getElementById('progressFill');
-        const percentText = document.getElementById('percentText');
-        let finishTriggered = false;
-        
-        async function checkEmergencyShutdown() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000);
-                const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/EmergencyShutDown.txt', { cache: 'no-store', signal: controller.signal });
-                clearTimeout(timeoutId);
-                if(response.ok) {
-                    const text = await response.text();
-                    const content = text.trim().toLowerCase();
-                    if(content === 'yes') {
-                        const bingWindow = window.open('https://www.bing.com', '_blank');
-                        if(bingWindow) {
-                            window.close();
-                        } else {
-                            window.location.href = 'https://www.bing.com';
-                        }
-                        return true;
-                    }
-                }
-            } catch(e) {}
-            return false;
+        item.classList.remove('hover-expand');
+    });
+});
+
+// 瞄准镜系统
+let crosshairEnabled=false;
+let currentHoverElement=null;
+const cursorDiv=document.getElementById('customCursor');
+const chkCrosshairSetting=document.getElementById('chkCrosshair');
+const selCrosshairColor=document.getElementById('selCrosshairColor');
+
+function updateCrosshairMode(){
+    crosshairEnabled=chkCrosshairSetting.checked;
+    const color=selCrosshairColor.value;
+    if(crosshairEnabled){
+        cursorDiv.style.display='block';
+        document.body.classList.add('crosshair-mode');
+        cursorDiv.style.borderColor=color;
+        cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
+    }else{
+        cursorDiv.style.display='none';
+        document.body.classList.remove('crosshair-mode');
+    }
+}
+function updateCrosshairColor(){
+    if(!crosshairEnabled)return;
+    const color=selCrosshairColor.value;
+    cursorDiv.style.borderColor=color;
+    cursorDiv.style.backgroundColor=color==='transparent'?'transparent':'rgba(255,255,255,0.05)';
+}
+chkCrosshairSetting.addEventListener('change',updateCrosshairMode);
+selCrosshairColor.addEventListener('change',updateCrosshairColor);
+
+document.addEventListener('mousemove',(e)=>{
+    if(crosshairEnabled){
+        cursorDiv.style.left=e.clientX+'px';
+        cursorDiv.style.top=e.clientY+'px';
+    }
+});
+const clickables=document.querySelectorAll('a, button, .btn, .nav-link, .lang-mode-btn, .footer-link, .dropdown-item, .settings-icon, .modal-close, .gate-check input, .hidden-bypass');
+clickables.forEach(el=>{
+    el.addEventListener('mouseenter',()=>{
+        if(!crosshairEnabled)return;
+        if(currentHoverElement===el)return;
+        currentHoverElement=el;
+        cursorDiv.classList.add('crosshair-rotate');
+    });
+    el.addEventListener('mouseleave',()=>{
+        if(!crosshairEnabled)return;
+        if(currentHoverElement===el){
+            cursorDiv.classList.remove('crosshair-rotate');
+            currentHoverElement=null;
         }
-        
-        async function checkMaintenanceStatus() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/MaintenanceStatus.txt', { cache: 'no-store', signal: controller.signal });
-                clearTimeout(timeoutId);
-                if(response.ok) {
-                    const text = await response.text();
-                    const lines = text.split(/\r?\n/);
-                    for(let line of lines) {
-                        const match = line.match(/<([^>]+)>/);
-                        if(match) {
-                            const status = match[1].trim().toLowerCase();
-                            if(status === 'positive') return true;
-                            if(status === 'negative') return false;
-                        }
-                    }
-                }
-            } catch(e) {}
-            return false;
-        }
-        
-        async function loadMaintenancePage() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/maintenance.htm', { cache: 'no-store', signal: controller.signal });
-                clearTimeout(timeoutId);
-                if(response.ok) {
-                    const html = await response.text();
-                    const iframe = document.createElement('iframe');
-                    iframe.className = 'maintenance-frame';
-                    iframe.srcdoc = html;
-                    document.body.innerHTML = '';
-                    document.body.appendChild(iframe);
-                    document.body.style.overflow = 'auto';
-                    return true;
-                }
-            } catch(e) {}
-            return false;
-        }
-        
-        function updateProgress(){
-            if(finishTriggered) return;
-            const percent = Math.floor((loadedCount / totalImages) * 100);
-            progressFill.style.width = percent+'%';
-            percentText.innerText = percent+'%';
-            if(loadedCount >= totalImages && !finishTriggered){
-                finishTriggered = true;
-                setTimeout(async () => {
-                    const emergencyActive = await checkEmergencyShutdown();
-                    if(emergencyActive) return;
-                    const isMaintenance = await checkMaintenanceStatus();
-                    if(isMaintenance) {
-                        const maintenanceSuccess = await loadMaintenancePage();
-                        if(maintenanceSuccess) return;
-                    }
-                    initialLoader.style.opacity = '0';
-                    setTimeout(() => {
-                        initialLoader.style.display = 'none';
-                        mainInterface.style.visibility = 'visible';
-                        mainInterface.style.opacity = '1';
-                        startFooterScrolling();
-                    }, 400);
-                }, 200);
-            }
-        }
-        
-        let preloadFinishTimeout = setTimeout(() => {
-            if(!finishTriggered && loadedCount < totalImages){
-                loadedCount = totalImages;
-                updateProgress();
-            }
-        }, 8000);
-        
-        function preloadImage(url){
-            const img = new Image();
-            let oneDone = false;
-            img.onload = () => {
-                if(!oneDone){ oneDone=true; loadedCount++; updateProgress(); }
-            };
-            img.onerror = () => {
-                if(!oneDone){ oneDone=true; loadedCount++; updateProgress(); }
-            };
-            img.src = url;
-        }
-        imagesToPreload.forEach(url => preloadImage(url));
-        
-        const leftPanel = document.getElementById('leftPanel');
-        const rightPanel = document.getElementById('rightPanel');
-        const btnEn = document.getElementById('btnEn');
-        const btnClassical = document.getElementById('BtnClassical');
-        const btnTrad = document.getElementById('BtnTrad');
-        const btnSimp = document.getElementById('BtnSimp');
-        const modeContainer = document.getElementById('modeContainer');
-        const fullExpBtn = document.getElementById('fullExpBtn');
-        const lowStressBtn = document.getElementById('lowStressBtn');
-        const backToLangBtn = document.getElementById('backToLangBtn');
-        const greetingDiv = document.getElementById('greetingMsg');
-        const footerScrollDiv = document.getElementById('footerScroll');
-        let selectedLanguage = 'en';
-        let scrollInterval = null;
-        
-        function startFooterScrolling() {
-            if(scrollInterval) clearInterval(scrollInterval);
-            const texts = [
-                "Use the tab key to navigate and press return or space to proceed.",
-                "กรุณาเลือกภาษาใดก็ได้และเว็บไซต์จะแปลให้",
-                "使用 Tab 鍵導航，然後按 Return 或 Space 繼續。",
-                "使用 Tab 键导航，然后按 Return 或 Space 继续。"
-            ];
-            let idx = 0;
-            function updateScrollText() {
-                footerScrollDiv.innerHTML = `<span class="scroll-text">${texts[idx]}</span>`;
-                idx = (idx + 1) % texts.length;
-            }
-            updateScrollText();
-            scrollInterval = setInterval(updateScrollText, 4200);
-        }
-        
-        function stopFooterScrolling() {
-            if(scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; }
-            footerScrollDiv.style.opacity = '0';
-            setTimeout(() => { footerScrollDiv.style.display = 'none'; }, 500);
-        }
-        
-        function getGreeting(lang, hour) {
-            let period = '';
-            if (hour < 12) period = 'morning';
-            else if (hour < 18) period = 'afternoon';
-            else period = 'evening';
-            const random = Math.random();
-            const isRandomQuestion = random < 0.03;
-            const greetingMap = {
-                en: { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' },
-                classical: { morning: '晨安', afternoon: '午安', evening: '夕安' },
-                trad: { morning: '早上好', afternoon: '下午好', evening: '晚上好' },
-                simp: { morning: '早上好', afternoon: '下午好', evening: '晚上好' }
-            };
-            const questionMap = {
-                en: { morning: 'What did you have for breakfast?', afternoon: 'What did you have for lunch?', evening: 'What did you have for dinner?' },
-                classical: { morning: '朝食何如？', afternoon: '午膳用何？', evening: '晚餐所食何物？' },
-                trad: { morning: '早餐吃了什麼？', afternoon: '午餐吃了什麼？', evening: '晚餐吃了什麼？' },
-                simp: { morning: '早上吃了什么？', afternoon: '中午吃了什么？', evening: '晚上吃了什么？' }
-            };
-            if (isRandomQuestion) {
-                return questionMap[lang][period] || questionMap.en[period];
-            } else {
-                return greetingMap[lang][period] || greetingMap.en[period];
-            }
-        }
-        
-        function revealGreetingWithWave() {
-            greetingDiv.classList.remove('reveal');
-            void greetingDiv.offsetWidth;
-            greetingDiv.classList.add('reveal');
-        }
-        
-        function updateGreetingForHover(lang) {
-            const now = new Date();
-            const hour = now.getHours();
-            const greetingText = getGreeting(lang, hour);
-            greetingDiv.innerText = greetingText;
-            revealGreetingWithWave();
-        }
-        
-        function setRightBgByLang(lang){
-            if(lang === 'en') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/bigben.jpg')";
-            else if(lang === 'classical') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/teapot.jpg')";
-            else if(lang === 'trad') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/thegreatwall.jpg')";
-            else if(lang === 'simp') rightPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/arandomstreet.jpg')";
-            rightPanel.style.backgroundSize = "cover";
-            rightPanel.style.backgroundPosition = "center";
-        }
-        
-        function addRipple(btn, event){
-            const rect = btn.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height)*1.2;
-            let x = event.clientX - rect.left;
-            let y = event.clientY - rect.top;
-            const ripple = document.createElement('span');
-            ripple.className = 'btn-ripple';
-            ripple.style.animation = 'rippleEffectVerySlow 1.7s ease-out forwards';
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = (x - size/2) + 'px';
-            ripple.style.top = (y - size/2) + 'px';
-            btn.style.position = 'relative';
-            btn.style.overflow = 'hidden';
-            btn.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 1800);
-        }
-        
-        let currentBlinkingStar = null;
-        function addSubtleStars(btn){
-            if(!btn.matches(':hover')) return;
-            if(currentBlinkingStar && document.body.contains(currentBlinkingStar)) return;
-            const existingStars = btn.querySelectorAll('.star');
-            if(existingStars.length >= 6) return;
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 2 + 1;
-            star.style.width = size+'px';
-            star.style.height = size+'px';
-            star.style.left = (Math.random() * (btn.clientWidth - 16) + 8) + 'px';
-            star.style.top = (Math.random() * (btn.clientHeight - 16) + 8) + 'px';
-            star.style.opacity = '0.22';
-            btn.appendChild(star);
-            currentBlinkingStar = star;
-            star.classList.add('star-flicker');
-            setTimeout(() => {
-                if(star && star.parentNode) star.remove();
-                if(currentBlinkingStar === star) currentBlinkingStar = null;
-            }, 400);
-        }
-        
-        function attachHoverEffects(btn, langCodeForGreeting = null){
-            let glowDiv = null;
-            let starInterval = null;
-            btn.addEventListener('mouseenter', () => {
-                if(langCodeForGreeting) updateGreetingForHover(langCodeForGreeting);
-                if(!glowDiv){
-                    glowDiv = document.createElement('div');
-                    glowDiv.className = 'hover-glow';
-                    btn.style.position = 'relative';
-                    btn.appendChild(glowDiv);
-                }
-                const scheduleStar = () => {
-                    if(!btn.matches(':hover')) return;
-                    if(!currentBlinkingStar) addSubtleStars(btn);
-                };
-                starInterval = setInterval(scheduleStar, 620);
-                function updateGlow(e){
-                    if(!glowDiv) return;
-                    const rectBtn = btn.getBoundingClientRect();
-                    let mouseX = e.clientX - rectBtn.left;
-                    let mouseY = e.clientY - rectBtn.top;
-                    mouseX = Math.min(Math.max(mouseX, 0), rectBtn.width);
-                    mouseY = Math.min(Math.max(mouseY, 0), rectBtn.height);
-                    glowDiv.style.left = mouseX + 'px';
-                    glowDiv.style.top = mouseY + 'px';
-                    glowDiv.style.opacity = '0.7';
-                }
-                btn.addEventListener('mousemove', updateGlow);
-                btn.addEventListener('mouseleave', function onLeave(){
-                    if(glowDiv) glowDiv.style.opacity = '0';
-                    if(starInterval) clearInterval(starInterval);
-                    if(currentBlinkingStar && currentBlinkingStar.parentNode) currentBlinkingStar.remove();
-                    currentBlinkingStar = null;
-                    btn.removeEventListener('mousemove', updateGlow);
-                    btn.removeEventListener('mouseleave', onLeave);
-                    if(langCodeForGreeting) {
-                        const nowHour = new Date().getHours();
-                        greetingDiv.innerText = getGreeting('en', nowHour);
-                        greetingDiv.classList.remove('reveal');
-                        void greetingDiv.offsetWidth;
-                        greetingDiv.classList.add('reveal');
-                    }
-                });
-            });
-        }
-        
-        function attachClickWave(btn){
-            btn.addEventListener('click', (e) => addRipple(btn, e));
-            btn.addEventListener('mousedown', (e) => addRipple(btn, e));
-        }
-        
-        attachHoverEffects(btnEn, 'en');
-        attachHoverEffects(btnClassical, 'classical');
-        attachHoverEffects(btnTrad, 'trad');
-        attachHoverEffects(btnSimp, 'simp');
-        attachClickWave(btnEn);
-        attachClickWave(btnClassical);
-        attachClickWave(btnTrad);
-        attachClickWave(btnSimp);
-        
-        btnEn.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/gbspace.jpg')"; });
-        btnClassical.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
-        btnTrad.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
-        btnSimp.addEventListener('mouseenter', () => { leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/easpace.jpg')"; });
-        
-        function switchToModeSelection(){
-            stopFooterScrolling();
-            document.getElementById('langContainerWrapper').style.display = 'none';
-            modeContainer.style.display = 'flex';
-            rightPanel.style.justifyContent = 'center';
-            updateModeUIText();
-            attachModeHover();
-            leftPanel.style.backgroundImage = "url('https://uplgov.github.io/iubanova-TestOnly/images/airspeed.jpg')";
-            leftPanel.style.filter = "brightness(0.45) contrast(1.1)";
-            const blurDiv = document.querySelector('.right-panel-blur');
-            if(blurDiv) blurDiv.style.backdropFilter = 'blur(7px)';
-            const modeTitleDiv = document.getElementById('modeTitle');
-            const titleMap = { en:"How would you like to browse today?", classical:"君欲以何式覽今日之網？", trad:"您希望以哪種方式瀏覽今日的網站？", simp:"您希望以哪种方式浏览今日的网站？" };
-            modeTitleDiv.innerText = titleMap[selectedLanguage] || titleMap.en;
-        }
-        
-        function backToLanguageSelection(){
-            window.location.reload();
-        }
-        
-        function updateModeUIText(){
-            const lang = selectedLanguage;
-            let fullText = "";
-            if(lang === 'en') fullText = "Full Experience";
-            else if(lang === 'classical') fullText = "完整體驗";
-            else if(lang === 'trad') fullText = "完整的體驗";
-            else fullText = "完整的体验";
-            const lowTextMap = { en:"Low Stress", classical:"低壓模式", trad:"較低的壓力", simp:"较低的压力" };
-            const backTextMap = { en:"← Back", classical:"← 返回", trad:"← 返回", simp:"← 返回" };
-            fullExpBtn.innerText = fullText;
-            lowStressBtn.innerText = lowTextMap[lang];
-            backToLangBtn.innerText = backTextMap[lang];
-            if(lang === 'en'){
-                fullExpBtn.classList.add('en-font');
-                lowStressBtn.classList.add('en-font');
-                backToLangBtn.classList.add('en-font');
-            } else {
-                fullExpBtn.classList.add('cjk-font');
-                lowStressBtn.classList.add('cjk-font');
-                backToLangBtn.classList.add('cjk-font');
-            }
-        }
-        
-        function attachModeHover(){
-            [fullExpBtn, lowStressBtn, backToLangBtn].forEach(btn => {
-                btn.removeEventListener('mouseenter', modeHoverHandler);
-                btn.removeEventListener('mouseleave', modeLeaveHandler);
-                btn.addEventListener('mouseenter', modeHoverHandler);
-                btn.addEventListener('mouseleave', modeLeaveHandler);
-                attachHoverEffects(btn);
-                attachClickWave(btn);
-            });
-            function modeHoverHandler(e){
-                const target = e.currentTarget;
-                if(target.id === 'fullExpBtn'){
-                    const tipMap = { en:"You are using a modern computer with a good internet connection and no data limit concerns.", classical:"君用新式電腦，網路暢達，無流量之憂。", trad:"你當前使用的是現代化計算機、網絡連接良好，且無流量限制顧慮。", simp:"你当前使用的是现代化计算机、网络连接良好，且无流量限制顾虑。" };
-                    showTempTooltip(tipMap[selectedLanguage] || tipMap.en, selectedLanguage);
-                } else if(target.id === 'lowStressBtn'){
-                    const tipMap = { en:"This is our lightweight website version. It uses simpler .htm pages, ensuring a fast and smooth experience even on older computers or slower connections. This version lacks visual effects.", classical:"此為輕量網站。採用簡約 .htm 頁面，即使老舊電腦或慢速網路亦快速流暢。無視覺特效。", trad:"這是我們的輕量級網站版本。它使用更簡單的 .htm 頁面，確保即使是在老式電腦或較慢的網絡連接上，也能獲得快速流暢的體驗。此模式缺少視覺效果。", simp:"这是我们的轻量级网站版本。它使用更简单的 .htm 页面，确保即使是在老式电脑或较慢的网络连接上，也能获得快速流畅的体验。当你只想毫不费力地获取信息时，这个模式非常完美。此模式缺少视觉效果。" };
-                    showTempTooltip(tipMap[selectedLanguage] || tipMap.en, selectedLanguage);
-                } else if(target.id === 'backToLangBtn'){
-                    showTempTooltip("", selectedLanguage);
-                }
-            }
-            function modeLeaveHandler(){
-                hideTempTooltip();
-            }
-        }
-        
-        let tooltipDiv = null;
-        function showTempTooltip(text, langCode){
-            if(!tooltipDiv){
-                tooltipDiv = document.createElement('div');
-                tooltipDiv.style.position = 'fixed';
-                tooltipDiv.style.bottom = '32px';
-                tooltipDiv.style.left = '50%';
-                tooltipDiv.style.transform = 'translateX(-50%)';
-                tooltipDiv.style.backgroundColor = 'rgba(8,8,16,0.85)';
-                tooltipDiv.style.backdropFilter = 'blur(16px)';
-                tooltipDiv.style.padding = '10px 22px';
-                tooltipDiv.style.borderRadius = '48px';
-                tooltipDiv.style.color = '#f0f0e0';
-                tooltipDiv.style.fontSize = '0.9rem';
-                tooltipDiv.style.maxWidth = '80%';
-                tooltipDiv.style.textAlign = 'center';
-                tooltipDiv.style.zIndex = '5000';
-                tooltipDiv.style.pointerEvents = 'none';
-                tooltipDiv.style.border = '1px solid rgba(255,255,200,0.2)';
-                tooltipDiv.style.fontStyle = 'italic';
-                document.body.appendChild(tooltipDiv);
-            }
-            if(langCode === 'en') tooltipDiv.style.fontFamily = "'Times New Roman', Georgia, serif";
-            else tooltipDiv.style.fontFamily = "'华文楷书', 'Microsoft YaHei', '宋体', 'SimHei', serif";
-            tooltipDiv.innerText = text;
-            if(text && text !== ""){
-                tooltipDiv.style.opacity = '1';
-                tooltipDiv.classList.add('tooltip-pop');
-                setTimeout(() => tooltipDiv.classList.remove('tooltip-pop'), 220);
-            } else {
-                tooltipDiv.style.opacity = '0';
-            }
-        }
-        function hideTempTooltip(){
-            if(tooltipDiv) tooltipDiv.style.opacity = '0';
-        }
-        
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const loadingSubtitle = document.getElementById('loadingSubtitle');
-        let subtitleInterval = null;
-        let isShowingWarning = false;
-        
-        const subtitlesMap = {
-            en: [
-                "Use ⌘ + D to add our website to your Favourites in Safari.",
-                "A restless melody is playing.",
-                "Fancy brewing a cup of tea while you wait?",
-                "We're preparing some fine content for you.",
-                "Press ⌘ + H to hide the current window and do something else while you wait.",
-                "Please bear with us for a moment.",
-                "Warming up the Hemi™ V8.",
-                "Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™",
-                "Almost there.",
-                "A good internet connection reduces loading time.",
-                "The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.",
-                "We will present it to you shortly."
-            ],
-            classical: [
-                "按 ⌘ + D，置吾網於 Safari 之「最愛」中。",
-                "促絃繁音，方奏未歇。",
-                "且先煮茗一盞，可乎？",
-                "方為君備佳篇美什，稍候即呈。",
-                "按 ⌘ + H 以隱此窗，且待且為他事。",
-                "請少待片晌。",
-                "Hemi™ V8 方熱機以待。",
-                "喚醒汝之混沌。飲 Camellipinigrum Coffeypuniceus™。",
-                "即至矣。",
-                "良網可減待時。",
-                "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
-                "即將為君奉上。"
-            ],
-            trad: [
-                "使用 ⌘ + D 將我們的網站加入 Safari 中的「最愛」收藏夾。",
-                "急促的音樂正在演奏。",
-                "要不要先泡一杯茶？",
-                "我們正在竭力為您準備精美內容。",
-                "使用 ⌘ + H 隱藏目前視窗，並在等待時做其他事情。",
-                "請稍等片刻。",
-                "正在預熱 Hemi™ V8。",
-                "喚醒你的混亂。飲用 Camellipinigrum Coffeypuniceus™。",
-                "很快了。",
-                "良好的網際網路連接會縮短加載時間。",
-                "薄暮初臨，諸事將備。煩君少駐，片刻即成。",
-                "即將為您奉上。"
-            ],
-            simp: [
-                "用 ⌘ + D 将我们的网站添加到Safari中的最爱收藏夹。",
-                "急促的音乐正在演奏",
-                "要不要先泡一杯茶？",
-                "我们正在为您准备精美内容",
-                "用 ⌘ + H 隐藏当前窗口并在等待的时候干些别的",
-                "请稍等片刻",
-                "正在预热Hemi™ V8",
-                "唤醒你的混乱。饮用 Camellipinigrum Coffeypuniceus™。",
-                "很快了。",
-                "良好的互联网连接会缩短加载时间。",
-                "薄暮初临，诸事将备。烦君少驻，片刻即成。",
-                "即将为你奉上。"
-            ]
-        };
-        
-        function startRandomSubtitle(lang){
-            if(subtitleInterval) clearInterval(subtitleInterval);
-            if(isShowingWarning) return;
-            const arr = subtitlesMap[lang];
-            if(!arr) return;
-            let currentIdx = Math.floor(Math.random() * arr.length);
-            loadingSubtitle.innerText = arr[currentIdx];
-            loadingSubtitle.style.opacity = '1';
-            subtitleInterval = setInterval(() => {
-                if(isShowingWarning) return;
-                loadingSubtitle.style.opacity = '0';
-                setTimeout(() => {
-                    if(isShowingWarning) return;
-                    let newIdx = Math.floor(Math.random() * arr.length);
-                    if(newIdx === currentIdx) newIdx = (newIdx+1)%arr.length;
-                    currentIdx = newIdx;
-                    loadingSubtitle.innerText = arr[currentIdx];
-                    loadingSubtitle.style.opacity = '1';
-                }, 200);
-            }, 1300);
-        }
-        
-        async function checkConnectivity(hostname, timeoutMs = 3500){
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeoutMs);
-            try {
-                await fetch(`https://${hostname}/favicon.ico?noCache=${Date.now()}`, { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
-                clearTimeout(id);
-                return true;
-            } catch(e){
-                clearTimeout(id);
-                return false;
-            }
-        }
-        
-        async function testMultipleEndpoints(){
-            const endpoints = ['youtube.com','google.co.uk','translate.google.co.uk','openstreetmap.org','github.com'];
-            let failCount = 0;
-            for(let ep of endpoints){
-                let success = false;
-                for(let attempt=1; attempt<=2; attempt++){
-                    const res = await checkConnectivity(ep, 3200);
-                    if(res) { success=true; break; }
-                    if(attempt===1) await new Promise(r=>setTimeout(r,600));
-                }
-                if(!success) failCount++;
-                if(failCount>=3) break;
-            }
-            return failCount>=3;
-        }
-        
-        function getWarningMessage(lang){
-            const warnMap = { en:"You may be experiencing a poor internet connection. The experience may be degraded.", classical:"汝或遭網路不暢，致體驗不佳。", trad:"你可能在遭遇一個不良的網際網路連接。體驗可能變差。", simp:"你可能在遭遇一个不良的互联网连接。体验可能变差。" };
-            return warnMap[lang] || warnMap.en;
-        }
-        
-        async function startLoadingSequence(){
-            mainInterface.style.transition = "filter 0.7s cubic-bezier(0.23,1,0.32,1), opacity 0.6s";
-            leftPanel.style.transition = "filter 0.7s ease, brightness 0.7s ease";
-            rightPanel.style.transition = "filter 0.7s ease, brightness 0.7s ease";
-            mainInterface.style.filter = "brightness(0.35) blur(4px)";
-            await new Promise(r => setTimeout(r, 700));
-            loadingOverlay.style.visibility = 'visible';
-            loadingOverlay.style.opacity = '1';
-            startRandomSubtitle(selectedLanguage);
-            const startTime = Date.now();
-            const poorConnection = await testMultipleEndpoints();
-            const elapsed = Date.now() - startTime;
-            let remainingWait = 2200 - elapsed;
-            if(remainingWait < 0) remainingWait = 0;
-            if(poorConnection){
-                isShowingWarning = true;
-                if(subtitleInterval) clearInterval(subtitleInterval);
-                const warnMsg = getWarningMessage(selectedLanguage);
-                loadingSubtitle.innerText = warnMsg;
-                loadingSubtitle.style.opacity = '1';
-                await new Promise(r => setTimeout(r, 2800));
-                isShowingWarning = false;
-                startRandomSubtitle(selectedLanguage);
-                await new Promise(r => setTimeout(r, remainingWait));
-            } else {
-                await new Promise(r => setTimeout(r, remainingWait));
-            }
-            if(subtitleInterval) clearInterval(subtitleInterval);
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.style.visibility = 'hidden';
-                mainInterface.style.filter = 'none';
-                switchToModeSelection();
-            }, 300);
-        }
-        
-        btnEn.addEventListener('click', () => { selectedLanguage = 'en'; setRightBgByLang('en'); startLoadingSequence(); });
-        btnClassical.addEventListener('click', () => { selectedLanguage = 'classical'; setRightBgByLang('classical'); startLoadingSequence(); });
-        btnTrad.addEventListener('click', () => { selectedLanguage = 'trad'; setRightBgByLang('trad'); startLoadingSequence(); });
-        btnSimp.addEventListener('click', () => { selectedLanguage = 'simp'; setRightBgByLang('simp'); startLoadingSequence(); });
-        
-        function getRedirectPath(experienceType){
-            const subfolder = experienceType === 'full' ? 'Prime-Universe' : 'Alternate-Universe';
-            const fileMap = { en: (experienceType==='full'?'en-GB.html':'en-GB.htm'), classical: (experienceType==='full'?'zh-LT.html':'zh-LT.htm'), trad: (experienceType==='full'?'zh-TW.html':'zh-TW.htm'), simp: (experienceType==='full'?'zh-CN.html':'zh-CN.htm') };
-            return `https://uplgov.github.io/iubanova-TestOnly/${subfolder}/${fileMap[selectedLanguage]}`;
-        }
-        
-        fullExpBtn.addEventListener('click', () => { window.location.href = getRedirectPath('full'); });
-        lowStressBtn.addEventListener('click', () => { window.location.href = getRedirectPath('low'); });
-        backToLangBtn.addEventListener('click', () => { backToLanguageSelection(); });
-        
-        rightPanel.style.backgroundSize = 'cover';
-        const blurLayer = document.createElement('div');
-        blurLayer.className = 'right-panel-blur';
-        rightPanel.insertBefore(blurLayer, rightPanel.firstChild);
-        
-        const nowHour = new Date().getHours();
-        greetingDiv.innerText = getGreeting('en', nowHour);
-        setTimeout(() => {
-            greetingDiv.classList.add('reveal');
-        }, 150);
-    })();
+    });
+});
+updateCrosshairMode();
+
+// 自定义右键菜单
+const contextMenu=document.getElementById('customContextMenu');
+document.addEventListener('contextmenu',(e)=>{
+    e.preventDefault();
+    contextMenu.style.display='block';
+    contextMenu.style.left=e.clientX+'px';
+    contextMenu.style.top=e.clientY+'px';
+    let prevUrl=document.referrer||'';
+    contextMenu.innerHTML=`
+        <div class="custom-context-menu-item ${!prevUrl?'disabled':''}" id="ctxLastPage">Last Page you are on</div>
+        <div class="custom-context-menu-item" id="ctxCopyURL">Copy the URL</div>
+        <hr>
+        <div class="custom-context-menu-item" id="ctxSettings">Settings</div>
+    `;
+    document.getElementById('ctxLastPage').onclick=()=>{if(prevUrl)window.location.href=prevUrl;contextMenu.style.display='none';};
+    document.getElementById('ctxCopyURL').onclick=()=>{navigator.clipboard.writeText(window.location.href);contextMenu.style.display='none';};
+    document.getElementById('ctxSettings').onclick=()=>{openModal('settingsModal');contextMenu.style.display='none';};
+});
+document.addEventListener('click',()=>{contextMenu.style.display='none';});
+
+function openModal(id){let m=document.getElementById(id);if(m)m.classList.add('active');}
+function closeModal(id){let m=document.getElementById(id);if(m)m.classList.remove('active');}
+document.getElementById('openSettingsBtn').onclick=()=>openModal('settingsModal');
+document.getElementById('btnPrivacy').onclick=()=>openModal('privacyModal');
+document.getElementById('btnTrade').onclick=()=>openModal('tradeModal');
+document.getElementById('btnLicence').onclick=()=>openModal('licenceModal');
+document.getElementById('langModeBtn').onclick=()=>openModal('langModeModal');
+document.getElementById('langModalYes').onclick=()=>{closeModal('langModeModal');let d=document.createElement('div');d.id='google_translate_element';d.style.position='fixed';d.style.bottom='20px';d.style.right='20px';d.style.zIndex='9999';d.style.background='rgba(0,0,0,0.75)';d.style.padding='12px';d.style.borderRadius='12px';document.body.appendChild(d);let s=document.createElement('script');s.src='https://translate.google.com/translate_a/element.js?cb=initGT';document.body.appendChild(s);window.initGT=function(){new google.translate.TranslateElement({pageLanguage:'en'},'google_translate_element');};};
+document.getElementById('langModalPortal').onclick=()=>{window.location.href='https://uplgov.github.io/iubanova-TestOnly/index.htm';};
+
+const slSat=document.getElementById('slSat'),slMono=document.getElementById('slMono'),slCont=document.getElementById('slCont'),vw=document.getElementById('visualWrapper'),valSat=document.getElementById('valSat'),valMono=document.getElementById('valMono'),valCont=document.getElementById('valCont');
+function upF(){valSat.innerText=slSat.value+'%';valMono.innerText=slMono.value+'%';valCont.innerText=slCont.value+'%';vw.style.filter=`saturate(${slSat.value}%) grayscale(${slMono.value}%) contrast(${slCont.value}%)`;}
+slSat.addEventListener('input',upF);slMono.addEventListener('input',upF);slCont.addEventListener('input',upF);
+let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!light;if(light){document.body.classList.add('light-theme');document.getElementById('themeToggleBtn').innerText='Light';}else{document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshairSetting.checked=false;selCrosshairColor.value='red';updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
+document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
 </script>
 </body>
 </html>
