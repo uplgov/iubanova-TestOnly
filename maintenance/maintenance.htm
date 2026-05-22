@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ERR</title>
+  <title>Service Status - UPL Central Government</title>
   <style>
     * {
       margin: 0;
@@ -199,9 +199,43 @@
       line-height: 1.2;
     }
 
+    .status-details {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-family: monospace;
+    }
+    
+    .local-time {
+      font-size: 0.9rem;
+      color: var(--sec-text);
+      margin-bottom: 1rem;
+      font-family: monospace;
+    }
+
+    .countdown {
+      font-size: 1.5rem;
+      color: var(--sec-text);
+      margin-top: 1rem;
+      font-family: monospace;
+    }
+
+    .no-select {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
     @media (max-width: 760px) {
       .main-word {
         font-size: 3.5rem;
+      }
+      .status-details {
+        font-size: 0.9rem;
+      }
+      .countdown {
+        font-size: 1.1rem;
       }
     }
 
@@ -399,7 +433,10 @@
 
 <div class="maintenance-container">
   <div class="hero-word">
-    <div class="main-word">Under maintenance</div>
+    <div class="main-word" id="statusTitle">Under maintenance</div>
+    <div class="status-details" id="statusDetails"></div>
+    <div class="local-time" id="localTime"></div>
+    <div class="countdown" id="countdown"></div>
     <div class="language-ring">
       <span class="lang-item" data-lang="zh-hans">正在维护</span>
       <span class="lang-item" data-lang="zh-hant">正在維護</span>
@@ -425,6 +462,7 @@
 <script>
   (function() {
     let bannerOpen = false;
+    let maintenanceConfig = null;
 
     function openBanner() {
       document.getElementById("securityFull").classList.add("open");
@@ -462,6 +500,162 @@
         window.location.reload();
       });
     }
+
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDetails = document.getElementById('statusDetails');
+    const localTimeEl = document.getElementById('localTime');
+    const countdownEl = document.getElementById('countdown');
+
+    function applyNoSelectToScheduled() {
+      const scheduledElement = document.getElementById('statusTitle');
+      if (scheduledElement && scheduledElement.textContent === 'Scheduled maintenance') {
+        scheduledElement.classList.add('no-select');
+      } else if (scheduledElement) {
+        scheduledElement.classList.remove('no-select');
+      }
+    }
+
+    function formatLocalTime(date) {
+      return date.toLocaleString(undefined, {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        timeZoneName: 'short'
+      });
+    }
+
+    function formatTimeRemaining(ms) {
+      if (ms <= 0) return null;
+      const hours = Math.floor(ms / 3600000);
+      const minutes = Math.floor((ms % 3600000) / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+      
+      if (hours > 0) {
+        return `${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds} second${seconds !== 1 ? 's' : ''}`;
+      } else if (minutes > 0) {
+        return `${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds} second${seconds !== 1 ? 's' : ''}`;
+      } else {
+        return `${seconds} second${seconds !== 1 ? 's' : ''}`;
+      }
+    }
+
+    function parseConfigFromText(text) {
+      const lines = text.split('\n');
+      let dateStr = null;
+      let timeStr = null;
+      let dateType = null;
+      let timeType = null;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('-date')) {
+          const match = line.match(/-date <(.+?)> to <(.+?)>/);
+          if (match) {
+            dateStr = match[1];
+            const dateTypeLine = lines[i+1] ? lines[i+1].trim() : '';
+            if (dateTypeLine.startsWith('-<')) {
+              dateType = dateTypeLine.substring(2, dateTypeLine.indexOf('>'));
+            }
+          }
+        }
+        if (line.startsWith('-time(UTC)')) {
+          const match = line.match(/-time\(UTC\) <(.+?)><(.+?)> to <(.+?)><(.+?)>/);
+          if (match) {
+            timeStr = `${match[1]} ${match[2]} to ${match[3]} ${match[4]}`;
+            const timeTypeLine = lines[i+1] ? lines[i+1].trim() : '';
+            if (timeTypeLine.startsWith('-<')) {
+              timeType = timeTypeLine.substring(2, timeTypeLine.indexOf('>'));
+            }
+          }
+        }
+      }
+      
+      if (!dateStr || !timeStr) return null;
+      
+      const [startTime, endTime] = timeStr.split(' to ');
+      const [startHour, startMinute] = startTime.split(':');
+      const [startAmPm] = startMinute ? startMinute.split(' ') : [startTime.split(' ')[0], startTime.split(' ')[1]];
+      const [endHour, endMinute] = endTime.split(':');
+      const [endAmPm] = endMinute ? endMinute.split(' ') : [endTime.split(' ')[0], endTime.split(' ')[1]];
+      
+      let startHour24 = parseInt(startHour);
+      let endHour24 = parseInt(endHour);
+      
+      if (startAmPm && startAmPm.toLowerCase() === 'pm' && startHour24 !== 12) startHour24 += 12;
+      if (startAmPm && startAmPm.toLowerCase() === 'am' && startHour24 === 12) startHour24 = 0;
+      if (endAmPm && endAmPm.toLowerCase() === 'pm' && endHour24 !== 12) endHour24 += 12;
+      if (endAmPm && endAmPm.toLowerCase() === 'am' && endHour24 === 12) endHour24 = 0;
+      
+      const [day, month, year] = dateStr.split(' ');
+      const monthMap = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11 };
+      const monthNum = monthMap[month];
+      const yearNum = 2000 + parseInt(year);
+      
+      const startDate = new Date(Date.UTC(yearNum, monthNum, parseInt(day), startHour24, parseInt(startMinute) || 0, 0));
+      const endDate = new Date(Date.UTC(yearNum, monthNum, parseInt(day), endHour24, parseInt(endMinute) || 0, 0));
+      
+      return {
+        dateType: dateType,
+        timeType: timeType,
+        startTime: startDate,
+        endTime: endDate,
+        exactTime: startDate
+      };
+    }
+
+    function updateDisplay() {
+      if (!maintenanceConfig) return;
+      
+      const now = new Date();
+      let statusText = '';
+      let localTimeText = '';
+      let countdownText = '';
+      let titleText = 'Under maintenance';
+      
+      if (maintenanceConfig.dateType === 'exact' && maintenanceConfig.timeType === 'between') {
+        if (now < maintenanceConfig.startTime) {
+          titleText = 'Scheduled maintenance';
+          statusText = `A maintenance window is scheduled. Service will become unavailable starting at ${maintenanceConfig.startTime.toISOString().substring(11, 16)} UTC. The restoration time is not fixed and could happen at any moment within the window.`;
+          localTimeText = `In your local time: from ${formatLocalTime(maintenanceConfig.startTime)} until ${formatLocalTime(maintenanceConfig.endTime)}`;
+          countdownText = ``;
+        } 
+        else if (now >= maintenanceConfig.startTime && now <= maintenanceConfig.endTime) {
+          titleText = 'Under maintenance (unpredictable)';
+          statusText = `Service is currently unavailable. The restoration time is not fixed and could happen at any moment within the window.`;
+          localTimeText = `The unpredictable window ends at ${maintenanceConfig.endTime.toISOString().substring(11, 16)} UTC (${formatLocalTime(maintenanceConfig.endTime)}).`;
+          countdownText = `The exact restoration time is unknown. Please refresh occasionally.`;
+        }
+        else if (now > maintenanceConfig.endTime) {
+          titleText = 'Service resumed';
+          statusText = `The maintenance window has ended. All systems should now be operational.`;
+          localTimeText = `If you are still experiencing issues, please refresh. Window ended at ${formatLocalTime(maintenanceConfig.endTime)}.`;
+          countdownText = `Thank you for your patience.`;
+        }
+      }
+      
+      statusTitle.textContent = titleText;
+      statusDetails.textContent = statusText;
+      localTimeEl.textContent = localTimeText;
+      countdownEl.textContent = countdownText;
+      applyNoSelectToScheduled();
+    }
+
+    async function loadConfig() {
+      try {
+        const response = await fetch('https://uplgov.github.io/iubanova-TestOnly/maintenance/Estimated-Ending-Time.txt');
+        const text = await response.text();
+        maintenanceConfig = parseConfigFromText(text);
+        if (maintenanceConfig) {
+          updateDisplay();
+          setInterval(updateDisplay, 1000);
+        } else {
+          statusDetails.textContent = 'Unable to load maintenance schedule. Please refresh.';
+        }
+      } catch (error) {
+        statusDetails.textContent = 'Error loading maintenance information. Please refresh.';
+      }
+    }
+    
+    loadConfig();
   })();
 </script>
 </body>
