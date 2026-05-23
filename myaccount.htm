@@ -1,1 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>iubanova · MyAccount</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
+        body {
+            background: #000;
+            min-height: 100vh;
+            font-family: system-ui, 'Segoe UI', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-layer {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background-image: url('https://uplgov.github.io/iubanova-TestOnly/images/38bc3bc2-f526-493d-bb36-cea3da725038.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(32px) brightness(0.35);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+        .card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 540px;
+            margin: 3rem 1.5rem;
+            background: rgba(10, 12, 18, 0.65);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .brand h1 {
+            font-family: 'GDS Transport', system-ui, 'Segoe UI', sans-serif;
+            font-weight: 450;
+            font-size: 2rem;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #f5f0e8 0%, #d9d2c5 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .byline {
+            text-align: center;
+            font-size: 0.95rem;
+            font-style: italic;
+            font-family: 'Times New Roman', Georgia, 'Playfair Display', serif;
+            font-weight: 400;
+            color: rgba(220, 210, 180, 0.9);
+            margin-top: 0.25rem;
+            margin-bottom: 2rem;
+            background: rgba(0,0,0,0.3);
+            display: inline-block;
+            width: auto;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.3px;
+        }
+
+        .oauth-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .oauth-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(20, 22, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 60px;
+            padding: 12px 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: rgba(245, 240, 230, 0.95);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+            width: 100%;
+            overflow: hidden;
+        }
+        .oauth-btn img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+            pointer-events: none;
+        }
+        .oauth-btn:hover {
+            background: rgba(45, 48, 60, 0.9);
+            border-color: rgba(255, 215, 140, 0.5);
+            transform: scale(1.01);
+        }
+        .hover-glow {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(180,170,130,0.18) 0%, rgba(150,140,100,0.04) 50%, rgba(100,90,60,0) 85%);
+            border-radius: 50%;
+            filter: blur(28px);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            z-index: 1;
+        }
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(210,190,130,0.35) 0%, rgba(170,150,90,0.1) 80%);
+            transform: scale(0);
+            animation: rippleEffect 1s ease-out forwards;
+            pointer-events: none;
+            filter: blur(5px);
+        }
+        @keyframes rippleEffect {
+            0% { transform: scale(0); opacity: 0.4; }
+            100% { transform: scale(14); opacity: 0; }
+        }
+        .star {
+            position: absolute;
+            background: rgba(190,180,150,0.25);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.2;
+            transition: opacity 0.08s linear;
+        }
+        .star-flicker {
+            animation: starBlink 0.2s ease-in-out 2;
+        }
+        @keyframes starBlink {
+            0% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.01; transform: scale(0.88); }
+            100% { opacity: 0.2; transform: scale(1); }
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 24px 0 20px;
+            color: rgba(180, 170, 150, 0.5);
+            font-size: 0.75rem;
+        }
+        .line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,220,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .input-field {
+            width: 100%;
+            background: rgba(15, 15, 22, 0.85);
+            border: 1px solid rgba(255,255,210,0.25);
+            border-radius: 60px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            color: #f0ede8;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            border-color: rgba(230, 200, 120, 0.7);
+            background: rgba(20, 20, 28, 0.95);
+        }
+        .input-field::placeholder {
+            color: rgba(180, 175, 155, 0.7);
+            font-weight: 400;
+        }
+        .arrow-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: rgba(230,200,120,0.2);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #e6d5a8;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .arrow-icon:hover {
+            background: rgba(230,200,120,0.5);
+        }
+        .submit-btn {
+            width: 100%;
+            background: rgba(255,255,245,0.1);
+            border: 1px solid rgba(230,210,140,0.5);
+            border-radius: 60px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f0e9d8;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.2s;
+        }
+        .submit-btn:hover {
+            background: rgba(230,210,120,0.25);
+            border-color: #e6c878;
+        }
+        .tfa-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0 5px;
+            display: none;
+        }
+        .tfa-label {
+            font-size: 0.85rem;
+            color: #ccc6b5;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2a2a2e;
+            transition: 0.2s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #ddd6c5;
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #c9aa5f;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        .create-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: rgba(30,32,42,0.7);
+            border: 1px solid rgba(210,180,100,0.4);
+            border-radius: 60px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #e2d5b6;
+            cursor: pointer;
+            margin-top: 28px;
+            transition: all 0.2s;
+        }
+        .create-btn:hover {
+            background: rgba(60,55,70,0.85);
+            border-color: #e2bc6e;
+        }
+
+        .loading-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.94);
+            backdrop-filter: blur(24px);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            color: white;
+        }
+        .spinner-anim {
+            width: 56px;
+            height: 56px;
+            border: 3px solid rgba(255,255,240,0.2);
+            border-top: 3px solid #f5e2b0;
+            border-radius: 50%;
+            animation: spinSlow 2.4s linear infinite;
+            margin-bottom: 1.8rem;
+        }
+        @keyframes spinSlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-sub {
+            font-size: 1rem;
+            text-align: center;
+            background: rgba(0,0,0,0.55);
+            padding: 10px 22px;
+            border-radius: 60px;
+            max-width: 80%;
+            font-family: 'Times New Roman', Georgia, 'Playfair Display', serif;
+            font-style: italic;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(8px);
+            transition: opacity 0.25s ease-in-out;
+        }
+        .toast-banner {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(20px);
+            border-left: 4px solid #b95c2a;
+            border-radius: 32px;
+            padding: 12px 24px;
+            color: #f2e5cf;
+            font-size: 0.85rem;
+            max-width: 85%;
+            width: auto;
+            text-align: center;
+            z-index: 4000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: auto;
+            cursor: default;
+            font-weight: 500;
+        }
+        .custom-select {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .select-trigger {
+            background: rgba(15,15,22,0.9);
+            border: 1px solid rgba(255,255,210,0.3);
+            border-radius: 60px;
+            padding: 14px 20px;
+            color: #f0ede8;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .select-dropdown {
+            position: absolute;
+            top: 58px;
+            left: 0;
+            width: 100%;
+            background: #181c24;
+            border-radius: 24px;
+            border: 1px solid #3a3a44;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 200;
+            display: none;
+        }
+        .select-dropdown.show {
+            display: block;
+        }
+        .select-option {
+            padding: 12px 18px;
+            cursor: pointer;
+            color: #e2d5c0;
+            transition: 0.1s;
+        }
+        .select-option:hover {
+            background: #2f3540;
+        }
+        .modal-overlay {
+            position: fixed;
+            top:0;left:0;width:100%;height:100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity:0;
+            transition:0.2s;
+        }
+        .confirm-card {
+            background: #14161e;
+            border-radius: 32px;
+            padding: 24px;
+            max-width: 320px;
+            text-align: center;
+            border: 1px solid rgba(210,180,100,0.4);
+        }
+        .confirm-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .confirm-btns button {
+            background: #2f2f3a;
+            border: none;
+            padding: 8px 28px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+        }
+        .phone-input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="card" id="appRoot">
+    <div class="brand">
+        <h1>iubanova MyAccount</h1>
+        <div class="byline" id="bylineText"></div>
+    </div>
+
+    <div id="oauthSection">
+        <div class="oauth-group">
+            <div class="oauth-btn" data-provider="apple"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/Apple_Computer_Logo_rainbow.svg-2.png.webp" alt="apple"> Continue with Apple</div>
+            <div class="oauth-btn" data-provider="google"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/OIP.dRKwxGHP0QfrWYS-rLkpfwHaDF.webp" alt="google"> Continue with Google</div>
+            <div class="oauth-btn" data-provider="facebook"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/21502363017elftwydqhsq2hfno5hr10fwmuvvqrozvbwd5focfqjeticuaeu5nftu8jp65rtarcvksy8ycpafitbgh5jia7ttf2gaqubc7liz7.png" alt="facebook"> Continue with Facebook</div>
+            <div class="oauth-btn" data-provider="wechat"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/WeChat-logo.png" alt="wechat"> Continue with WeChat</div>
+        </div>
+    </div>
+
+    <div class="divider"><span class="line"></span> OR <span class="line"></span></div>
+
+    <div id="loginFormArea">
+        <div class="input-group" id="identifierGroup">
+            <input type="text" id="identifierInput" class="input-field" placeholder="Username, Email or Phone Number" autocomplete="off">
+            <div id="arrowBtn" class="arrow-icon" style="display: none;">→</div>
+        </div>
+        <div id="passwordGroup" style="display: none;">
+            <div class="input-group">
+                <input type="password" id="passwordInput" class="input-field" placeholder="Password">
+            </div>
+        </div>
+        <div class="tfa-row" id="tfaRow">
+            <span class="tfa-label">Two-Factor Authentication (2FA)</span>
+            <label class="switch"><input type="checkbox" id="tfaToggle"><span class="slider"></span></label>
+        </div>
+        <div id="tfaCodeGroup" style="display: none;">
+            <div class="input-group"><input type="text" id="tfaCode" class="input-field" placeholder="Authentication code"></div>
+        </div>
+        <button id="submitLoginBtn" class="submit-btn">Submit</button>
+    </div>
+
+    <button id="createAccountBtn" class="create-btn">——  Create an account  ——</button>
+</div>
+
+<div id="loadingOverlay" class="loading-mask">
+    <div class="spinner-anim"></div>
+    <div id="loadingMessage" class="loading-sub"> </div>
+</div>
+<div id="toastMessage" class="toast-banner"></div>
+<div id="confirmModal" class="modal-overlay"><div class="confirm-card"><p id="confirmText"></p><div class="confirm-btns"><button id="confirmYes">Yes</button><button id="confirmNo">No</button></div></div></div>
+
+<script>
+    (function() {
+        // ========== byline italic serif ==========
+        const bylines = [
+            "Your account. Your preferences. Your pace.",
+            "This page belongs only to you. Between light and shadow, you decide when to arrive.",
+            "The place to govern all your services.",
+            "Your service hub. Everything within reach."
+        ];
+        document.getElementById('bylineText').innerText = bylines[Math.floor(Math.random() * bylines.length)];
+
+        // ========== 加载字幕优雅过渡 ==========
+        const subtitlesMap = [
+            "Use ⌘ + D to add our website to your Favourites in Safari.",
+            "A restless melody is playing.",
+            "Fancy brewing a cup of tea while you wait?",
+            "We're preparing some fine content for you.",
+            "Press ⌘ + H to hide the current window and do something else while you wait.",
+            "Please bear with us for a moment.",
+            "Warming up the Hemi™ V8.",
+            "Wake your chaos. Drink Camellipinigrum Coffeypuniceus.™",
+            "Almost there.",
+            "A good internet connection reduces loading time.",
+            "The first dusk falls, and all things draw near their readiness. Stay but a moment—all shall be complete.",
+            "We will present it to you shortly."
+        ];
+        let subtitleInterval = null;
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingMsgDiv = document.getElementById('loadingMessage');
+        const toastEl = document.getElementById('toastMessage');
+        let toastTimeout = null;
+
+        function startRandomSubtitle() {
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            let idx = Math.floor(Math.random() * subtitlesMap.length);
+            loadingMsgDiv.innerText = subtitlesMap[idx];
+            loadingMsgDiv.style.opacity = '1';
+            subtitleInterval = setInterval(() => {
+                loadingMsgDiv.style.opacity = '0';
+                setTimeout(() => {
+                    let newIdx = Math.floor(Math.random() * subtitlesMap.length);
+                    if (newIdx === idx) newIdx = (newIdx+1)%subtitlesMap.length;
+                    idx = newIdx;
+                    loadingMsgDiv.innerText = subtitlesMap[idx];
+                    loadingMsgDiv.style.opacity = '1';
+                }, 200);
+            }, 1400);
+        }
+        function stopRandomSubtitle() { if (subtitleInterval) clearInterval(subtitleInterval); subtitleInterval = null; }
+        function showLoading() { startRandomSubtitle(); loadingOverlay.style.visibility = 'visible'; loadingOverlay.style.opacity = '1'; }
+        function hideLoading() { stopRandomSubtitle(); loadingOverlay.style.opacity = '0'; setTimeout(() => { loadingOverlay.style.visibility = 'hidden'; }, 400); }
+        function showFailureToast(manual = false) {
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastEl.innerText = "We apologise, but the login attempt has failed. For reasons currently undetermined, your request could not be routed to the iubanova online service.";
+            toastEl.style.opacity = '1';
+            if (!manual) toastTimeout = setTimeout(() => { if (toastEl.style.opacity === '1') toastEl.style.opacity = '0'; }, 5000);
+            toastEl.onmouseenter = () => { if(toastTimeout) clearTimeout(toastTimeout); };
+            toastEl.onmouseleave = () => { toastTimeout = setTimeout(() => { if(toastEl.style.opacity === '1') toastEl.style.opacity = '0'; }, 5000); };
+        }
+        async function fakeLongLoading(callback) { showLoading(); await new Promise(r => setTimeout(r, 6500)); hideLoading(); showFailureToast(); if (callback) callback(); }
+
+        // ========== 光斑(更暗更模糊) & 涟漪残影 ==========
+        function addRipple(btn, event) {
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 1.3;
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+            const ripple = document.createElement('span');
+            ripple.className = 'btn-ripple';
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (x - size/2) + 'px';
+            ripple.style.top = (y - size/2) + 'px';
+            btn.style.position = 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1000);
+        }
+        let currentBlinkingStar = null;
+        function addSubtleStars(btn) {
+            if(!btn.matches(':hover')) return;
+            if(currentBlinkingStar && document.body.contains(currentBlinkingStar)) return;
+            const existingStars = btn.querySelectorAll('.star');
+            if(existingStars.length >= 5) return;
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 1;
+            star.style.width = size+'px';
+            star.style.height = size+'px';
+            star.style.left = (Math.random() * (btn.clientWidth - 16) + 8) + 'px';
+            star.style.top = (Math.random() * (btn.clientHeight - 16) + 8) + 'px';
+            btn.appendChild(star);
+            currentBlinkingStar = star;
+            star.classList.add('star-flicker');
+            setTimeout(() => { if(star && star.parentNode) star.remove(); if(currentBlinkingStar === star) currentBlinkingStar = null; }, 400);
+        }
+        function attachHoverEffects(btn) {
+            let glowDiv = null;
+            let starInterval = null;
+            btn.addEventListener('mouseenter', () => {
+                if(!glowDiv) { glowDiv = document.createElement('div'); glowDiv.className = 'hover-glow'; btn.style.position = 'relative'; btn.appendChild(glowDiv); }
+                const scheduleStar = () => { if(!btn.matches(':hover')) return; if(!currentBlinkingStar) addSubtleStars(btn); };
+                starInterval = setInterval(scheduleStar, 680);
+                function updateGlow(e) {
+                    if(!glowDiv) return;
+                    const rectBtn = btn.getBoundingClientRect();
+                    let mouseX = e.clientX - rectBtn.left;
+                    let mouseY = e.clientY - rectBtn.top;
+                    mouseX = Math.min(Math.max(mouseX, 0), rectBtn.width);
+                    mouseY = Math.min(Math.max(mouseY, 0), rectBtn.height);
+                    glowDiv.style.left = mouseX + 'px';
+                    glowDiv.style.top = mouseY + 'px';
+                    glowDiv.style.opacity = '0.55';
+                }
+                btn.addEventListener('mousemove', updateGlow);
+                btn.addEventListener('mouseleave', function onLeave() {
+                    if(glowDiv) glowDiv.style.opacity = '0';
+                    if(starInterval) clearInterval(starInterval);
+                    if(currentBlinkingStar && currentBlinkingStar.parentNode) currentBlinkingStar.remove();
+                    currentBlinkingStar = null;
+                    btn.removeEventListener('mousemove', updateGlow);
+                    btn.removeEventListener('mouseleave', onLeave);
+                });
+            });
+        }
+        function attachClickWave(btn) {
+            btn.addEventListener('click', (e) => addRipple(btn, e));
+            btn.addEventListener('mousedown', (e) => addRipple(btn, e));
+        }
+        function applyEffectsToButtons(selector) {
+            document.querySelectorAll(selector).forEach(btn => { attachHoverEffects(btn); attachClickWave(btn); });
+        }
+
+        // ========== 主要登录UI交互 ==========
+        const identifierInput = document.getElementById('identifierInput');
+        const arrowDiv = document.getElementById('arrowBtn');
+        const passwordGroup = document.getElementById('passwordGroup');
+        const tfaRow = document.getElementById('tfaRow');
+        const tfaToggle = document.getElementById('tfaToggle');
+        const tfaCodeGroup = document.getElementById('tfaCodeGroup');
+        const submitBtn = document.getElementById('submitLoginBtn');
+
+        identifierInput.addEventListener('input', () => {
+            if (identifierInput.value.trim().length > 0) {
+                arrowDiv.style.display = 'flex';
+                tfaRow.style.display = 'flex';
+            } else {
+                arrowDiv.style.display = 'none';
+                tfaRow.style.display = 'none';
+                passwordGroup.style.display = 'none';
+                tfaCodeGroup.style.display = 'none';
+                if(tfaToggle.checked) tfaToggle.checked = false;
+            }
+        });
+
+        async function onArrowOrReturn() {
+            if (!identifierInput.value.trim()) return;
+            arrowDiv.style.display = 'none';
+            const originalHtml = arrowDiv.innerHTML;
+            arrowDiv.innerHTML = '<div class="spinner-anim" style="width:18px;height:18px;border-width:2px;margin:0;"></div>';
+            await new Promise(r => setTimeout(r, 1000));
+            arrowDiv.innerHTML = originalHtml;
+            arrowDiv.style.display = 'flex';
+            passwordGroup.style.display = 'block';
+            if (tfaToggle.checked) tfaCodeGroup.style.display = 'block';
+            else tfaCodeGroup.style.display = 'none';
+        }
+        arrowDiv.addEventListener('click', onArrowOrReturn);
+        identifierInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') onArrowOrReturn(); });
+        tfaToggle.addEventListener('change', () => {
+            if (tfaToggle.checked && passwordGroup.style.display === 'block') tfaCodeGroup.style.display = 'block';
+            else tfaCodeGroup.style.display = 'none';
+        });
+        submitBtn.addEventListener('click', async () => { if (passwordGroup.style.display === 'block') fakeLongLoading(); });
+
+        function handleOAuthClick() { fakeLongLoading(); }
+        document.querySelectorAll('.oauth-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); handleOAuthClick(); }); });
+
+        // ========== 国家/地区列表 (50个强大国家/地区) ==========
+        const countriesList = [
+            { name: "United States", dial: "+1" }, { name: "China", dial: "+86" }, { name: "Japan", dial: "+81" },
+            { name: "Germany", dial: "+49" }, { name: "United Kingdom", dial: "+44" }, { name: "France", dial: "+33" },
+            { name: "India", dial: "+91" }, { name: "Canada", dial: "+1" }, { name: "Italy", dial: "+39" },
+            { name: "Brazil", dial: "+55" }, { name: "Australia", dial: "+61" }, { name: "Russia", dial: "+7" },
+            { name: "South Korea", dial: "+82" }, { name: "Spain", dial: "+34" }, { name: "Mexico", dial: "+52" },
+            { name: "Indonesia", dial: "+62" }, { name: "Netherlands", dial: "+31" }, { name: "Saudi Arabia", dial: "+966" },
+            { name: "Turkey", dial: "+90" }, { name: "Switzerland", dial: "+41" }, { name: "Sweden", dial: "+46" },
+            { name: "Poland", dial: "+48" }, { name: "Belgium", dial: "+32" }, { name: "Thailand", dial: "+66" },
+            { name: "Norway", dial: "+47" }, { name: "Israel", dial: "+972" }, { name: "UAE", dial: "+971" },
+            { name: "Singapore", dial: "+65" }, { name: "Malaysia", dial: "+60" }, { name: "Denmark", dial: "+45" },
+            { name: "Finland", dial: "+358" }, { name: "Vietnam", dial: "+84" }, { name: "Philippines", dial: "+63" },
+            { name: "Pakistan", dial: "+92" }, { name: "Nigeria", dial: "+234" }, { name: "Egypt", dial: "+20" },
+            { name: "South Africa", dial: "+27" }, { name: "Argentina", dial: "+54" }, { name: "Chile", dial: "+56" },
+            { name: "Colombia", dial: "+57" }, { name: "Peru", dial: "+51" }, { name: "New Zealand", dial: "+64" },
+            { name: "Ireland", dial: "+353" }, { name: "Portugal", dial: "+351" }, { name: "Greece", dial: "+30" },
+            { name: "Czech Republic", dial: "+420" }, { name: "Hungary", dial: "+36" }, { name: "Ukraine", dial: "+380" },
+            { name: "Kazakhstan", dial: "+7" }, { name: "Qatar", dial: "+974" }
+        ];
+
+        // ========== 完整Create account 重建 (保证下拉和所有交互) ==========
+        let createViewActive = false;
+        const originalCardHTML = document.getElementById('appRoot').innerHTML;
+        function restoreLoginView() {
+            const container = document.getElementById('appRoot');
+            container.innerHTML = originalCardHTML;
+            attachPostRenderEvents();
+            createViewActive = false;
+        }
+
+        function attachPostRenderEvents() {
+            document.querySelectorAll('.oauth-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); fakeLongLoading(); }); attachHoverEffects(btn); attachClickWave(btn); });
+            const idInput = document.getElementById('identifierInput');
+            const arrDiv = document.getElementById('arrowBtn');
+            const pwdGroup = document.getElementById('passwordGroup');
+            const tfaRowEl = document.getElementById('tfaRow');
+            const tfaToggleEl = document.getElementById('tfaToggle');
+            const tfaGroupDiv = document.getElementById('tfaCodeGroup');
+            const submit = document.getElementById('submitLoginBtn');
+            const create = document.getElementById('createAccountBtn');
+            if(idInput && arrDiv) {
+                idInput.addEventListener('input', () => { if(idInput.value.trim().length > 0) { arrDiv.style.display = 'flex'; if(tfaRowEl) tfaRowEl.style.display = 'flex'; } else { arrDiv.style.display = 'none'; if(tfaRowEl) tfaRowEl.style.display = 'none'; pwdGroup.style.display = 'none'; if(tfaGroupDiv) tfaGroupDiv.style.display = 'none'; if(tfaToggleEl) tfaToggleEl.checked = false; } });
+                arrDiv.addEventListener('click', onArrowOrReturn);
+                idInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') onArrowOrReturn(); });
+            }
+            if(tfaToggleEl) tfaToggleEl.addEventListener('change', () => { if(tfaToggleEl.checked && pwdGroup && pwdGroup.style.display === 'block') tfaGroupDiv.style.display = 'block'; else if(tfaGroupDiv) tfaGroupDiv.style.display = 'none'; });
+            if(submit) submit.addEventListener('click', async () => { if(pwdGroup && pwdGroup.style.display === 'block') fakeLongLoading(); });
+            if(create) create.addEventListener('click', buildCreateView);
+            applyEffectsToButtons('.oauth-btn');
+            applyEffectsToButtons('.create-btn');
+            applyEffectsToButtons('.submit-btn');
+        }
+
+        async function showPhoneConfirm(phoneNum, country) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmText').innerText = `Is this number correct? ${country.dial} ${phoneNum}. We will send an OTP to verify it.`;
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            return new Promise((resolve) => {
+                const onYes = () => { cleanup(); resolve(true); };
+                const onNo = () => { cleanup(); resolve(false); };
+                function cleanup() { modal.style.visibility = 'hidden'; modal.style.opacity = '0'; document.getElementById('confirmYes').removeEventListener('click', onYes); document.getElementById('confirmNo').removeEventListener('click', onNo); }
+                document.getElementById('confirmYes').addEventListener('click', onYes);
+                document.getElementById('confirmNo').addEventListener('click', onNo);
+            });
+        }
+
+        function buildCreateView() {
+            if(createViewActive) return;
+            createViewActive = true;
+            const container = document.getElementById('appRoot');
+            container.innerHTML = `
+                <div class="brand"><h1>iubanova MyAccount</h1><div class="byline">Join the space</div></div>
+                <div class="oauth-group" id="createOauthGroup"></div>
+                <div class="divider"><span class="line"></span> Sign up with phone or email <span class="line"></span></div>
+                <div class="custom-select" id="countrySelectWrapper">
+                    <div class="select-trigger" id="selectTrigger">Select country / region</div>
+                    <div class="select-dropdown" id="selectDropdown"></div>
+                </div>
+                <div class="phone-input-row">
+                    <input type="text" id="phoneNumberInput" class="input-field" placeholder="Phone number">
+                    <button id="phoneContinueBtn" class="oauth-btn" style="width:auto; padding:12px 20px;"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/blue-2024619_1280.png" width="24" alt="phone"></button>
+                </div>
+                <div style="margin:20px 0 12px;"><div class="divider"><span class="line"></span></div></div>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <input type="email" id="emailSignupInput" class="input-field" placeholder="Email address">
+                    <button id="emailContinueBtn" class="oauth-btn" style="width:auto; padding:12px 20px;"><img src="https://uplgov.github.io/iubanova-TestOnly/images/icons/R.2c94e80bc439f8ac26eed33063918083.png" width="24" alt="email"></button>
+                </div>
+                <button id="backToLoginBtn" class="create-btn" style="margin-top:32px;">← Back to Login</button>
+            `;
+
+            // 克隆第三方按钮
+            const originalOauth = document.querySelector('#oauthSection .oauth-group').cloneNode(true);
+            document.getElementById('createOauthGroup').innerHTML = originalOauth.innerHTML;
+
+            // 初始化下拉框 (50个)
+            let selectedCountry = countriesList[0];
+            const trigger = document.getElementById('selectTrigger');
+            const dropdown = document.getElementById('selectDropdown');
+            function renderOptions(filter = "") {
+                const filtered = countriesList.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()) || c.dial.includes(filter));
+                dropdown.innerHTML = '';
+                filtered.forEach(c => {
+                    const opt = document.createElement('div');
+                    opt.className = 'select-option';
+                    opt.innerText = `${c.name} (${c.dial})`;
+                    opt.addEventListener('click', () => { selectedCountry = c; trigger.innerText = `${c.name} ${c.dial}`; dropdown.classList.remove('show'); });
+                    dropdown.appendChild(opt);
+                });
+                if(filtered.length === 0) dropdown.innerHTML = '<div class="select-option">No results</div>';
+            }
+            trigger.innerText = `${selectedCountry.name} ${selectedCountry.dial}`;
+            trigger.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); renderOptions(""); });
+            const searchInput = document.createElement('input');
+            searchInput.placeholder = "Search country or dial code...";
+            searchInput.className = "input-field";
+            searchInput.style.margin = "8px";
+            searchInput.style.padding = "8px 12px";
+            searchInput.addEventListener('input', (e) => renderOptions(e.target.value));
+            dropdown.appendChild(searchInput);
+            renderOptions("");
+            document.addEventListener('click', () => dropdown.classList.remove('show'));
+
+        
+            document.getElementById('phoneContinueBtn').addEventListener('click', async () => {
+                const phoneInput = document.getElementById('phoneNumberInput');
+                const rawPhone = phoneInput.value.trim();
+                if(!rawPhone) return;
+                const confirmed = await showPhoneConfirm(rawPhone, selectedCountry);
+                if(confirmed) fakeLongLoading();
+            });
+            document.getElementById('emailContinueBtn').addEventListener('click', () => {
+                const email = document.getElementById('emailSignupInput').value.trim();
+                if(!email.includes('@') || !email.includes('.')) { alert("Please enter a valid email address containing @"); return; }
+                fakeLongLoading();
+            });
+            document.getElementById('backToLoginBtn').addEventListener('click', restoreLoginView);
+            document.querySelectorAll('#createOauthGroup .oauth-btn').forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); fakeLongLoading(); }));
+            // 应用光斑特效
+            applyEffectsToButtons('#createOauthGroup .oauth-btn');
+            applyEffectsToButtons('#phoneContinueBtn');
+            applyEffectsToButtons('#emailContinueBtn');
+            applyEffectsToButtons('#backToLoginBtn');
+        }
+
+        attachPostRenderEvents();
+        document.getElementById('createAccountBtn').addEventListener('click', buildCreateView);
+        applyEffectsToButtons('.oauth-btn');
+        applyEffectsToButtons('.create-btn');
+        applyEffectsToButtons('.submit-btn');
+    })();
+</script>
+</body>
+</html>
