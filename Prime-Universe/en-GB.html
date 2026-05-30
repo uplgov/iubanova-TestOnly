@@ -794,9 +794,18 @@ width: 90%;
 position: relative;
 transform: scale(0.96) translateY(20px);
 transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+text-align: center;
 }
 .external-redirect-overlay.active .external-redirect-content {
 transform: scale(1) translateY(0);
+}
+.external-redirect-content img {
+width: 64px;
+height: 64px;
+margin-bottom: 1rem;
+display: block;
+margin-left: auto;
+margin-right: auto;
 }
 .external-redirect-content p {
 margin-bottom: 1.5rem;
@@ -805,7 +814,7 @@ line-height: 1.5;
 .external-redirect-buttons {
 display: flex;
 gap: 1rem;
-justify-content: flex-end;
+justify-content: center;
 }
 </style>
 </head>
@@ -940,6 +949,12 @@ I have read, understood, and agree to the terms above.
 <span class="footer-link" id="btnTrade">Trademarks & disclaimer</span>
 <span class="footer-link" id="btnLicence">Licence</span>
 <a href="https://uplgov.github.io/iubanova-TestOnly/sitemap.xml" class="footer-link">Sitemap</a>
+</div>
+<div class="footer-section">
+<h4>iubanova values</h4>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/values/education.html" class="footer-link" target="_blank">Education</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/values/environment.html" class="footer-link" target="_blank">Environment</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/values/e-c.html" class="footer-link" target="_blank">Employees' community</a>
 </div>
 <div class="footer-section">
 <h4>Links</h4>
@@ -1080,6 +1095,7 @@ I have read, understood, and agree to the terms above.
 
 <div id="externalRedirectOverlay" class="external-redirect-overlay">
 <div class="external-redirect-content">
+<img src="https://uplgov.github.io/sixside/icons/caution.png" alt="Caution">
 <p>You are being redirected to an external website that is not operated or controlled by iubanova. Once you leave iubanova, any information you provide will be governed by the privacy policy and terms of service of that external site. iubanova encourages you to review those documents before continuing. iubanova accepts no liability or responsibility for the content, security, or practices of any third‑party website.</p>
 <div class="external-redirect-buttons">
 <button id="cancelRedirectBtn" class="btn">Cancel redirecting</button>
@@ -1316,7 +1332,6 @@ function interceptExternalLinks() {
         const href = link.getAttribute('href');
         if(!href) return;
         if(href.startsWith('http') && !href.includes('https://uplgov.github.io/iubanova-TestOnly')) {
-            const originalClick = link.onclick;
             link.onclick = (e) => {
                 e.preventDefault();
                 showExternalRedirect(href);
@@ -1334,16 +1349,13 @@ if(uplGovLink) {
         return false;
     };
 }
-const originalFooterLinks = document.querySelectorAll('.footer-link');
-originalFooterLinks.forEach(link => {
-    if(link.id !== 'uplGovLink' && link.getAttribute('href') && link.getAttribute('href').startsWith('http') && !link.getAttribute('href').includes('https://uplgov.github.io/iubanova-TestOnly')) {
-        const existingClick = link.onclick;
-        link.onclick = (e) => {
-            e.preventDefault();
-            showExternalRedirect(link.getAttribute('href'));
-            return false;
-        };
-    }
+const valuesLinks = document.querySelectorAll('.footer-section:nth-child(3) .footer-link');
+valuesLinks.forEach(link => {
+    link.onclick = (e) => {
+        e.preventDefault();
+        showExternalRedirect(link.getAttribute('href'));
+        return false;
+    };
 });
 </script>
 </body>
