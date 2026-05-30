@@ -1284,7 +1284,7 @@ let light=false;document.getElementById('themeToggleBtn').onclick=()=>{light=!li
 document.getElementById('btnResetAll').onclick=()=>{slSat.value=100;slMono.value=0;slCont.value=100;upF();chkCrosshairSetting.checked=false;selCrosshairColor.value='red';updateCrosshairMode();if(light){light=false;document.body.classList.remove('light-theme');document.getElementById('themeToggleBtn').innerText='Dark';}};
 document.getElementById('navLogoBtn').onclick=function(e){if(window.location.href.indexOf('en-GB.html')>-1)e.preventDefault();else window.location.href='https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB.html';};
 
-(function() {
+(async function() {
     const isMaintenance = await checkMaintenanceAndShow();
     if(isMaintenance) return;
 })();
@@ -1325,7 +1325,7 @@ function interceptExternalLinks() {
         }
     });
 }
-setTimeout(interceptExternalLinks, 500);
+setTimeout(interceptExternalLinks, 1000);
 const uplGovLink = document.getElementById('uplGovLink');
 if(uplGovLink) {
     uplGovLink.onclick = (e) => {
