@@ -40,14 +40,6 @@ user-select: none;
 --hover-bg: rgba(45,45,70,0.85);
 --modal-overlay: rgba(0,0,0,0.8);
 }
-body.light-theme {
---bg-color: #f4f4f5;
---text-color: #111;
---panel-bg: rgba(240,240,245,0.85);
---border-color: rgba(0,0,0,0.1);
---hover-bg: rgba(220,220,225,0.95);
---modal-overlay: rgba(255,255,255,0.8);
-}
 body {
 background: var(--bg-color);
 color: var(--text-color);
@@ -56,7 +48,15 @@ font-size: 18px;
 width: 100vw;
 min-height: 100vh;
 overflow-x: hidden;
-transition: background 0.3s, color 0.3s;
+transition: background 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), color 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+body.light-theme {
+--bg-color: #f4f4f5;
+--text-color: #111;
+--panel-bg: rgba(240,240,245,0.85);
+--border-color: rgba(0,0,0,0.1);
+--hover-bg: rgba(220,220,225,0.95);
+--modal-overlay: rgba(255,255,255,0.8);
 }
 img, a, button, .btn, .nav-link, .lang-mode-btn, .settings-icon, .footer-link, .dropdown-item {
 -webkit-user-drag: none;
@@ -779,6 +779,10 @@ justify-content: center;
 opacity: 0;
 visibility: hidden;
 transition: opacity 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), visibility 0.4s ease;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
 }
 .external-redirect-overlay.active {
 opacity: 1;
@@ -795,6 +799,10 @@ position: relative;
 transform: scale(0.96) translateY(20px);
 transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 text-align: center;
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
 }
 .external-redirect-overlay.active .external-redirect-content {
 transform: scale(1) translateY(0);
@@ -810,6 +818,9 @@ margin-right: auto;
 .external-redirect-content p {
 margin-bottom: 1.5rem;
 line-height: 1.5;
+}
+.external-redirect-content p strong {
+font-weight: bold;
 }
 .external-redirect-buttons {
 display: flex;
@@ -951,10 +962,18 @@ I have read, understood, and agree to the terms above.
 <a href="https://uplgov.github.io/iubanova-TestOnly/sitemap.xml" class="footer-link">Sitemap</a>
 </div>
 <div class="footer-section">
-<h4>iubanova values</h4>
+<h4>iubanova Values</h4>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/values/education.html" class="footer-link" target="_blank">Education</a>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/values/environment.html" class="footer-link" target="_blank">Environment</a>
 <a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/values/e-c.html" class="footer-link" target="_blank">Employees' community</a>
+</div>
+<div class="footer-section">
+<h4>Quick Services</h4>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/find-us.html" class="footer-link" target="_blank">Arrange a Visit</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/en-GB/download.html" class="footer-link" target="_blank">Mobile Application</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/help.html" class="footer-link" target="_blank">Help</a>
+<a href="https://uplgov.github.io/iubanova-TestOnly/Prime-Universe/careers.html" class="footer-link" target="_blank">Careers</a>
+<span class="footer-link" id="servicesStatusBtn">Services Status</span>
 </div>
 <div class="footer-section">
 <h4>Links</h4>
@@ -962,9 +981,9 @@ I have read, understood, and agree to the terms above.
 <a href="https://uplgov.github.io/national-portal/" target="_blank" class="footer-link" id="uplGovLink">UPL Central Government</a>
 </div>
 <div class="footer-section">
-<h4>Follow Us</h4>
+<h4>Connect with us</h4>
 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">YouTube</a>
-<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">X</a>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">𝕏</a>
 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">FaceBook</a>
 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="footer-link">LinkedIn</a>
 </div>
@@ -1096,7 +1115,7 @@ I have read, understood, and agree to the terms above.
 <div id="externalRedirectOverlay" class="external-redirect-overlay">
 <div class="external-redirect-content">
 <img src="https://uplgov.github.io/sixside/icons/caution.png" alt="Caution">
-<p>You are being redirected to an external website that is not operated or controlled by iubanova. Once you leave iubanova, any information you provide will be governed by the privacy policy and terms of service of that external site. iubanova encourages you to review those documents before continuing. iubanova accepts no liability or responsibility for the content, security, or practices of any third‑party website.</p>
+<p><strong>You are being redirected to an external website that is not operated or controlled by iubanova.</strong> Once you leave iubanova, any information you provide will be governed by the privacy policy and terms of service of that external site. iubanova encourages you to review those documents before continuing. iubanova accepts no liability or responsibility for the content, security, or practices of any third‑party website.</p>
 <div class="external-redirect-buttons">
 <button id="cancelRedirectBtn" class="btn">Cancel redirecting</button>
 <button id="continueRedirectBtn" class="btn">Continue</button>
@@ -1349,13 +1368,33 @@ if(uplGovLink) {
         return false;
     };
 }
-const valuesLinks = document.querySelectorAll('.footer-section:nth-child(3) .footer-link');
+const valuesLinks = document.querySelectorAll('.footer-section:nth-child(2) .footer-link, .footer-section:nth-child(3) .footer-link');
 valuesLinks.forEach(link => {
-    link.onclick = (e) => {
+    if(link.tagName === 'A') {
+        link.onclick = (e) => {
+            e.preventDefault();
+            showExternalRedirect(link.getAttribute('href'));
+            return false;
+        };
+    }
+});
+const servicesStatusBtn = document.getElementById('servicesStatusBtn');
+if(servicesStatusBtn) {
+    servicesStatusBtn.onclick = (e) => {
         e.preventDefault();
-        showExternalRedirect(link.getAttribute('href'));
+        alert('This function is still being developed. Please accept our sincere apologies.');
         return false;
     };
+}
+const quickServicesLinks = document.querySelectorAll('.footer-section:nth-child(3) .footer-link');
+quickServicesLinks.forEach(link => {
+    if(link.tagName === 'A') {
+        link.onclick = (e) => {
+            e.preventDefault();
+            showExternalRedirect(link.getAttribute('href'));
+            return false;
+        };
+    }
 });
 </script>
 </body>
